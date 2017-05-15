@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+
+. /usr/local/share/bash/travis_dependencies.bash
+
+echo Configuring pypi
+configure_pypi
+
+echo Upgrading pip and setuptools
+pip install --upgrade pip setuptools # Make sure to always be on latest version of these
+
+echo Uninstalling mock, pytest and py
+pip uninstall -y mock pytest py # Get rid of old versions, so that we get the ones we want

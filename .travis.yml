@@ -1,0 +1,26 @@
+language: python
+python:
+  # CPython: https://docs.travis-ci.com/user/languages/python/#Choosing-Python-versions-to-test-against
+  - '2.7'
+  - '3.3'
+  - '3.4'
+  - '3.5'
+  - '3.6'
+cache: pip
+before_install:
+  - bin/prepare
+script: bin/test
+#TODO: Fill in needed details and enable this block
+#env:
+#  global:
+#    - ARTIFACTORY_USER=TODO
+#    - secure: TODO # ARTIFACTORY_PWD
+#deploy:
+#  provider: pypi
+#  user: TODO
+#  password:
+#    secure: TODO
+#  server: https://artifacts.schibsted.io/artifactory/api/pypi/pypi-local
+#  distributions: "sdist bdist_wheel"
+#  on:
+#    python: '3.4'

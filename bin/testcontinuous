@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+set -o pipefail
+
+cd "$(dirname $0)/.." || exit 1
+
+echo "Waiting for filesystem changes. Hit Ctrl+C to exit."
+fswatch -e '.*' -i '.*\.py$' --event=Updated --event=Created --event=MovedTo --event=Renamed --event=MovedFrom --event=Removed -o -r . | while read line; do python setup.py test '--addopts="-m not integration_test"'; done
