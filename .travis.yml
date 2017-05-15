@@ -1,7 +1,6 @@
 language: python
 python:
   # CPython: https://docs.travis-ci.com/user/languages/python/#Choosing-Python-versions-to-test-against
-  - '2.7'
   - '3.3'
   - '3.4'
   - '3.5'
