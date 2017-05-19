@@ -1,9 +1,9 @@
 from flask import Flask, url_for, jsonify, request, abort, Blueprint
-from werkzeug.exceptions import UnprocessableEntity, HTTPException
+from werkzeug.exceptions import UnprocessableEntity, HTTPException, InternalServerError
 
 from .deployer import deploy
-from .status import status
 from .models import Deployment
+from .status import status
 
 web = Blueprint("web", __name__)
 
@@ -26,14 +26,20 @@ def status_handler(application):
 
 def error_handler(error):
     """Render errors as JSON"""
-    resp = {"code": error.code, "name": error.name, "description": error.description}
-    return jsonify(resp), error.code
+    if not all(hasattr(error, attr) for attr in ("code", "name", "description")):
+        error = InternalServerError()
+    resp = {
+        "code": error.code,
+        "name": error.name,
+        "description": error.description
+    }
+    return jsonify(resp), resp["code"]
 
 
 def create_app():
     app = Flask(__name__)
     app.register_blueprint(web)
     for error_class in HTTPException.__subclasses__():
-        if 400 <= error_class.code < 500:
+        if 400 <= error_class.code < 600:
             app.register_error_handler(error_class.code, error_handler)
     return app
