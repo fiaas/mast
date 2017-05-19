@@ -1,12 +1,6 @@
-from flask import Flask
-
-app = Flask(__name__)
-
-
-@app.route('/')
-def hello_world():
-    return 'Hello World!'
+from schip_spinnaker_webhook.web import create_app
 
 
 def main():
+    app = create_app()
     app.run()

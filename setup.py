@@ -11,12 +11,12 @@ from warnings import warn
 
 
 def version():
-    date_string = datetime.now().strftime("%Y.%m.%d.%H%M%S")
+    date_string = datetime.now().strftime("1.%Y%m%d.%H%M%S")
     try:
-        git_sha = check_output(["git", "rev-parse", "--short", "HEAD"]).strip().decode()
+        git_sha = check_output(["git", "describe", "--always", "--dirty=dirty", "--match=NOTHING"]).strip().decode()
         return "{}+{}".format(date_string, git_sha)
     except CalledProcessError as e:
-        warn("Error calling git rev-parse: {}".format(e))
+        warn("Error calling git: {}".format(e))
     return date_string
 
 
