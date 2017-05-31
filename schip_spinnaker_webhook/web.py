@@ -1,7 +1,8 @@
 from flask import Flask, url_for, jsonify, request, abort, Blueprint
 from werkzeug.exceptions import UnprocessableEntity, HTTPException, InternalServerError
 
-from .deployer import deploy
+from k8s.client import Client
+from .deployer import Deployer
 from .models import Deployment
 from .status import status
 
@@ -19,8 +20,10 @@ def deploy_handler():
     errors = ["Missing key {!r} in input".format(key) for key in ("image", "config_url") if key not in data]
     if errors:
         abort(UnprocessableEntity.code, errors)
-    deployment = Deployment(data["image"], data["config_url"])
-    application = deploy(deployment)
+    deployer = Deployer(Client())
+    application = deployer.deploy(
+        Deployment(data["image"], data["config_url"])
+    )
     return jsonify(status(application)), 201, {"Location": url_for("web.status_handler", application=application)}
 
 
