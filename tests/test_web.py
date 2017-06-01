@@ -11,6 +11,7 @@ from schip_spinnaker_webhook.web import create_app
 VALID_DEPLOY_DATA = dumps({"image": "test_image", "config_url": "http://example.com"})
 KEEP_MARKER = object()
 NOT_SERIALIZABLE = object()
+NAMESPACE_FROM_FILE = 'file-namespace'
 
 
 @pytest.fixture(autouse=True)
@@ -22,6 +23,7 @@ def status():
 
 @pytest.fixture
 def client():
+    os.environ['NAMESPACE'] = 'env-namespace'
     app = create_app()
     with app.app_context():
         with app.test_client() as client:
@@ -70,3 +72,24 @@ def test_status(client, status):
     body = loads(resp.data.decode(resp.charset))
     assert all(x in body.keys() for x in ("status", "info"))
     status.assert_called_with("test_application")
+
+
+def test_namespace_is_read_from_env_variable():
+    os.environ['NAMESPACE'] = 'env-namespace'
+    create_app()
+    assert os.environ['NAMESPACE'] == 'env-namespace'
+    del os.environ['NAMESPACE']
+
+
+def test_use_file_fallback_for_namespace_when_env_variable_is_not_set():
+    with mock.patch('builtins.open', mock.mock_open(read_data=NAMESPACE_FROM_FILE)):
+        create_app()
+        assert os.environ['NAMESPACE'] == NAMESPACE_FROM_FILE
+
+
+def test_fail_when_file_fallback_for_namespace_is_not_available_and_env_variable_is_not_set():
+    with mock.patch('builtins.open') as mocked_open:
+        with pytest.raises(OSError) as excinfo:
+            if 'NAMESPACE' in os.environ: del os.environ['NAMESPACE']
+            mocked_open.side_effect = OSError()
+            create_app()

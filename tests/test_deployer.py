@@ -61,26 +61,3 @@ class TestCreateDeploymentInK8s(object):
             "/apis/schibsted.io/v1beta/namespaces/{0}/paasbetaapplications/".format(NAMESPACE_FROM_ENV),
             TPR_TEMPLATE.format(VALID_IMAGE_NAME, VALID_DEPLOY_CONFIG)
         )
-
-        del os.environ["NAMESPACE"]
-
-    @patch('urllib.request.urlopen')
-    @patch("builtins.open", mock_open(read_data=NAMESPACE_FROM_FILE))
-    def test_read_namespace_from_file_when_environment_variable_is_not_defined(self, mock_urlopen):
-        config_response = MagicMock()
-        config_response.read.return_value = VALID_DEPLOY_CONFIG
-        mock_urlopen.return_value = config_response
-
-        k8s = MagicMock(spec="k8s.client.Client")
-        post = MagicMock()
-        k8s.post = post
-
-        Deployer(k8s).deploy(
-            Deployment(VALID_IMAGE_NAME, VALID_DEPLOY_CONFIG_URL)
-        )
-
-        mock_urlopen.assert_called_once_with(VALID_DEPLOY_CONFIG_URL)
-        post.assert_called_once_with(
-            "/apis/schibsted.io/v1beta/namespaces/{0}/paasbetaapplications/".format(NAMESPACE_FROM_FILE),
-            TPR_TEMPLATE.format(VALID_IMAGE_NAME, VALID_DEPLOY_CONFIG)
-        )

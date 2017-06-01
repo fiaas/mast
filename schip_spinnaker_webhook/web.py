@@ -45,7 +45,21 @@ def error_handler(error):
     return jsonify(resp), resp["code"]
 
 
+def assert_namespace_is_set():
+    """Namespace where TPRs are created. The namespace where this webhook is running will be used unless an Environment
+    variable is passed"""
+    if "NAMESPACE" not in os.environ:
+        try:
+            with open("/var/run/secrets/kubernetes.io/serviceaccount/namespace") as f:
+                os.environ["NAMESPACE"] = f.read()
+        except OSError as e:
+            raise OSError(
+                'The \'NAMESPACE\' environment variable is not set, and the file '
+                '\'/var/run/secrets/kubernetes.io/serviceaccount/namespace\' can\'t be read')
+
+
 def create_app():
+    assert_namespace_is_set()
     app = Flask(__name__)
     app.register_blueprint(web)
     for error_class in HTTPException.__subclasses__():
