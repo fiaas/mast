@@ -1,10 +1,11 @@
 from json import loads, dumps
 
 import mock
+import os
 import pytest
 
 from schip_spinnaker_webhook.deployer import Deployer
-from schip_spinnaker_webhook.models import Deployment
+from schip_spinnaker_webhook.models import Release
 from schip_spinnaker_webhook.web import create_app
 
 VALID_DEPLOY_DATA = dumps({"image": "test_image", "config_url": "http://example.com"})
@@ -59,7 +60,7 @@ def test_deploy(client, status):
         body = loads(resp.data.decode(resp.charset))
         assert all(x in body.keys() for x in ("status", "info"))
 
-        deploy.assert_called_with(Deployment("test_image", "http://example.com"))
+        deploy.assert_called_with(Release("test_image", "http://example.com"))
         status.assert_called_with("test_application")
 
 

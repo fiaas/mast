@@ -1,9 +1,8 @@
 import os
-
-from mock import MagicMock, patch, mock_open
+from mock import MagicMock, patch
 
 from schip_spinnaker_webhook.deployer import Deployer
-from schip_spinnaker_webhook.models import Deployment
+from schip_spinnaker_webhook.models import Release
 
 VALID_IMAGE_NAME = "test_image:a1b2c3d"
 
@@ -14,8 +13,6 @@ NAMESPACE_FROM_FILE = "file_pre"
 VALID_DEPLOY_CONFIG_URL = "http://url_to_config.file"
 
 TPR_TEMPLATE = """
-apiVersion: "schibsted.io/v1beta"
-kind: PaasbetaApplication
 metadata:
   name: v1beta-example
 spec:
@@ -56,7 +53,7 @@ class TestCreateDeploymentInK8s(object):
         os.environ["NAMESPACE"] = NAMESPACE_FROM_ENV
 
         Deployer(k8s).deploy(
-            Deployment(VALID_IMAGE_NAME, VALID_DEPLOY_CONFIG_URL)
+            Release(VALID_IMAGE_NAME, VALID_DEPLOY_CONFIG_URL)
         )
 
         mock_urlopen.assert_called_once_with(VALID_DEPLOY_CONFIG_URL)

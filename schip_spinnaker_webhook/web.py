@@ -1,9 +1,10 @@
+import os
 from flask import Flask, url_for, jsonify, request, abort, Blueprint
 from werkzeug.exceptions import UnprocessableEntity, HTTPException, InternalServerError
 
 from k8s.client import Client
 from .deployer import Deployer
-from .models import Deployment
+from .models import Release
 from .status import status
 
 web = Blueprint("web", __name__)
@@ -22,7 +23,7 @@ def deploy_handler():
         abort(UnprocessableEntity.code, errors)
     deployer = Deployer(Client())
     application = deployer.deploy(
-        Deployment(data["image"], data["config_url"])
+        Release(data["image"], data["config_url"])
     )
     return jsonify(status(application)), 201, {"Location": url_for("web.status_handler", application=application)}
 
