@@ -52,7 +52,7 @@ def assert_namespace_is_set():
         try:
             with open("/var/run/secrets/kubernetes.io/serviceaccount/namespace") as f:
                 os.environ["NAMESPACE"] = f.read()
-        except OSError as e:
+        except OSError:
             raise OSError(
                 'The \'NAMESPACE\' environment variable is not set, and the file '
                 '\'/var/run/secrets/kubernetes.io/serviceaccount/namespace\' can\'t be read')

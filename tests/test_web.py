@@ -89,7 +89,8 @@ def test_use_file_fallback_for_namespace_when_env_variable_is_not_set():
 
 def test_fail_when_file_fallback_for_namespace_is_not_available_and_env_variable_is_not_set():
     with mock.patch('builtins.open') as mocked_open:
-        with pytest.raises(OSError) as excinfo:
-            if 'NAMESPACE' in os.environ: del os.environ['NAMESPACE']
+        with pytest.raises(OSError):
+            if 'NAMESPACE' in os.environ:
+                del os.environ['NAMESPACE']
             mocked_open.side_effect = OSError()
             create_app()
