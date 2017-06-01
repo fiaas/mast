@@ -9,6 +9,7 @@ from schip_spinnaker_webhook.models import Release
 from schip_spinnaker_webhook.web import create_app
 
 VALID_DEPLOY_DATA = dumps({"image": "test_image", "config_url": "http://example.com"})
+INVALID_DEPLOY_DATA = dumps({"definitely_not_image": "test_image", "something_other_than_url": "http://example.com"})
 KEEP_MARKER = object()
 NOT_SERIALIZABLE = object()
 NAMESPACE_FROM_FILE = 'file-namespace'
@@ -53,6 +54,12 @@ def test_500_error(client):
         body = loads(resp.data.decode(resp.charset))
         assert body["code"] == 500
         assert all(x in body.keys() for x in ("name", "description"))
+
+
+def test_bad_request_from_client(client):
+    with mock.patch.object(Deployer, 'deploy', return_value=True):
+        resp = client.post("/deploy/", data=INVALID_DEPLOY_DATA, content_type="application/json")
+        assert resp.status_code == 422
 
 
 def test_deploy(client, status):
