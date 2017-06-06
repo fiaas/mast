@@ -8,6 +8,11 @@ from .status import status
 web = Blueprint("web", __name__)
 
 
+@web.route("/health", methods=["GET"])
+def health_check():
+    return jsonify("ok"), 200
+
+
 @web.route("/deploy/", methods=["PUT", "POST"])
 def deploy_handler():
     data = request.get_json(force=True)
