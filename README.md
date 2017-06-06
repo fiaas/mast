@@ -1,4 +1,4 @@
-SCHIP Spinnaker Webhook
+SCHIP Spinnaker Webhook [![Build Status](https://travis.schibsted.io/spt-infrastructure/schip-spinnaker-webhook.svg?token=z6c5cx1P1xECeUhxrnJF&branch=master)](https://travis.schibsted.io/spt-infrastructure/schip-spinnaker-webhook)
 =======================
 
 Receives HTTP requests from Spinnaker for deployments, and creates or updates a SCHIP-app object
