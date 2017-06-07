@@ -1,6 +1,5 @@
-import urllib
-
 import os
+import requests
 
 
 class Deployer:
@@ -17,7 +16,7 @@ spec:
   image: %s
   config:
 %s
-""" % (release.image, urllib.request.urlopen(release.config_url).read())
+""" % (release.image, requests.get(release.config_url).text)
 
         self.k8s.post(
             "/apis/schibsted.io/v1beta/namespaces/{0}/paasbetaapplications/".format(os.environ["NAMESPACE"]),

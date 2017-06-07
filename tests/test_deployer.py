@@ -41,11 +41,11 @@ VALID_DEPLOY_CONFIG = """
 
 
 class TestCreateDeploymentInK8s(object):
-    @patch('urllib.request.urlopen')
-    def test_deployer_sends_tpr_to_k8s(self, mock_urlopen):
+    @patch('requests.get')
+    def test_deployer_sends_tpr_to_k8s(self, mock_config):
         config_response = MagicMock()
-        config_response.read.return_value = VALID_DEPLOY_CONFIG
-        mock_urlopen.return_value = config_response
+        config_response.text = VALID_DEPLOY_CONFIG
+        mock_config.return_value = config_response
 
         k8s = MagicMock(spec="k8s.client.Client")
         post = MagicMock()
@@ -56,7 +56,7 @@ class TestCreateDeploymentInK8s(object):
             Release(VALID_IMAGE_NAME, VALID_DEPLOY_CONFIG_URL)
         )
 
-        mock_urlopen.assert_called_once_with(VALID_DEPLOY_CONFIG_URL)
+        mock_config.assert_called_once_with(VALID_DEPLOY_CONFIG_URL)
         post.assert_called_once_with(
             "/apis/schibsted.io/v1beta/namespaces/{0}/paasbetaapplications/".format(NAMESPACE_FROM_ENV),
             TPR_TEMPLATE.format(VALID_IMAGE_NAME, VALID_DEPLOY_CONFIG)
