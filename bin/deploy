@@ -27,8 +27,8 @@ install_kubectl() {
 	install "$install_dir/kubectl" ~/bin/kubectl
 
     kubectl config set-credentials schip-prod-user --token="${CRE_TOKEN}"
-    kubectl config set-cluster ${K8S_CLUSTER} --insecure-skip-tls-verify=true --server=https://${K8S_CLUSTER}.cre-pro.schibsted.io
-    kubectl config set-context schip-prod-context --cluster=${K8S_CLUSTER} --user=schip-prod-user --namespace="${K8S_NAMESPACE}"
+    kubectl config set-cluster schip-prod --insecure-skip-tls-verify=true --server=https://schip.cre-pro.schibsted.io
+    kubectl config set-context schip-prod-context --cluster=schip-prod --user=schip-prod-user --namespace="${K8S_NAMESPACE}"
     kubectl config use-context schip-prod-context
 }
 
