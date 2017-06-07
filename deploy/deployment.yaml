@@ -20,6 +20,10 @@ spec:
             name: http
             protocol: TCP
           env:
+          - name: PORT
+            value: ${CONTAINER_PORT}
+          - name: DEBUG
+            value: ${DEBUG}
           - name: NAMESPACE
             valueFrom:
               fieldRef:
@@ -32,7 +36,7 @@ spec:
             timeoutSeconds: 2
             failureThreshold: 3
             successThreshold: 2
-            periodSeconds: 5
+            periodSeconds: 10
           readinessProbe:
             httpGet:
               path: /health
@@ -41,4 +45,4 @@ spec:
             timeoutSeconds: 2
             failureThreshold: 3
             successThreshold: 2
-            periodSeconds: 5
+            periodSeconds: 10

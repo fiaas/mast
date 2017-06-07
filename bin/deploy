@@ -2,19 +2,7 @@
 
 set -euo pipefail
 
-function set_k8s_version() {
-    K8S_VERSION=${K8S_VERSION:-"1.6.2"}
-}
-
-function set_container_tag() {
-    if [[ -z "${TRAVIS}" ]]; then
-        export CONTAINER_TAG="latest"
-    else
-        export CONTAINER_TAG="${TRAVIS_COMMIT}"
-    fi
-}
-
-function set_current_commit_in_deployment_template() {
+function render_deployment_template() {
     local tmp_file
     tmp_file=$(mktemp)
     envsubst < "deploy/deployment.yaml" > "${tmp_file}" || return 1
@@ -35,6 +23,7 @@ install_kubectl() {
 
 	chmod +x "$install_dir/kubectl"
 
+	mkdir ~/bin
 	install "$install_dir/kubectl" ~/bin/kubectl
 }
 
@@ -43,9 +32,11 @@ deploy_application_to_cre() {
 }
 
 
-set_k8s_version
-install_kubectl
+export K8S_VERSION=${K8S_VERSION:-"1.6.2"}
+export CONTAINER_TAG=${TRAVIS_COMMIT:-"latest"}
+export CONTAINER_PORT=${CONTAINER_PORT:-5000}
+export DEBUG=${DEBUG:-"False"}
 
-set_container_tag
-set_current_commit_in_deployment_template
+install_kubectl
+render_deployment_template
 deploy_application_to_cre
