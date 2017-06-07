@@ -10,10 +10,10 @@ before_install:
   - bin/prepare
 script:
   - bin/test
+  - bin/publish
   - bin/deploy
 env:
   global:
     - K8S_VERSION="1.6.2"
     - K8S_NAMESPACE="delivery-pro"
-    - K8S_CLUSTER="schip-prod01"
     - secure: "REMOVED"

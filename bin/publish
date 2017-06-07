@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+
+set -evuo pipefail
+
+DOCKER_REGISTRY=${DOCKER_REGISTRY:-"containers.schibsted.io"}
+DOCKER_REPO_NAME=${DOCKER_REPO_NAME:-${TRAVIS_REPO_SLUG}}
+DOCKER_IMAGE_TAG=${DOCKER_IMAGE_TAG:-${TRAVIS_COMMIT}}
+DOCKER_IMAGE="${DOCKER_REGISTRY}/${DOCKER_REPO_NAME}:${DOCKER_IMAGE_TAG}"
+
+sudo docker login --username "${ARTIFACTORY_USER}" --password "${ARTIFACTORY_PWD}" "${DOCKER_REGISTRY}"
+sudo docker build -t "${DOCKER_IMAGE}" "."
+sudo docker push "${DOCKER_IMAGE}"
+
