@@ -37,11 +37,12 @@ deploy_application_to_cre() {
 }
 
 
-export K8S_VERSION=${K8S_VERSION:-"1.6.2"}
-export CONTAINER_TAG=${TRAVIS_COMMIT:-"latest"}
-export CONTAINER_PORT=${CONTAINER_PORT:-5000}
-export DEBUG=${DEBUG:-"False"}
-
-install_kubectl
-render_deployment_template
-deploy_application_to_cre
+if [[ -z "${TRAVIS}" ]] || [[ "${TRAVIS_PULL_REQUEST}" == "false"  && "${TRAVIS_BRANCH}" == 'master' ]]; then
+    export K8S_VERSION=${K8S_VERSION:-"1.6.2"}
+    export CONTAINER_TAG=${TRAVIS_COMMIT:-"latest"}
+    export CONTAINER_PORT=${CONTAINER_PORT:-5000}
+    export DEBUG=${DEBUG:-"False"}
+    install_kubectl
+    render_deployment_template
+    deploy_application_to_cre
+fi
