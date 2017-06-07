@@ -21,9 +21,9 @@ spec:
             protocol: TCP
           env:
           - name: PORT
-            value: ${CONTAINER_PORT}
+            value: "${CONTAINER_PORT}"
           - name: DEBUG
-            value: ${DEBUG}
+            value: "${DEBUG}"
           - name: NAMESPACE
             valueFrom:
               fieldRef:
