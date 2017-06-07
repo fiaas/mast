@@ -34,15 +34,9 @@ spec:
               port: http
             initialDelaySeconds: 10
             timeoutSeconds: 2
-            failureThreshold: 3
-            successThreshold: 2
-            periodSeconds: 10
           readinessProbe:
             httpGet:
               path: /health
               port: http
             initialDelaySeconds: 10
             timeoutSeconds: 2
-            failureThreshold: 3
-            successThreshold: 2
-            periodSeconds: 10
