@@ -14,4 +14,5 @@ script:
 env:
   global:
     - K8S_VERSION="1.6.2"
+    - K8S_NAMESPACE="delivery-pro"
     - secure: "REMOVED"

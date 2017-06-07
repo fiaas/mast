@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-set -euo pipefail
+set -evuo pipefail
 
 function render_deployment_template() {
     local tmp_file
@@ -25,6 +25,11 @@ install_kubectl() {
 
 	mkdir ~/bin
 	install "$install_dir/kubectl" ~/bin/kubectl
+
+    kubectl config set-credentials schip-prod-user --token="${CRE_TOKEN}"
+    kubectl config set-cluster schip-prod02 --insecure-skip-tls-verify=true --server=https://schip-prod02.cre-pro.schibsted.io
+    kubectl config set-context schip-prod-context --cluster=schip-prod02 --user=schip-prod-user --namespace="${K8S_NAMESPACE}"
+    kubectl config use-context schip-prod-context
 }
 
 deploy_application_to_cre() {
