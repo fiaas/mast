@@ -1,24 +1,27 @@
-import requests
+import yaml
+
+from k8s.models.common import ObjectMeta
+from .paasbetaapplication import PaasbetaApplication, PaasbetaApplicationSpec
 
 
 class Deployer:
-    def __init__(self, k8s):
-        self.k8s = k8s
+    def __init__(self, http_client):
+        self.http_client = http_client
 
     def deploy(self, namespace, release):
         """Create or update TPR for application"""
-        body = """
-metadata:
-  name: v1beta-example
-spec:
-  application: v1beta-example
-  image: %s
-  config:
-%s
-""" % (release.image, requests.get(release.config_url).text)
+        application_name = release.image.split(":")[0]
+        config = self.download_config(release.config_url)
+        labels = {}
+        metadata = ObjectMeta(name=application_name, namespace=namespace, labels=labels)
+        spec = PaasbetaApplicationSpec(application=application_name, image=release.image, config=config)
+        application = PaasbetaApplication.get_or_create(metadata=metadata, spec=spec)
+        application.save()
 
-        self.k8s.post(
-            "/apis/schibsted.io/v1beta/namespaces/{0}/paasbetaapplications/".format(namespace),
-            body
-        )
         return True
+
+    def download_config(self, config_url):
+        resp = self.http_client.get(config_url)
+        resp.raise_for_status()
+        app_config = yaml.safe_load(resp.text)
+        return app_config
