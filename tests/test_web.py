@@ -1,7 +1,6 @@
 from json import loads, dumps
 
 import mock
-import os
 import pytest
 
 from schip_spinnaker_webhook.deployer import Deployer
@@ -23,8 +22,8 @@ def status():
 
 
 @pytest.fixture
-def client():
-    os.environ['NAMESPACE'] = 'env-namespace'
+def client(monkeypatch):
+    monkeypatch.setenv('NAMESPACE', 'env-namespace')
     app = create_app()
     with app.app_context():
         with app.test_client() as client:
@@ -64,12 +63,13 @@ def test_bad_request_from_client(client):
 
 def test_deploy(client, status):
     with mock.patch.object(Deployer, 'deploy', return_value="test_application") as deploy:
+        namespace = 'env-namespace'
         resp = client.post("/deploy/", data=VALID_DEPLOY_DATA, content_type="application/json")
         assert resp.status_code == 201
         body = loads(resp.data.decode(resp.charset))
         assert all(x in body.keys() for x in ("status", "info"))
 
-        deploy.assert_called_with(Release("test_image", "http://example.com"))
+        deploy.assert_called_with(namespace, Release("test_image", "http://example.com"))
         status.assert_called_with("test_application")
 
 
@@ -81,23 +81,21 @@ def test_status(client, status):
     status.assert_called_with("test_application")
 
 
-def test_namespace_is_read_from_env_variable():
-    os.environ['NAMESPACE'] = 'env-namespace'
-    create_app()
-    assert os.environ['NAMESPACE'] == 'env-namespace'
-    del os.environ['NAMESPACE']
+def test_namespace_is_read_from_env_variable(monkeypatch):
+    namespace = 'env-namespace'
+    monkeypatch.setenv('NAMESPACE', namespace)
+    app = create_app()
+    assert app.config['NAMESPACE'] == namespace
 
 
 def test_use_file_fallback_for_namespace_when_env_variable_is_not_set():
     with mock.patch('builtins.open', mock.mock_open(read_data=NAMESPACE_FROM_FILE)):
-        create_app()
-        assert os.environ['NAMESPACE'] == NAMESPACE_FROM_FILE
+        app = create_app()
+        assert app.config['NAMESPACE'] == NAMESPACE_FROM_FILE
 
 
-def test_fail_when_file_fallback_for_namespace_is_not_available_and_env_variable_is_not_set():
+def test_fail_when_file_fallback_for_namespace_is_not_available_and_env_variable_is_not_set(monkeypatch):
     with mock.patch('builtins.open') as mocked_open:
         with pytest.raises(OSError):
-            if 'NAMESPACE' in os.environ:
-                del os.environ['NAMESPACE']
             mocked_open.side_effect = OSError()
             create_app()

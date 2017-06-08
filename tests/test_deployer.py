@@ -1,4 +1,3 @@
-import os
 from mock import MagicMock, patch
 
 from schip_spinnaker_webhook.deployer import Deployer
@@ -50,10 +49,11 @@ class TestCreateDeploymentInK8s(object):
         k8s = MagicMock(spec="k8s.client.Client")
         post = MagicMock()
         k8s.post = post
-        os.environ["NAMESPACE"] = NAMESPACE_FROM_ENV
+        namespace = NAMESPACE_FROM_ENV
 
         Deployer(k8s).deploy(
-            Release(VALID_IMAGE_NAME, VALID_DEPLOY_CONFIG_URL)
+            namespace=namespace,
+            release=Release(VALID_IMAGE_NAME, VALID_DEPLOY_CONFIG_URL)
         )
 
         mock_config.assert_called_once_with(VALID_DEPLOY_CONFIG_URL)

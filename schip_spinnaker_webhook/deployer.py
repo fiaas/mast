@@ -1,4 +1,3 @@
-import os
 import requests
 
 
@@ -6,7 +5,7 @@ class Deployer:
     def __init__(self, k8s):
         self.k8s = k8s
 
-    def deploy(self, release):
+    def deploy(self, namespace, release):
         """Create or update TPR for application"""
         body = """
 metadata:
@@ -19,7 +18,7 @@ spec:
 """ % (release.image, requests.get(release.config_url).text)
 
         self.k8s.post(
-            "/apis/schibsted.io/v1beta/namespaces/{0}/paasbetaapplications/".format(os.environ["NAMESPACE"]),
+            "/apis/schibsted.io/v1beta/namespaces/{0}/paasbetaapplications/".format(namespace),
             body
         )
         return True

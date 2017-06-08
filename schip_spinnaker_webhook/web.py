@@ -1,5 +1,7 @@
 import os
+
 from flask import Flask, url_for, jsonify, request, abort, Blueprint
+from flask import current_app as app
 from werkzeug.exceptions import UnprocessableEntity, HTTPException, InternalServerError
 
 from k8s.client import Client
@@ -23,6 +25,7 @@ def deploy_handler():
         abort(UnprocessableEntity.code, errors)
     deployer = Deployer(Client())
     application = deployer.deploy(
+        app.config['NAMESPACE'],
         Release(data["image"], data["config_url"])
     )
     return jsonify(status(application)), 201, {"Location": url_for("web.status_handler", application=application)}
@@ -45,22 +48,24 @@ def error_handler(error):
     return jsonify(resp), resp["code"]
 
 
-def assert_namespace_is_set():
+def set_namespace_in_config_or_fail(app):
     """Namespace where TPRs are created. The namespace where this webhook is running will be used unless an Environment
     variable is passed"""
     if "NAMESPACE" not in os.environ:
         try:
             with open("/var/run/secrets/kubernetes.io/serviceaccount/namespace") as f:
-                os.environ["NAMESPACE"] = f.read()
+                app.config.update(dict(NAMESPACE=f.read()))
         except OSError:
             raise OSError(
                 'The \'NAMESPACE\' environment variable is not set, and the file '
                 '\'/var/run/secrets/kubernetes.io/serviceaccount/namespace\' can\'t be read')
+    else:
+        app.config.update(dict(NAMESPACE=os.environ['NAMESPACE']))
 
 
 def create_app():
-    assert_namespace_is_set()
     app = Flask(__name__)
+    set_namespace_in_config_or_fail(app)
     app.register_blueprint(web)
     for error_class in HTTPException.__subclasses__():
         if 400 <= error_class.code < 600:
