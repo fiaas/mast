@@ -18,7 +18,7 @@ class Deployer:
         application = PaasbetaApplication.get_or_create(metadata=metadata, spec=spec)
         application.save()
 
-        return True
+        return application_name
 
     def download_config(self, config_url):
         resp = self.http_client.get(config_url)
