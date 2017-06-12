@@ -1,9 +1,5 @@
 language: python
 python:
-  # CPython: https://docs.travis-ci.com/user/languages/python/#Choosing-Python-versions-to-test-against
-  - '3.3'
-  - '3.4'
-  - '3.5'
   - '3.6'
 cache: pip
 install:
