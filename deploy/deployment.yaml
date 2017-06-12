@@ -13,7 +13,7 @@ spec:
     spec:
       containers:
         - name: schip-spinnaker-webhook
-          image: "containers.schibsted.io/schip-spinnaker-webhook:${CONTAINER_TAG}"
+          image: "containers.schibsted.io/spt-infrastructure/schip-spinnaker-webhook:${CONTAINER_TAG}"
           imagePullPolicy: IfNotPresent
           ports:
           - containerPort: ${CONTAINER_PORT}
