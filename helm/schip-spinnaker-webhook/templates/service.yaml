@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ template "fullname" . }}
+  labels:
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}"
+spec:
+  type: {{ .Values.service.type }}
+  ports:
+  - port: {{ .Values.service.externalPort }}
+    targetPort: http
+    protocol: TCP
+    name: http
+  - port: {{ .Values.service.heimdallPort }}
+    targetPort: heimdall
+    protocol: TCP
+    name: heimdall
+  selector:
+    app: {{ template "fullname" . }}

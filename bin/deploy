@@ -2,47 +2,10 @@
 
 set -evuo pipefail
 
-function render_deployment_template() {
-    local tmp_file
-    tmp_file=$(mktemp)
-    envsubst < "deploy/deployment.yaml" > "${tmp_file}" || return 1
-    mv "${tmp_file}" "deploy/deployment.yaml"
-}
-
-install_kubectl() {
-	echo "Installing kubectl"
-	local url="https://storage.googleapis.com/kubernetes-release/release/v${K8S_VERSION}/bin/linux/amd64/kubectl"
-	local checksum_url="https://storage.googleapis.com/kubernetes-release/release/v${K8S_VERSION}/bin/linux/amd64/kubectl.sha1"
-	local install_dir="$(pwd)/kubectl/bin"
-
-	mkdir -p "$install_dir"
-	curl -Lo "$install_dir/kubectl" "$url"
-
-	local checksum="$(curl -Lo - "$checksum_url")"
-	echo "$checksum  $install_dir/kubectl" | shasum --algorithm 1 --check
-
-	chmod +x "$install_dir/kubectl"
-
-	mkdir ~/bin
-	install "$install_dir/kubectl" ~/bin/kubectl
-
-    kubectl config set-credentials schip-prod-user --token="${CRE_TOKEN}"
-    kubectl config set-cluster schip-prod --insecure-skip-tls-verify=true --server=https://schip.cre-pro.schibsted.io
-    kubectl config set-context schip-prod-context --cluster=schip-prod --user=schip-prod-user --namespace="${K8S_NAMESPACE}"
-    kubectl config use-context schip-prod-context
-}
-
-deploy_application_to_cre() {
-    kubectl apply -f deploy
-}
-
-
 if [[ -z "${TRAVIS}" ]] || [[ "${TRAVIS_PULL_REQUEST}" == "false"  && "${TRAVIS_BRANCH}" == 'master' ]]; then
-    export K8S_VERSION=${K8S_VERSION:-"1.6.2"}
-    export CONTAINER_TAG=${TRAVIS_COMMIT:-"latest"}
-    export CONTAINER_PORT=${CONTAINER_PORT:-5000}
-    export DEBUG=${DEBUG:-"False"}
-    install_kubectl
-    render_deployment_template
-    deploy_application_to_cre
+    helm upgrade --install --namespace="${K8S_NAMESPACE}" \
+        --values=./helm/schip-spinnaker-webhook/values.yaml \
+        --set image.tag="${TRAVIS_COMMIT:-"latest"}" \
+        --set secrets.token="${HEIMDALL_TOKEN}" \
+        "schip-spinnaker-webhook" "./helm/schip-spinnaker-webhook"
 fi

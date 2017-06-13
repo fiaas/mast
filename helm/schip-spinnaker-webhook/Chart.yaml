@@ -1,0 +1,4 @@
+apiVersion: v1
+description: Service that listens deployment requests from Spinnaker
+name: schip-spinnaker-webhook
+version: 0.1.0

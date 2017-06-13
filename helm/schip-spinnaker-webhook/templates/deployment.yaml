@@ -1,0 +1,74 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: {{ template "fullname" . }}
+  labels:
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}"
+spec:
+  replicas: {{ .Values.replicaCount }}
+  template:
+    metadata:
+      labels:
+        app: {{ template "fullname" . }}
+      annotations:
+        checksum/config: {{ include (print $.Template.BasePath "/secret.yaml") . | sha256sum }}
+    spec:
+      containers:
+      - name: {{ .Chart.Name }}
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        ports:
+        - containerPort: 5000
+          name: http
+          protocol: TCP
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: http
+          initialDelaySeconds: 10
+          timeoutSeconds: 2
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: http
+          initialDelaySeconds: 10
+          timeoutSeconds: 2
+        env:
+        - name: PORT
+          value: "5000"
+        - name: DEBUG
+          value: "${DEBUG}"
+        - name: NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        resources:
+{{ toYaml .Values.resources | indent 10 }}
+      - name: heimdall-challenge
+        image: "containers.schibsted.io/spt-infrastructure/heimdall-challenge"
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 8000
+          name: heimdall
+          protocol: TCP
+        livenessProbe:
+          httpGet:
+            path: /
+            port: http
+        readinessProbe:
+          httpGet:
+            path: /
+            port: http
+        env:
+        - name: TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: {{.Release.Name}}-secret
+              key: heimdall_token
+        resources:
+          limits:
+            cpu: 50m
+            memory: 32Mi
+          requests:
+            cpu: 50m
+            memory: 32Mi

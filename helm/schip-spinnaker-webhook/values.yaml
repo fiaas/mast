@@ -1,0 +1,22 @@
+replicaCount: 1
+image:
+  repository: "containers.schibsted.io/spt-infrastructure/schip-spinnaker-webhook"
+  tag: latest
+  pullPolicy: IfNotPresent
+service:
+  name: nginx
+  type: ClusterIP
+  externalPort: 80
+  heimdallPort: 8765
+ingress:
+  host: "schip-spinnaker-webhook.ingress.cre-pro.schibsted.io"
+  whitelistSourceRange: "52.30.77.67/32,52.17.229.60/32,52.30.18.198/32"
+
+resources:
+  limits:
+    cpu: 100m
+    memory: 64Mi
+  requests:
+    cpu: 100m
+    memory: 64Mi
+
