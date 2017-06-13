@@ -19,14 +19,14 @@ spec:
           - path: /
             backend:
               serviceName: {{ template "fullname" . }}
-              servicePort: {{ .Values.service.externalPort }}
+              servicePort: http
     - host: {{ .Values.ingress.host }}
       http:
         paths:
           - path: /heimdall-token
             backend:
               serviceName: {{ template "fullname" . }}
-              servicePort: {{ .Values.service.heimdallPort }}
+              servicePort: heimdall
   tls:
   - hosts:
     - {{ .Values.ingress.host }}
