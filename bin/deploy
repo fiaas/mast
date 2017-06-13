@@ -2,10 +2,8 @@
 
 set -evuo pipefail
 
-if [[ -z "${TRAVIS}" ]] || [[ "${TRAVIS_PULL_REQUEST}" == "false"  && "${TRAVIS_BRANCH}" == 'master' ]]; then
-    helm upgrade --install --namespace="${K8S_NAMESPACE}" \
-        --values=./helm/schip-spinnaker-webhook/values.yaml \
-        --set image.tag="${TRAVIS_COMMIT:-"latest"}" \
-        --set secrets.token="${HEIMDALL_TOKEN}" \
-        "schip-spinnaker-webhook" "./helm/schip-spinnaker-webhook"
-fi
+helm upgrade --install --namespace="${K8S_NAMESPACE}" \
+    --values=./helm/schip-spinnaker-webhook/values.yaml \
+    --set image.tag="${TRAVIS_COMMIT:-"latest"}" \
+    --set secrets.token="${HEIMDALL_TOKEN}" \
+    "schip-spinnaker-webhook" "./helm/schip-spinnaker-webhook"

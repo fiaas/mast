@@ -9,6 +9,10 @@ script:
 deploy:
   provider: script
   script: bin/docker_push && bin/deploy
+  skip_cleanup: true
+  on:
+    branch: master
+    condition: $TRAVIS_PULL_REQUEST = false
 env:
   global:
     - DOCKER_REGISTRY="containers.schibsted.io"

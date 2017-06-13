@@ -2,8 +2,6 @@
 
 set -evuo pipefail
 
-if [[ -z "${TRAVIS:-}" ]] || [[ "${TRAVIS_PULL_REQUEST}" == "false"  && "${TRAVIS_BRANCH}" == 'master' ]]; then
-    sudo docker login --username "${ARTIFACTORY_USER}" --password "${ARTIFACTORY_PWD}" "${DOCKER_REGISTRY}"
-    sudo docker tag "${DOCKER_IMAGE}" "${DOCKER_IMAGE}:${TRAVIS_COMMIT}"
-    sudo docker push "${DOCKER_IMAGE}"
-fi
+sudo docker login --username "${ARTIFACTORY_USER}" --password "${ARTIFACTORY_PWD}" "${DOCKER_REGISTRY}"
+sudo docker tag "${DOCKER_IMAGE}" "${DOCKER_IMAGE}:${TRAVIS_COMMIT}"
+sudo docker push "${DOCKER_IMAGE}"
