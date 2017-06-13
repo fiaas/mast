@@ -10,7 +10,7 @@ metadata:
   annotations:
     kubernetes.io/ingress.class: nginx
     kubernetes.io/tls-acme: "true"
-    whitelist-source-range: {{ .Values.ingress.whitelistSourceRange }}
+    ingress.kubernetes.io/whitelist-source-range: {{ .Values.ingress.whitelistSourceRange }}
 spec:
   rules:
     - host: {{ .Values.ingress.host }}
