@@ -5,7 +5,10 @@ cache: pip
 install:
   - bin/install
 script:
-  - bin/test && bin/build && bin/docker_push && bin/deploy
+  - bin/test && bin/build
+deploy:
+  provider: script
+  script: bin/docker_push && bin/deploy
 env:
   global:
     - DOCKER_REGISTRY="containers.schibsted.io"
