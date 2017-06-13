@@ -48,7 +48,7 @@ spec:
         resources:
 {{ toYaml .Values.resources | indent 10 }}
       - name: heimdall-challenge
-        image: "containers.schibsted.io/spt-infrastructure/heimdall-challenge"
+        image: "containers.schibsted.io/spt-infrastructure/heimdall-challenge:{{ .Values.heimdallChallengeTag }}"
         imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 8000

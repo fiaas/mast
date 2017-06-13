@@ -3,6 +3,7 @@ image:
   repository: "containers.schibsted.io/spt-infrastructure/schip-spinnaker-webhook"
   tag: latest
   pullPolicy: IfNotPresent
+heimdallChallengeTag: "REMOVED"
 service:
   name: nginx
   type: ClusterIP
