@@ -2,8 +2,8 @@
 
 set -evuo pipefail
 
-helm upgrade --install --namespace="${K8S_NAMESPACE}" \
-    --values=./helm/schip-spinnaker-webhook/values.yaml \
+helm upgrade --install --namespace="${K8S_NAMESPACE}" "schip-spinnaker-webhook" "./helm/schip-spinnaker-webhook" \
     --set image.tag="${TRAVIS_COMMIT:-"latest"}" \
     --set secrets.token="${HEIMDALL_TOKEN}" \
-    "schip-spinnaker-webhook" "./helm/schip-spinnaker-webhook"
+    --set secrets.artifactoryUser="${ARTIFACTORY_USER}" \
+    --set secrets.artifactoryPassword="${ARTIFACTORY_PWD}"

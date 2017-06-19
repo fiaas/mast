@@ -41,6 +41,16 @@ spec:
           value: "5000"
         - name: DEBUG
           value: "${DEBUG}"
+        - name: ARTIFACTORY_USER
+          valueFrom:
+            secretKeyRef:
+              name: {{.Release.Name}}-secret
+              key: artifactory_user
+        - name: ARTIFACTORY_PWD
+          valueFrom:
+            secretKeyRef:
+              name: {{.Release.Name}}-secret
+              key: artifactory_password
         - name: NAMESPACE
           valueFrom:
             fieldRef:

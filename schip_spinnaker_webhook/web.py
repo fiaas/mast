@@ -23,7 +23,7 @@ def deploy_handler():
     errors = ["Missing key {!r} in input".format(key) for key in ("image", "config_url") if key not in data]
     if errors:
         abort(UnprocessableEntity.code, errors)
-    deployer = Deployer(requests.Session())
+    deployer = Deployer(get_http_client())
     application = deployer.deploy(
         app.config['NAMESPACE'],
         Release(data["image"], data["config_url"])
@@ -46,6 +46,14 @@ def error_handler(error):
         "description": error.description
     }
     return jsonify(resp), resp["code"]
+
+
+def get_http_client():
+    http_client = requests.Session()
+    if 'ARTIFACTORY_USER' in os.environ and 'ARTIFACTORY_PWD' in os.environ:
+        http_client.auth = (os.environ['ARTIFACTORY_USER'], os.environ['ARTIFACTORY_PWD'])
+
+    return http_client
 
 
 def set_namespace_in_config_or_fail(app):
