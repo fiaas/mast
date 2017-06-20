@@ -50,10 +50,18 @@ def error_handler(error):
 
 def get_http_client():
     http_client = requests.Session()
-    if 'ARTIFACTORY_USER' in os.environ and 'ARTIFACTORY_PWD' in os.environ:
-        http_client.auth = (os.environ['ARTIFACTORY_USER'], os.environ['ARTIFACTORY_PWD'])
+    http_client.auth = (app.config['ARTIFACTORY_USER'], app.config['ARTIFACTORY_PWD'])
 
     return http_client
+
+
+def set_artifactory_credentials_or_fail(app):
+    if 'ARTIFACTORY_USER' not in os.environ or 'ARTIFACTORY_PWD' not in os.environ:
+        raise OSError('You need to pass the \'ARTIFACTORY_USER\' and \'ARTIFACTORY_PWD\' environment variables')
+    else:
+        app.config.update(
+            dict(ARTIFACTORY_USER=os.environ['ARTIFACTORY_USER'], ARTIFACTORY_PWD=os.environ['ARTIFACTORY_PWD'])
+        )
 
 
 def set_namespace_in_config_or_fail(app):
@@ -74,6 +82,7 @@ def set_namespace_in_config_or_fail(app):
 def create_app():
     app = Flask(__name__)
     set_namespace_in_config_or_fail(app)
+    set_artifactory_credentials_or_fail(app)
     app.register_blueprint(web)
     for error_class in HTTPException.__subclasses__():
         if 400 <= error_class.code < 600:
