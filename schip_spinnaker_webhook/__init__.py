@@ -11,7 +11,7 @@ def configure_k8s_client():
 
     ca_cert_path = "/var/run/secrets/kubernetes.io/serviceaccount/ca.crt"
     if os.path.exists(token_file):
-        k8s_config.verify_ssl = ca_cert_file
+        k8s_config.verify_ssl = ca_cert_path
 
 def main():
     configure_k8s_client()
