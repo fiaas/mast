@@ -3,16 +3,22 @@ from json import loads, dumps
 import mock
 import pytest
 
+from schip_spinnaker_webhook.app import init
 from schip_spinnaker_webhook.deployer import Deployer
 from schip_spinnaker_webhook.models import Release
-from schip_spinnaker_webhook.web import create_app
 
 VALID_DEPLOY_DATA = dumps({"image": "test_image", "config_url": "http://example.com", "application_name": "example"})
 INVALID_DEPLOY_DATA = dumps({"definitely_not_image": "test_image", "something_other_than_url": "http://example.com"})
-KEEP_MARKER = object()
-NOT_SERIALIZABLE = object()
-NAMESPACE_FROM_ENV = 'env-namespace'
-NAMESPACE_FROM_FILE = 'file-namespace'
+
+DEFAULT_CONFIG = {
+    'PORT': 5000,
+    'DEBUG': True,
+    'NAMESPACE': "default-namespace",
+    'APISERVER_TOKEN': "default-token",
+    'APISERVER_CA_CERT': "/path/to/default.crt",
+    'ARTIFACTORY_USER': "default_username",
+    'ARTIFACTORY_PWD': "default_password",
+}
 
 
 @pytest.fixture(autouse=True)
@@ -23,30 +29,11 @@ def status():
 
 
 @pytest.fixture
-def client(monkeypatch):
-    monkeypatch.setenv('NAMESPACE', NAMESPACE_FROM_ENV)
-    monkeypatch.setenv('ARTIFACTORY_USER', "artifactory_username")
-    monkeypatch.setenv('ARTIFACTORY_PWD', "artifactory_password")
-    app = create_app()
+def client():
+    app = init(DEFAULT_CONFIG)
     with app.app_context():
         with app.test_client() as client:
             yield client
-
-
-@pytest.mark.parametrize("action,code", (
-        (lambda c: c.get("/"), 404),
-        (lambda c: c.get("/deploy/"), 405),
-        (lambda c: c.post("/deploy/"), 400),
-        (lambda c: c.post("/deploy/", data="{}", content_type="application/json"), 422),
-        (lambda c: c.post("/deploy/", data=dumps({"image": "test_image"}), content_type="application/json"), 422),
-        (lambda c: c.post("/deploy/", data=dumps({"config_url": "test_url"}), content_type="application/json"), 422),
-))
-def test_error_handler(client, action, code):
-    resp = action(client)
-    assert resp.status_code == code
-    body = loads(resp.data.decode(resp.charset))
-    assert body["code"] == code
-    assert all(x in body.keys() for x in ("name", "description"))
 
 
 def test_500_error(client):
@@ -71,7 +58,8 @@ def test_deploy(client, status):
         body = loads(resp.data.decode(resp.charset))
         assert all(x in body.keys() for x in ("status", "info"))
 
-        deploy.assert_called_with(NAMESPACE_FROM_ENV, Release("test_image", "http://example.com", "example"))
+        deploy.assert_called_with(DEFAULT_CONFIG.get('NAMESPACE'),
+                                  Release("test_image", "http://example.com", "example"))
         status.assert_called_with("example")
 
 
@@ -86,40 +74,3 @@ def test_status(client, status):
 def test_health(client):
     resp = client.get("/health")
     assert resp.status_code == 200
-
-
-def test_when_create_app_then_namespace_is_read_from_env_variable(monkeypatch):
-    monkeypatch.setenv('ARTIFACTORY_USER', "artifactory_username")
-    monkeypatch.setenv('ARTIFACTORY_PWD', "artifactory_password")
-    namespace = 'env-namespace'
-    monkeypatch.setenv('NAMESPACE', namespace)
-    app = create_app()
-    assert app.config['NAMESPACE'] == namespace
-    assert app.config['ARTIFACTORY_USER'] == "artifactory_username"
-    assert app.config['ARTIFACTORY_PWD'] == "artifactory_password"
-
-
-def test_when_create_app_use_file_fallback_for_namespace_when_env_variable_is_not_set(monkeypatch):
-    monkeypatch.setenv('ARTIFACTORY_USER', "artifactory_username")
-    monkeypatch.setenv('ARTIFACTORY_PWD', "artifactory_password")
-    with mock.patch('builtins.open', mock.mock_open(read_data=NAMESPACE_FROM_FILE)):
-        app = create_app()
-        assert app.config['NAMESPACE'] == NAMESPACE_FROM_FILE
-
-
-def test_create_app_fails_when_file_fallback_for_namespace_is_not_available_and_env_variable_is_not_set(monkeypatch):
-    monkeypatch.setenv('ARTIFACTORY_USER', "artifactory_username")
-    monkeypatch.setenv('ARTIFACTORY_PWD', "artifactory_password")
-    with mock.patch('builtins.open') as mocked_open:
-        with pytest.raises(OSError):
-            mocked_open.side_effect = OSError()
-            create_app()
-
-
-def test_create_app_fails_when_artifactory_credentials_are_not_set(monkeypatch):
-    namespace = 'env-namespace'
-    monkeypatch.setenv('NAMESPACE', namespace)
-    with mock.patch('builtins.open') as mocked_open:
-        with pytest.raises(OSError):
-            mocked_open.side_effect = OSError()
-            create_app()
