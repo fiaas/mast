@@ -24,10 +24,7 @@ def deploy_handler():
     if errors:
         abort(UnprocessableEntity.code, errors)
     deployer = Deployer(get_http_client())
-    application = deployer.deploy(
-        app.config['NAMESPACE'],
-        Release(data["image"], data["config_url"])
-    )
+    application = deployer.deploy(app.config['NAMESPACE'], Release(data["image"], data["config_url"]))
     return jsonify(status(application)), 201, {"Location": url_for("web.status_handler", application=application)}
 
 
@@ -40,11 +37,7 @@ def error_handler(error):
     """Render errors as JSON"""
     if not all(hasattr(error, attr) for attr in ("code", "name", "description")):
         error = InternalServerError()
-    resp = {
-        "code": error.code,
-        "name": error.name,
-        "description": error.description
-    }
+    resp = {"code": error.code, "name": error.name, "description": error.description}
     return jsonify(resp), resp["code"]
 
 
@@ -74,7 +67,8 @@ def set_namespace_in_config_or_fail(app):
         except OSError:
             raise OSError(
                 'The \'NAMESPACE\' environment variable is not set, and the file '
-                '\'/var/run/secrets/kubernetes.io/serviceaccount/namespace\' can\'t be read')
+                '\'/var/run/secrets/kubernetes.io/serviceaccount/namespace\' can\'t be read'
+            )
     else:
         app.config.update(dict(NAMESPACE=os.environ['NAMESPACE']))
 

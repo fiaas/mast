@@ -28,11 +28,13 @@ def test_k8s_config_from_file(monkeypatch):
     assert k8s_config.api_token == apiserver_token
     assert k8s_config.verify_ssl == "/var/run/secrets/kubernetes.io/serviceaccount/ca.crt"
 
+
 def test_k8s_config_apiserver_token_missing(monkeypatch):
     monkeypatch.setenv("APISERVER_CA_CERT", "/path/to/the/ca.crt")
 
     with pytest.raises(RuntimeError):
         configure_k8s_client()
+
 
 def test_k8s_config_apiserver_ca_cert_missing(monkeypatch):
     monkeypatch.setenv("APISERVER_TOKEN", "thetoken")
