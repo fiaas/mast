@@ -1,4 +1,6 @@
+import logging
 import os
+import sys
 
 from k8s import config as k8s_config
 from schip_spinnaker_webhook.web import create_app
@@ -40,7 +42,7 @@ def configure_k8s_client():
 
 
 def main():
-    setup_logging()
+    configure_logging()
     configure_k8s_client()
     app = create_app()
     app.run(host="0.0.0.0", port=int(os.getenv('PORT', 5000)), debug=bool(os.getenv('DEBUG', False)))
