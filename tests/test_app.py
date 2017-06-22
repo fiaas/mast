@@ -3,7 +3,7 @@ from json import dumps, loads
 import pytest
 
 from k8s import config
-from schip_spinnaker_webhook.app import init
+from schip_spinnaker_webhook.app import create_app
 
 DEFAULT_CONFIG = {
     'PORT': 5000,
@@ -22,7 +22,7 @@ class TestApp(object):
         cert = "/path/to/cert.crt"
         DEFAULT_CONFIG['APISERVER_TOKEN'] = token
         DEFAULT_CONFIG['APISERVER_CA_CERT'] = cert
-        init(DEFAULT_CONFIG)
+        create_app(DEFAULT_CONFIG)
 
         assert config.api_token == token
         assert config.verify_ssl == cert
@@ -38,7 +38,7 @@ class TestApp(object):
                                      content_type="application/json"), 422),
     ))
     def test_error_handler(self, action, code):
-        app = init(DEFAULT_CONFIG)
+        app = create_app(DEFAULT_CONFIG)
         resp = action(app.test_client())
         assert resp.status_code == code
         body = loads(resp.data.decode(resp.charset))
@@ -52,5 +52,5 @@ class TestApp(object):
         monkeypatch.setenv('APISERVER_CA_CERT', "/path/to/cert.crt")
         monkeypatch.setenv('ARTIFACTORY_USER', "default_username")
         monkeypatch.setenv('ARTIFACTORY_PWD', "default_password")
-        app = init()
+        app = create_app()
         assert app.config['NAMESPACE'] == namespace

@@ -3,7 +3,7 @@ from json import loads, dumps
 import mock
 import pytest
 
-from schip_spinnaker_webhook.app import init
+from schip_spinnaker_webhook.app import create_app
 from schip_spinnaker_webhook.deployer import Deployer
 from schip_spinnaker_webhook.models import Release
 
@@ -30,7 +30,7 @@ def status():
 
 @pytest.fixture
 def client():
-    app = init(DEFAULT_CONFIG)
+    app = create_app(DEFAULT_CONFIG)
     with app.app_context():
         with app.test_client() as client:
             yield client

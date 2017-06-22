@@ -36,5 +36,5 @@ setup(
         ]
     },
     setup_requires=['setuptools>=17.1', 'pytest-runner', 'wheel'],
-    entry_points={"console_scripts": ['schip-spinnaker-webhook=schip_spinnaker_webhook:main']},
+    entry_points={"console_scripts": ['schip-spinnaker-webhook=schip_spinnaker_webhook.__main__:main']},
 )

@@ -9,7 +9,7 @@ from k8s import config as k8s_config
 from schip_spinnaker_webhook.web import web
 
 
-def init(config=None):
+def create_app(config=None):
     """ Create a Flask app. """
     app = Flask(__name__)
 
