@@ -42,15 +42,14 @@ class TestCreateDeploymentInK8s(object):
         http_client = self._given_config_url_response_content_is(VALID_DEPLOY_CONFIG)
         deployment_id = "deadbeef-abba-cafe-1337-baaaaaaaaaad"
         Deployer(http_client, create_deployment_id=lambda: deployment_id).deploy(
-            namespace=ANY_NAMESPACE,
-            release=Release(VALID_IMAGE_NAME, VALID_DEPLOY_CONFIG_URL, APPLICATION_NAME)
+            namespace=ANY_NAMESPACE, release=Release(VALID_IMAGE_NAME, VALID_DEPLOY_CONFIG_URL, APPLICATION_NAME)
         )
 
         http_client.get.assert_called_once_with(VALID_DEPLOY_CONFIG_URL)
 
-        metadata = ObjectMeta(name=APPLICATION_NAME, namespace=ANY_NAMESPACE, labels={
-            "fiaas/deployment_id": deployment_id
-        })
+        metadata = ObjectMeta(
+            name=APPLICATION_NAME, namespace=ANY_NAMESPACE, labels={"fiaas/deployment_id": deployment_id}
+        )
         spec = PaasbetaApplicationSpec(
             application=APPLICATION_NAME, image=VALID_IMAGE_NAME, config=yaml.safe_load(VALID_DEPLOY_CONFIG)
         )
