@@ -42,7 +42,7 @@ class TestCreateDeploymentInK8s(object):
         http_client = self._given_config_url_response_content_is(VALID_DEPLOY_CONFIG)
 
         Deployer(http_client).deploy(
-            namespace=ANY_NAMESPACE, release=Release(VALID_IMAGE_NAME, VALID_DEPLOY_CONFIG_URL)
+            namespace=ANY_NAMESPACE, release=Release(VALID_IMAGE_NAME, VALID_DEPLOY_CONFIG_URL, APPLICATION_NAME)
         )
 
         http_client.get.assert_called_once_with(VALID_DEPLOY_CONFIG_URL)

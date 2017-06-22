@@ -10,7 +10,7 @@ class Deployer:
 
     def deploy(self, namespace, release):
         """Create or update TPR for application"""
-        application_name = release.image.split(":")[0]
+        application_name = release.application_name
         config = self.download_config(release.config_url)
         labels = {}
         metadata = ObjectMeta(name=application_name, namespace=namespace, labels=labels)

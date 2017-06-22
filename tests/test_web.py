@@ -7,7 +7,7 @@ from schip_spinnaker_webhook.deployer import Deployer
 from schip_spinnaker_webhook.models import Release
 from schip_spinnaker_webhook.web import create_app
 
-VALID_DEPLOY_DATA = dumps({"image": "test_image", "config_url": "http://example.com"})
+VALID_DEPLOY_DATA = dumps({"image": "test_image", "config_url": "http://example.com", "application_name": "example"})
 INVALID_DEPLOY_DATA = dumps({"definitely_not_image": "test_image", "something_other_than_url": "http://example.com"})
 KEEP_MARKER = object()
 NOT_SERIALIZABLE = object()
@@ -65,14 +65,14 @@ def test_bad_request_from_client(client):
 
 
 def test_deploy(client, status):
-    with mock.patch.object(Deployer, 'deploy', return_value="test_application") as deploy:
+    with mock.patch.object(Deployer, 'deploy', return_value="example") as deploy:
         resp = client.post("/deploy/", data=VALID_DEPLOY_DATA, content_type="application/json")
         assert resp.status_code == 201
         body = loads(resp.data.decode(resp.charset))
         assert all(x in body.keys() for x in ("status", "info"))
 
-        deploy.assert_called_with(NAMESPACE_FROM_ENV, Release("test_image", "http://example.com"))
-        status.assert_called_with("test_application")
+        deploy.assert_called_with(NAMESPACE_FROM_ENV, Release("test_image", "http://example.com", "example"))
+        status.assert_called_with("example")
 
 
 def test_status(client, status):
