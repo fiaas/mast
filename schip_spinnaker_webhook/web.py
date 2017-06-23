@@ -1,7 +1,7 @@
 import requests
 from flask import current_app as app
 from flask import url_for, jsonify, request, abort, Blueprint
-from werkzeug.exceptions import UnprocessableEntity, InternalServerError
+from werkzeug.exceptions import UnprocessableEntity
 
 from .deployer import Deployer
 from .models import Release
@@ -22,13 +22,10 @@ def deploy_handler():
     errors = ["Missing key {!r} in input".format(key) for key in required_fields if key not in data]
     if errors:
         abort(UnprocessableEntity.code, errors)
-    try:
-        deployer = Deployer(get_http_client())
-        application = deployer.deploy(app.config['NAMESPACE'],
-                                      Release(data["image"], data["config_url"], data["application_name"]))
-        return jsonify(status(application)), 201, {"Location": url_for("web.status_handler", application=application)}
-    except Exception:
-        abort(InternalServerError.code)
+    deployer = Deployer(get_http_client())
+    application = deployer.deploy(app.config['NAMESPACE'],
+                                  Release(data["image"], data["config_url"], data["application_name"]))
+    return jsonify(status(application)), 201, {"Location": url_for("web.status_handler", application=application)}
 
 
 @web.route("/status/<application>/", methods=["GET"])

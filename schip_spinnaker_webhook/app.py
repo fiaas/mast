@@ -34,6 +34,7 @@ def configure_blueprints(app):
 
 
 def configure_error_handler(app):
+    app.register_error_handler(Exception, error_handler)
     for error_class in HTTPException.__subclasses__():
         if 400 <= error_class.code < 600:
             app.register_error_handler(error_class.code, error_handler)
