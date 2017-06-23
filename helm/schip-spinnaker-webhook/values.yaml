@@ -15,7 +15,7 @@ service:
 
 ingress:
   host: "schip-spinnaker-webhook.ingress.cre-pro.schibsted.io"
-  whitelistSourceRange: "52.30.77.67/32,52.17.229.60/32,52.30.18.198/32"
+  whitelistSourceRange: "52.30.77.67/32,52.17.229.60/32,52.30.18.198/32,52.208.55.195/32"
 
 resources:
   limits:
