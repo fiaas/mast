@@ -27,12 +27,12 @@ setup(
     maintainer_email="platform-delivery@schibsted.com",
     version=version(),
     packages=find_packages(),
-    install_requires=['Flask==0.12.1'],
+    install_requires=['Flask==0.12.1', "PyYAML==3.12", "requests==2.13.0", "six==1.10.0", "ipaddress==1.0.18"],
     extras_require={
         "dev": [
             'flake8==3.3.0', "flake8-comprehensions==1.3.0", "flake8-print==2.0.2", "pep8-naming==0.4.1", 'mock==2.0.0',
             'pytest-sugar==0.8.0', 'pytest==3.0.7', "pytest-cov==2.4.0", "pytest-html==1.14.2", 'yapf==0.16.1',
-            "tox==2.7.0", "tox-travis==0.8", "requests==2.13.0", "PyYAML == 3.12"
+            "tox==2.7.0", "tox-travis==0.8"
         ]
     },
     setup_requires=['setuptools>=17.1', 'pytest-runner', 'wheel'],
