@@ -22,3 +22,13 @@ env:
     - K8S_HOST="https://schip.cre-pro.schibsted.io"
     - K8S_NAMESPACE="delivery-pro"
     - secure: "REMOVED"
+after_failure:
+  - reports-publisher
+
+after_success:
+  - reports-publisher
+
+notifications:
+  webhooks:
+    - https://devhose.spt-engprod-pro.schibsted.io/devhose/travis
+
