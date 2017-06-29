@@ -9,6 +9,9 @@ from k8s import config as k8s_config
 from schip_spinnaker_webhook.web import web
 
 
+LOGGER = logging.getLogger(__name__)
+
+
 def create_app(config=None):
     """ Create a Flask app. """
     app = Flask(__name__)
@@ -56,6 +59,7 @@ def configure_k8s_client(app):
 def error_handler(error):
     """Render errors as JSON"""
     if not all(hasattr(error, attr) for attr in ("code", "name", "description")):
+        LOGGER.exception("An error occured: %r", error)
         error = InternalServerError()
     resp = {
         "code": error.code,
