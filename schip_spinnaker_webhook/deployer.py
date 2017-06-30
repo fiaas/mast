@@ -20,13 +20,14 @@ class Deployer:
         """Create or update TPR for application"""
         application_name = release.application_name
         config = self.download_config(release.config_url)
-        labels = {"fiaas/deployment_id": self.create_deployment_id()}
+        deployment_id = self.create_deployment_id()
+        labels = {"fiaas/deployment_id": deployment_id}
         metadata = ObjectMeta(name=application_name, namespace=namespace, labels=labels)
         spec = PaasbetaApplicationSpec(application=application_name, image=release.image, config=config)
         application = PaasbetaApplication.get_or_create(metadata=metadata, spec=spec)
         application.save()
 
-        return application_name
+        return application_name, deployment_id
 
     def download_config(self, config_url):
         resp = self.http_client.get(config_url)

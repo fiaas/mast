@@ -7,11 +7,9 @@ from schip_spinnaker_webhook.deployer import Deployer
 from schip_spinnaker_webhook.models import Release
 
 APPLICATION_NAME = "test_image"
-
+DEPLOYMENT_ID = "deadbeef-abba-cafe-1337-baaaaaaaaaad"
 VALID_IMAGE_NAME = "test_image:a1b2c3d"
-
 VALID_DEPLOY_CONFIG_URL = "http://url_to_config.file"
-
 ANY_NAMESPACE = "any-namespace"
 
 VALID_DEPLOY_CONFIG = """
@@ -40,15 +38,16 @@ class TestCreateDeploymentInK8s(object):
         k8s_model.save = MagicMock()
 
         http_client = self._given_config_url_response_content_is(VALID_DEPLOY_CONFIG)
-        deployment_id = "deadbeef-abba-cafe-1337-baaaaaaaaaad"
-        Deployer(http_client, create_deployment_id=lambda: deployment_id).deploy(
+        returned_name, returned_id = Deployer(http_client, create_deployment_id=lambda: DEPLOYMENT_ID).deploy(
             namespace=ANY_NAMESPACE, release=Release(VALID_IMAGE_NAME, VALID_DEPLOY_CONFIG_URL, APPLICATION_NAME)
         )
 
+        assert returned_name == APPLICATION_NAME
+        assert returned_id == DEPLOYMENT_ID
         http_client.get.assert_called_once_with(VALID_DEPLOY_CONFIG_URL)
 
         metadata = ObjectMeta(
-            name=APPLICATION_NAME, namespace=ANY_NAMESPACE, labels={"fiaas/deployment_id": deployment_id}
+            name=APPLICATION_NAME, namespace=ANY_NAMESPACE, labels={"fiaas/deployment_id": DEPLOYMENT_ID}
         )
         spec = PaasbetaApplicationSpec(
             application=APPLICATION_NAME, image=VALID_IMAGE_NAME, config=yaml.safe_load(VALID_DEPLOY_CONFIG)

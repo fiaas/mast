@@ -46,13 +46,13 @@ def test_500_error(client):
 
 
 def test_bad_request_from_client(client):
-    with mock.patch.object(Deployer, 'deploy', return_value=True):
+    with mock.patch.object(Deployer, 'deploy', return_value=("name", "id")):
         resp = client.post("/deploy/", data=INVALID_DEPLOY_DATA, content_type="application/json")
         assert resp.status_code == 422
 
 
 def test_deploy(client, status):
-    with mock.patch.object(Deployer, 'deploy', return_value="example") as deploy:
+    with mock.patch.object(Deployer, 'deploy', return_value=("name", "id")) as deploy:
         resp = client.post("/deploy/", data=VALID_DEPLOY_DATA, content_type="application/json")
         assert resp.status_code == 201
         body = loads(resp.data.decode(resp.charset))
@@ -60,15 +60,15 @@ def test_deploy(client, status):
 
         deploy.assert_called_with(DEFAULT_CONFIG.get('NAMESPACE'),
                                   Release("test_image", "http://example.com", "example"))
-        status.assert_called_with("example")
+        status.assert_called_with("name", "id")
 
 
 def test_status(client, status):
-    resp = client.get("/status/test_application/")
+    resp = client.get("/status/test_application/test_id/")
     assert resp.status_code == 200
     body = loads(resp.data.decode(resp.charset))
     assert all(x in body.keys() for x in ("status", "info"))
-    status.assert_called_with("test_application")
+    status.assert_called_with("test_application", "test_id")
 
 
 def test_health(client):
