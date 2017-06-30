@@ -7,13 +7,15 @@ from schip_spinnaker_webhook.app import create_app
 from schip_spinnaker_webhook.deployer import Deployer
 from schip_spinnaker_webhook.models import Release
 
+DEFAULT_NAMESPACE = "default-namespace"
+
 VALID_DEPLOY_DATA = dumps({"image": "test_image", "config_url": "http://example.com", "application_name": "example"})
 INVALID_DEPLOY_DATA = dumps({"definitely_not_image": "test_image", "something_other_than_url": "http://example.com"})
 
 DEFAULT_CONFIG = {
     'PORT': 5000,
     'DEBUG': True,
-    'NAMESPACE': "default-namespace",
+    'NAMESPACE': DEFAULT_NAMESPACE,
     'APISERVER_TOKEN': "default-token",
     'APISERVER_CA_CERT': "/path/to/default.crt",
     'ARTIFACTORY_USER': "default_username",
@@ -58,17 +60,16 @@ def test_deploy(client, status):
         body = loads(resp.data.decode(resp.charset))
         assert all(x in body.keys() for x in ("status", "info"))
 
-        deploy.assert_called_with(DEFAULT_CONFIG.get('NAMESPACE'),
-                                  Release("test_image", "http://example.com", "example"))
-        status.assert_called_with("name", "id")
+        deploy.assert_called_with(DEFAULT_NAMESPACE, Release("test_image", "http://example.com", "example"))
+        status.assert_called_with(DEFAULT_NAMESPACE, "name", "id")
 
 
 def test_status(client, status):
-    resp = client.get("/status/test_application/test_id/")
+    resp = client.get("/status/test_namespace/test_application/test_id/")
     assert resp.status_code == 200
     body = loads(resp.data.decode(resp.charset))
     assert all(x in body.keys() for x in ("status", "info"))
-    status.assert_called_with("test_application", "test_id")
+    status.assert_called_with("test_namespace", "test_application", "test_id")
 
 
 def test_health(client):

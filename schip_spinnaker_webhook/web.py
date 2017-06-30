@@ -23,15 +23,17 @@ def deploy_handler():
     if errors:
         abort(UnprocessableEntity.code, errors)
     deployer = Deployer(get_http_client())
-    application, deployment_id = deployer.deploy(app.config['NAMESPACE'],
+    namespace = app.config['NAMESPACE']
+    application, deployment_id = deployer.deploy(namespace,
                                                  Release(data["image"], data["config_url"], data["application_name"]))
-    return jsonify(status(application, deployment_id)), 201, {
-        "Location": url_for("web.status_handler", application=application, deployment_id=deployment_id)}
+    return jsonify(status(namespace, application, deployment_id)), 201, {
+        "Location": url_for("web.status_handler", namespace=namespace, application=application,
+                            deployment_id=deployment_id)}
 
 
-@web.route("/status/<application>/<deployment_id>/", methods=["GET"])
-def status_handler(application, deployment_id):
-    return jsonify(status(application, deployment_id))
+@web.route("/status/<namespace>/<application>/<deployment_id>/", methods=["GET"])
+def status_handler(namespace, application, deployment_id):
+    return jsonify(status(namespace, application, deployment_id))
 
 
 def get_http_client():
