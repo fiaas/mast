@@ -2,7 +2,7 @@ import yaml
 from mock import MagicMock, patch
 
 from k8s.models.common import ObjectMeta
-from schip_spinnaker_webhook.paasbetaapplication import PaasbetaApplicationSpec
+from schip_spinnaker_webhook.paasbeta import PaasbetaApplicationSpec
 from schip_spinnaker_webhook.deployer import Deployer
 from schip_spinnaker_webhook.models import Release
 
@@ -48,7 +48,7 @@ class TestCreateDeploymentInK8s(object):
         http_client.get.assert_called_once_with(VALID_DEPLOY_CONFIG_URL)
 
         metadata = ObjectMeta(
-            name=APPLICATION_NAME, namespace=ANY_NAMESPACE, annotations={"fiaas/deployment_id": deployment_id}
+            name=APPLICATION_NAME, namespace=ANY_NAMESPACE, labels={"fiaas/deployment_id": deployment_id}
         )
         spec = PaasbetaApplicationSpec(
             application=APPLICATION_NAME, image=VALID_IMAGE_NAME, config=yaml.safe_load(VALID_DEPLOY_CONFIG)

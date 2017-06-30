@@ -102,5 +102,18 @@ class PaasbetaApplication(Model):
     # Workaround for https://github.com/kubernetes/kubernetes/issues/44182
     apiVersion = Field(six.text_type, "schibsted.io/v1beta")
     kind = Field(six.text_type, "PaasbetaApplication")
+
     metadata = Field(ObjectMeta)
     spec = Field(PaasbetaApplicationSpec)
+
+
+class PaasbetaStatus(Model):
+    class Meta:
+        url_template = "/apis/schibsted.io/v1beta/namespaces/{namespace}/paasbetastatuses/{name}"
+
+    # Workaround for https://github.com/kubernetes/kubernetes/issues/44182
+    apiVersion = Field(six.text_type, "schibsted.io/v1beta")
+    kind = Field(six.text_type, "PaasbetaStatus")
+
+    metadata = Field(ObjectMeta)
+    result = Field(six.text_type)

@@ -3,7 +3,7 @@ import uuid
 import yaml
 
 from k8s.models.common import ObjectMeta
-from .paasbetaapplication import PaasbetaApplication, PaasbetaApplicationSpec
+from .paasbeta import PaasbetaApplication, PaasbetaApplicationSpec
 
 
 def generate_random_uuid_string():
@@ -20,8 +20,8 @@ class Deployer:
         """Create or update TPR for application"""
         application_name = release.application_name
         config = self.download_config(release.config_url)
-        annotations = {"fiaas/deployment_id": self.create_deployment_id()}
-        metadata = ObjectMeta(name=application_name, namespace=namespace, annotations=annotations)
+        labels = {"fiaas/deployment_id": self.create_deployment_id()}
+        metadata = ObjectMeta(name=application_name, namespace=namespace, labels=labels)
         spec = PaasbetaApplicationSpec(application=application_name, image=release.image, config=config)
         application = PaasbetaApplication.get_or_create(metadata=metadata, spec=spec)
         application.save()
