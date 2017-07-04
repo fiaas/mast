@@ -45,5 +45,6 @@ sudo start-docker-daemon
 install_kubectl
 configure_kubectl
 install_helm
+export TILLER_NAMESPACE="${K8S_NAMESPACE}"
 helm init
 pip install -r requirements.txt
