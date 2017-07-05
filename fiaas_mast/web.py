@@ -33,7 +33,8 @@ def deploy_handler():
 
 @web.route("/status/<namespace>/<application>/<deployment_id>/", methods=["GET"])
 def status_handler(namespace, application, deployment_id):
-    return jsonify(status(namespace, application, deployment_id))
+    response = status(namespace, application, deployment_id)
+    return jsonify(response._asdict())
 
 
 def get_http_client():
