@@ -5,7 +5,7 @@ import pytest
 
 from fiaas_mast.app import create_app
 from fiaas_mast.deployer import Deployer
-from fiaas_mast.models import Release
+from fiaas_mast.models import Release, Status
 
 DEFAULT_NAMESPACE = "default-namespace"
 
@@ -26,7 +26,7 @@ DEFAULT_CONFIG = {
 @pytest.fixture(autouse=True)
 def status():
     with mock.patch("fiaas_mast.web.status") as mock_status:
-        mock_status.return_value = {"status": "status", "info": "info"}
+        mock_status.return_value = Status(status="status", info="info")
         yield mock_status
 
 

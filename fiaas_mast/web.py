@@ -26,7 +26,8 @@ def deploy_handler():
     namespace = app.config['NAMESPACE']
     application, deployment_id = deployer.deploy(namespace,
                                                  Release(data["image"], data["config_url"], data["application_name"]))
-    return jsonify(status(namespace, application, deployment_id)), 201, {
+    response = status(namespace, application, deployment_id)
+    return jsonify(response._asdict()), 201, {
         "Location": url_for("web.status_handler", namespace=namespace, application=application,
                             deployment_id=deployment_id)}
 
