@@ -2,9 +2,9 @@ import yaml
 from mock import MagicMock, patch
 
 from k8s.models.common import ObjectMeta
-from schip_spinnaker_webhook.paasbeta import PaasbetaApplicationSpec
-from schip_spinnaker_webhook.deployer import Deployer
-from schip_spinnaker_webhook.models import Release
+from fiaas_mast.paasbeta import PaasbetaApplicationSpec
+from fiaas_mast.deployer import Deployer
+from fiaas_mast.models import Release
 
 APPLICATION_NAME = "test_image"
 DEPLOYMENT_ID = "deadbeef-abba-cafe-1337-baaaaaaaaaad"
@@ -33,7 +33,7 @@ config:
 class TestCreateDeploymentInK8s(object):
     @patch('k8s.base.ApiMixIn.get_or_create')
     def test_deployer_sends_tpr_to_k8s(self, get_or_create):
-        k8s_model = MagicMock(spec="schip_spinnaker_webhook.paasbetaapplication.PaasbetaApplication")
+        k8s_model = MagicMock(spec="fiaas_mast.paasbetaapplication.PaasbetaApplication")
         get_or_create.return_value = k8s_model
         k8s_model.save = MagicMock()
 

@@ -1,7 +1,7 @@
 replicaCount: 1
 
 image:
-  repository: "containers.schibsted.io/spt-infrastructure/schip-spinnaker-webhook"
+  repository: "containers.schibsted.io/spt-infrastructure/fiaas-mast"
   tag: latest
   pullPolicy: IfNotPresent
 
@@ -14,7 +14,7 @@ service:
   heimdallPort: 8765
 
 ingress:
-  host: "schip-spinnaker-webhook.ingress.cre-pro.schibsted.io"
+  host: "fiaas-mast.ingress.cre-pro.schibsted.io"
   whitelistSourceRange: "52.30.77.67/32,52.17.229.60/32,52.30.18.198/32,52.208.55.195/32"
 
 resources:

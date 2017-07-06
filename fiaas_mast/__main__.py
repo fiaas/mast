@@ -1,4 +1,4 @@
-from schip_spinnaker_webhook.app import create_app
+from fiaas_mast.app import create_app
 
 
 def main():

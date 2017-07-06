@@ -21,8 +21,8 @@ def version():
 
 
 setup(
-    name="schip-spinnaker-webhook",
-    url="https://github.schibsted.io/spt-infrastructure/schip-spinnaker-webhook",
+    name="fiaas-mast",
+    url="https://github.schibsted.io/spt-infrastructure/fiaas-mast",
     maintainer="Platform Delivery",
     maintainer_email="platform-delivery@schibsted.com",
     version=version(),
@@ -36,5 +36,5 @@ setup(
         ]
     },
     setup_requires=['setuptools>=17.1', 'pytest-runner', 'wheel'],
-    entry_points={"console_scripts": ['schip-spinnaker-webhook=schip_spinnaker_webhook.__main__:main']},
+    entry_points={"console_scripts": ['fiaas-mast=fiaas_mast.__main__:main']},
 )

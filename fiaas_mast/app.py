@@ -4,9 +4,9 @@ import sys
 from flask import Flask, jsonify
 from werkzeug.exceptions import InternalServerError, HTTPException
 
-from schip_spinnaker_webhook.config import Config
+from fiaas_mast.config import Config
 from k8s import config as k8s_config
-from schip_spinnaker_webhook.web import web
+from fiaas_mast.web import web
 
 
 LOGGER = logging.getLogger(__name__)

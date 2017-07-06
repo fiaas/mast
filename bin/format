@@ -3,4 +3,4 @@ set -euo pipefail
 IFS=$'\n\t'
 
 cd "$(git rev-parse --show-toplevel)"
-yapf --recursive --in-place schip_spinnaker_webhook tests setup.py
+yapf --recursive --in-place fiaas_mast tests setup.py

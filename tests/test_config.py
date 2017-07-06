@@ -1,7 +1,7 @@
 import mock
 import pytest
 
-from schip_spinnaker_webhook.config import Config
+from fiaas_mast.config import Config
 
 
 class TestConfig(object):
@@ -67,7 +67,7 @@ class TestConfig(object):
         monkeypatch.setenv("ARTIFACTORY_PWD", "password")
 
         with pytest.raises(RuntimeError):
-            from schip_spinnaker_webhook.config import Config
+            from fiaas_mast.config import Config
             config = Config()
             config.NAMESPACE
 

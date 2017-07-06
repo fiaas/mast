@@ -22,7 +22,7 @@ def version():
 
 setup(
     name="k8s-client",
-    url="https://github.schibsted.io/spt-infrastructure/schip-spinnaker-webhook",
+    url="https://github.schibsted.io/spt-infrastructure/fiaas-mast",
     maintainer="Platform Delivery",
     maintainer_email="platform-delivery@schibsted.com",
     version=version(),

@@ -3,7 +3,7 @@ from json import dumps, loads
 import pytest
 
 from k8s import config
-from schip_spinnaker_webhook.app import create_app
+from fiaas_mast.app import create_app
 
 DEFAULT_CONFIG = {
     'PORT': 5000,

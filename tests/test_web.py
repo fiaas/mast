@@ -3,9 +3,9 @@ from json import loads, dumps
 import mock
 import pytest
 
-from schip_spinnaker_webhook.app import create_app
-from schip_spinnaker_webhook.deployer import Deployer
-from schip_spinnaker_webhook.models import Release
+from fiaas_mast.app import create_app
+from fiaas_mast.deployer import Deployer
+from fiaas_mast.models import Release
 
 DEFAULT_NAMESPACE = "default-namespace"
 
@@ -25,7 +25,7 @@ DEFAULT_CONFIG = {
 
 @pytest.fixture(autouse=True)
 def status():
-    with mock.patch("schip_spinnaker_webhook.web.status") as mock_status:
+    with mock.patch("fiaas_mast.web.status") as mock_status:
         mock_status.return_value = {"status": "status", "info": "info"}
         yield mock_status
 

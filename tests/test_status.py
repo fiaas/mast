@@ -6,7 +6,7 @@ import os.path
 import pytest
 import yaml
 
-from schip_spinnaker_webhook.status import status
+from fiaas_mast.status import status
 
 NAMESPACE = "somespace"
 APPLICATION_NAME = "some_app"

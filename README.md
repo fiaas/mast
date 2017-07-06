@@ -1,7 +1,9 @@
-SCHIP Spinnaker Webhook [![Build Status](https://travis.schibsted.io/spt-infrastructure/schip-spinnaker-webhook.svg?token=z6c5cx1P1xECeUhxrnJF&branch=master)](https://travis.schibsted.io/spt-infrastructure/schip-spinnaker-webhook)
-=======================
+FIAAS Mast [![Build Status](https://travis.schibsted.io/spt-infrastructure/fiaas-mast.svg?token=z6c5cx1P1xECeUhxrnJF&branch=master)](https://travis.schibsted.io/spt-infrastructure/fiaas-mast)
+==========
 
-Receives HTTP requests from Spinnaker for deployments, and creates or updates a SCHIP-app object
+FIAAS Mast connects the Spinnaker to FIAAS.
+
+Receives HTTP requests from Spinnaker for deployments, and creates or updates a FIAAS-app object
 in the containing Kubernetes cluster.
 
 Development
@@ -22,7 +24,7 @@ Optionally, enable auto-formatting on save in Emacs:
 
     M-x package-install py-yapf
 
-Add the following to `$schip-spinnaker-webhook/.dir-locals.el`:
+Add the following to `$fiaas-mast/.dir-locals.el`:
 
     ((python-mode . ((eval . (add-hook 'python-mode-hook 'py-yapf-enable-on-save nil t)))))
 
@@ -38,8 +40,8 @@ complain if an interpreter is not available.
 #### Running the application
 
 * Create a Python configuration with a suitable name
-* Script: Find the `schip-spinnaker-webhook` executable in the virtualenvs bin directory
-    * If using bash, try `which schip-spinnaker-webhook` inside the virtualenv
+* Script: Find the `fiaas-mast` executable in the virtualenvs bin directory
+    * If using bash, try `which fiaas-mast` inside the virtualenv
 * Python Interpreter: Make sure to add the virtualenv as an SDK, and use that interpreter
 
 
