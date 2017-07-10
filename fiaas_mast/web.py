@@ -28,7 +28,8 @@ def deploy_handler():
                                                  Release(data["image"], data["config_url"], data["application_name"]))
     response = status(namespace, application, deployment_id)
     return jsonify(response._asdict()), 201, {
-        "Location": url_for("web.status_handler", namespace=namespace, application=application,
+        "Location": url_for("web.status_handler", _external=True, _scheme="https", namespace=namespace,
+                            application=application,
                             deployment_id=deployment_id)}
 
 
