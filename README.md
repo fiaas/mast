@@ -1,4 +1,4 @@
-FIAAS Mast [![Build Status](https://travis.schibsted.io/spt-infrastructure/fiaas-mast.svg?token=z6c5cx1P1xECeUhxrnJF&branch=master)](https://travis.schibsted.io/spt-infrastructure/fiaas-mast)
+FIAAS Mast
 ==========
 
 <!-- Badger start badges -->
