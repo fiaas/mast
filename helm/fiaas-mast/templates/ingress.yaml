@@ -20,9 +20,6 @@ spec:
             backend:
               serviceName: {{ template "fullname" . }}
               servicePort: http
-    - host: {{ .Values.ingress.host }}
-      http:
-        paths:
           - path: /heimdall-token
             backend:
               serviceName: {{ template "fullname" . }}
