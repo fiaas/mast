@@ -1,10 +1,10 @@
 import yaml
 from mock import MagicMock, patch
 
-from k8s.models.common import ObjectMeta
-from fiaas_mast.paasbeta import PaasbetaApplicationSpec
 from fiaas_mast.deployer import Deployer
 from fiaas_mast.models import Release
+from fiaas_mast.paasbeta import PaasbetaApplicationSpec
+from k8s.models.common import ObjectMeta
 
 APPLICATION_NAME = "test_image"
 DEPLOYMENT_ID = "deadbeef-abba-cafe-1337-baaaaaaaaaad"
@@ -47,7 +47,8 @@ class TestCreateDeploymentInK8s(object):
         http_client.get.assert_called_once_with(VALID_DEPLOY_CONFIG_URL)
 
         metadata = ObjectMeta(
-            name=APPLICATION_NAME, namespace=ANY_NAMESPACE, labels={"fiaas/deployment_id": DEPLOYMENT_ID}
+            name=APPLICATION_NAME, namespace=ANY_NAMESPACE,
+            labels={"fiaas/deployment_id": DEPLOYMENT_ID, "app": APPLICATION_NAME}
         )
         spec = PaasbetaApplicationSpec(
             application=APPLICATION_NAME, image=VALID_IMAGE_NAME, config=yaml.safe_load(VALID_DEPLOY_CONFIG)

@@ -1,5 +1,4 @@
 import uuid
-
 import yaml
 
 from k8s.models.common import ObjectMeta
@@ -21,7 +20,7 @@ class Deployer:
         application_name = release.application_name
         config = self.download_config(release.config_url)
         deployment_id = self.create_deployment_id()
-        labels = {"fiaas/deployment_id": deployment_id}
+        labels = {"fiaas/deployment_id": deployment_id, "app": application_name}
         metadata = ObjectMeta(name=application_name, namespace=namespace, labels=labels)
         spec = PaasbetaApplicationSpec(application=application_name, image=release.image, config=config)
         application = PaasbetaApplication.get_or_create(metadata=metadata, spec=spec)
