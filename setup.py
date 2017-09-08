@@ -27,7 +27,14 @@ setup(
     maintainer_email="platform-delivery@schibsted.com",
     version=version(),
     packages=find_packages(),
-    install_requires=['Flask==0.12.1', "PyYAML==3.12", "requests==2.13.0", "six==1.10.0", "ipaddress==1.0.18"],
+    install_requires=[
+        "Flask==0.12.1",
+        "PyYAML==3.12",
+        "requests==2.13.0",
+        "six==1.10.0",
+        "ipaddress==1.0.18",
+        "k8s==0.0.2",
+    ],
     extras_require={
         "dev": [
             'flake8==3.3.0', "flake8-comprehensions==1.3.0", "flake8-print==2.0.2", "pep8-naming==0.4.1", 'mock==2.0.0',
