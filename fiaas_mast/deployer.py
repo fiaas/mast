@@ -16,19 +16,20 @@ class Deployer:
         self.http_client = http_client
         self.create_deployment_id = create_deployment_id
 
-    def deploy(self, namespace, release):
+    def deploy(self, mast_namespace, release):
         """Create or update TPR for application"""
         application_name = release.application_name
         config = self.download_config(release.config_url)
         deployment_id = self.create_deployment_id()
         labels = {"fiaas/deployment_id": deployment_id, "app": application_name}
+        namespace = config["namespace"] if "namespace" in config else mast_namespace
         metadata = ObjectMeta(name=application_name,
-                              namespace=config["namespace"] if "namespace" in config else namespace, labels=labels)
+                              namespace=namespace, labels=labels)
         spec = PaasbetaApplicationSpec(application=application_name, image=release.image, config=config)
         application = PaasbetaApplication.get_or_create(metadata=metadata, spec=spec)
         application.save()
 
-        return application_name, deployment_id
+        return namespace, application_name, deployment_id
 
     def download_config(self, config_url):
         resp = self.http_client.get(config_url)

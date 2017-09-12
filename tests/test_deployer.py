@@ -56,10 +56,12 @@ class TestCreateDeploymentInK8s(object):
         k8s_model.save = MagicMock()
 
         http_client = self._given_config_url_response_content_is(VALID_DEPLOY_CONFIG)
-        returned_name, returned_id = Deployer(http_client, create_deployment_id=lambda: DEPLOYMENT_ID).deploy(
-            namespace=ANY_NAMESPACE, release=Release(VALID_IMAGE_NAME, VALID_DEPLOY_CONFIG_URL, APPLICATION_NAME)
+        returned_namespace, returned_name, returned_id = Deployer(http_client,
+                                                                  create_deployment_id=lambda: DEPLOYMENT_ID).deploy(
+            mast_namespace=ANY_NAMESPACE, release=Release(VALID_IMAGE_NAME, VALID_DEPLOY_CONFIG_URL, APPLICATION_NAME)
         )
 
+        assert returned_namespace == ANY_NAMESPACE
         assert returned_name == APPLICATION_NAME
         assert returned_id == DEPLOYMENT_ID
         http_client.get.assert_called_once_with(VALID_DEPLOY_CONFIG_URL)
@@ -81,10 +83,12 @@ class TestCreateDeploymentInK8s(object):
         k8s_model.save = MagicMock()
 
         http_client = self._given_config_url_response_content_is(VALID_DEPLOY_CONFIG_WITH_NAMESPACE)
-        returned_name, returned_id = Deployer(http_client, create_deployment_id=lambda: DEPLOYMENT_ID).deploy(
-            namespace=ANY_NAMESPACE, release=Release(VALID_IMAGE_NAME, VALID_DEPLOY_CONFIG_URL, APPLICATION_NAME)
+        returned_namespace, returned_name, returned_id = Deployer(http_client,
+                                                                  create_deployment_id=lambda: DEPLOYMENT_ID).deploy(
+            mast_namespace=ANY_NAMESPACE, release=Release(VALID_IMAGE_NAME, VALID_DEPLOY_CONFIG_URL, APPLICATION_NAME)
         )
 
+        assert returned_namespace == "custom-namespace"
         assert returned_name == APPLICATION_NAME
         assert returned_id == DEPLOYMENT_ID
         http_client.get.assert_called_once_with(VALID_DEPLOY_CONFIG_URL)

@@ -1,4 +1,5 @@
 from json import loads, dumps
+from urllib.parse import urlparse
 
 import mock
 import pytest
@@ -54,14 +55,16 @@ def test_bad_request_from_client(client):
 
 
 def test_deploy(client, status):
-    with mock.patch.object(Deployer, 'deploy', return_value=("name", "id")) as deploy:
+    with mock.patch.object(Deployer, 'deploy', return_value=("some-namespace", "app-name", "deploy_id")) as deploy:
         resp = client.post("/deploy/", data=VALID_DEPLOY_DATA, content_type="application/json")
         assert resp.status_code == 201
+        assert urlparse(resp.location).path == "/status/some-namespace/app-name/deploy_id/"
+
         body = loads(resp.data.decode(resp.charset))
         assert all(x in body.keys() for x in ("status", "info"))
 
         deploy.assert_called_with(DEFAULT_NAMESPACE, Release("test_image", "http://example.com", "example"))
-        status.assert_called_with(DEFAULT_NAMESPACE, "name", "id")
+        status.assert_called_with("some-namespace", "app-name", "deploy_id")
 
 
 def test_status(client, status):
