@@ -5,7 +5,6 @@ class Config(object):
     def __init__(self):
         self.PORT = os.environ.get('PORT', 5000)
         self.DEBUG = os.environ.get('DEBUG', False)
-        self.NAMESPACE = self.get_namespace()
         self.APISERVER_TOKEN = self.get_apiserver_token()
         self.APISERVER_CA_CERT = self.get_apiserver_cert()
 
@@ -43,18 +42,3 @@ class Config(object):
                 )
 
         return cert
-
-    def get_namespace(self):
-        namespace = os.environ.get('NAMESPACE')
-        if namespace is None:
-            namespace_path = "/var/run/secrets/kubernetes.io/serviceaccount/namespace"
-            if os.path.exists(namespace_path):
-                with open("/var/run/secrets/kubernetes.io/serviceaccount/namespace") as fobj:
-                    return fobj.read().strip()
-            else:
-                raise RuntimeError(
-                    "Could not resolve current namespace. No $NAMESPACE set in the environment and "
-                    "{} did not exist.".format(namespace_path)
-                )
-
-        return namespace

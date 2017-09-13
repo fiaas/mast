@@ -10,7 +10,12 @@ from fiaas_mast.models import Release, Status
 
 DEFAULT_NAMESPACE = "default-namespace"
 
-VALID_DEPLOY_DATA = dumps({"image": "test_image", "config_url": "http://example.com", "application_name": "example"})
+VALID_DEPLOY_DATA = dumps({
+    "image": "test_image",
+    "config_url": "http://example.com",
+    "application_name": "example",
+    "namespace": DEFAULT_NAMESPACE})
+
 INVALID_DEPLOY_DATA = dumps({"definitely_not_image": "test_image", "something_other_than_url": "http://example.com"})
 
 DEFAULT_CONFIG = {

@@ -18,15 +18,15 @@ def health_check():
 @web.route("/deploy/", methods=["PUT", "POST"])
 def deploy_handler():
     data = request.get_json(force=True)
-    required_fields = ("application_name", "config_url", "image")
+    required_fields = ("application_name", "config_url", "image", "namespace")
     errors = ["Missing key {!r} in input".format(key) for key in required_fields if key not in data]
     if errors:
         abort(UnprocessableEntity.code, errors)
     deployer = Deployer(get_http_client())
-    mast_namespace = app.config['NAMESPACE']
-    namespace, application_name, deployment_id = deployer.deploy(mast_namespace,
-                                                                 Release(data["image"], data["config_url"],
-                                                                         data["application_name"]))
+    namespace, application_name, deployment_id = deployer.deploy(
+        data["namespace"],
+        Release(data["image"], data["config_url"], data["application_name"])
+    )
     response = status(namespace, application_name, deployment_id)
     return jsonify(response._asdict()), 201, {
         "Location": url_for("web.status_handler", _external=True, _scheme="https", namespace=namespace,

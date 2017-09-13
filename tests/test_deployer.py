@@ -47,6 +47,24 @@ config:
   volume: true
 """
 
+VALID_DEPLOY_CONFIG_WITH_NAMESPACE_V3 = """
+version: 3
+namespace: custom-namespace
+admin_access: true
+replicas: 1
+resources:
+  requests:
+    memory: 128m
+ports:
+  - target_port: 5000
+healthchecks:
+  liveness:
+    http:
+      path: /healthz
+config:
+  volume: true
+"""
+
 
 class TestCreateDeploymentInK8s(object):
     @patch('k8s.base.ApiMixIn.get_or_create')
@@ -58,7 +76,7 @@ class TestCreateDeploymentInK8s(object):
         http_client = self._given_config_url_response_content_is(VALID_DEPLOY_CONFIG)
         returned_namespace, returned_name, returned_id = Deployer(http_client,
                                                                   create_deployment_id=lambda: DEPLOYMENT_ID).deploy(
-            mast_namespace=ANY_NAMESPACE, release=Release(VALID_IMAGE_NAME, VALID_DEPLOY_CONFIG_URL, APPLICATION_NAME)
+            target_namespace=ANY_NAMESPACE, release=Release(VALID_IMAGE_NAME, VALID_DEPLOY_CONFIG_URL, APPLICATION_NAME)
         )
 
         assert returned_namespace == ANY_NAMESPACE
@@ -83,9 +101,10 @@ class TestCreateDeploymentInK8s(object):
         k8s_model.save = MagicMock()
 
         http_client = self._given_config_url_response_content_is(VALID_DEPLOY_CONFIG_WITH_NAMESPACE)
-        returned_namespace, returned_name, returned_id = Deployer(http_client,
-                                                                  create_deployment_id=lambda: DEPLOYMENT_ID).deploy(
-            mast_namespace=ANY_NAMESPACE, release=Release(VALID_IMAGE_NAME, VALID_DEPLOY_CONFIG_URL, APPLICATION_NAME)
+
+        deployer = Deployer(http_client, create_deployment_id=lambda: DEPLOYMENT_ID)
+        returned_namespace, returned_name, returned_id = deployer.deploy(
+            target_namespace=ANY_NAMESPACE, release=Release(VALID_IMAGE_NAME, VALID_DEPLOY_CONFIG_URL, APPLICATION_NAME)
         )
 
         assert returned_namespace == "custom-namespace"
@@ -100,6 +119,36 @@ class TestCreateDeploymentInK8s(object):
         spec = PaasbetaApplicationSpec(
             application=APPLICATION_NAME, image=VALID_IMAGE_NAME,
             config=yaml.safe_load(VALID_DEPLOY_CONFIG_WITH_NAMESPACE)
+        )
+        get_or_create.assert_called_once_with(metadata=metadata, spec=spec)
+        k8s_model.save.assert_called_once()
+
+    @patch('k8s.base.ApiMixIn.get_or_create')
+    def test_deployer_ignores_namespace_in_config_file_when_version_higher_than_3(self, get_or_create):
+        k8s_model = MagicMock(spec="fiaas_mast.paasbetaapplication.PaasbetaApplication")
+        get_or_create.return_value = k8s_model
+        k8s_model.save = MagicMock()
+
+        http_client = self._given_config_url_response_content_is(VALID_DEPLOY_CONFIG_WITH_NAMESPACE_V3)
+
+        deployer = Deployer(http_client, create_deployment_id=lambda: DEPLOYMENT_ID)
+        returned_namespace, returned_name, returned_id = deployer.deploy(
+            target_namespace="target-namespace",
+            release=Release(VALID_IMAGE_NAME, VALID_DEPLOY_CONFIG_URL, APPLICATION_NAME)
+        )
+
+        assert returned_namespace == "target-namespace"
+        assert returned_name == APPLICATION_NAME
+        assert returned_id == DEPLOYMENT_ID
+        http_client.get.assert_called_once_with(VALID_DEPLOY_CONFIG_URL)
+
+        metadata = ObjectMeta(
+            name=APPLICATION_NAME, namespace="target-namespace",
+            labels={"fiaas/deployment_id": DEPLOYMENT_ID, "app": APPLICATION_NAME}
+        )
+        spec = PaasbetaApplicationSpec(
+            application=APPLICATION_NAME, image=VALID_IMAGE_NAME,
+            config=yaml.safe_load(VALID_DEPLOY_CONFIG_WITH_NAMESPACE_V3)
         )
         get_or_create.assert_called_once_with(metadata=metadata, spec=spec)
         k8s_model.save.assert_called_once()

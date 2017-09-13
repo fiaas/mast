@@ -8,7 +8,6 @@ from fiaas_mast.app import create_app
 DEFAULT_CONFIG = {
     'PORT': 5000,
     'DEBUG': True,
-    'NAMESPACE': "default-namespace",
     'APISERVER_TOKEN': "default-token",
     'APISERVER_CA_CERT': "/path/to/default.crt",
     'ARTIFACTORY_USER': "default_username",
@@ -46,11 +45,10 @@ class TestApp(object):
         assert all(x in body.keys() for x in ("name", "description"))
 
     def test_app_uses_config_object(self, monkeypatch):
-        namespace = 'ns-env'
-        monkeypatch.setenv('NAMESPACE', namespace)
-        monkeypatch.setenv('APISERVER_TOKEN', "token")
+        token = 'token'
+        monkeypatch.setenv('APISERVER_TOKEN', token)
         monkeypatch.setenv('APISERVER_CA_CERT', "/path/to/cert.crt")
         monkeypatch.setenv('ARTIFACTORY_USER', "default_username")
         monkeypatch.setenv('ARTIFACTORY_PWD', "default_password")
         app = create_app()
-        assert app.config['NAMESPACE'] == namespace
+        assert app.config['APISERVER_TOKEN'] == token
