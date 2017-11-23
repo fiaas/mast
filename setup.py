@@ -33,7 +33,7 @@ setup(
         "requests==2.13.0",
         "six==1.10.0",
         "ipaddress==1.0.18",
-        "k8s==0.0.2",
+        "k8s==0.3.4",
     ],
     extras_require={
         "dev": [
