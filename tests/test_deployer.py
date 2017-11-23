@@ -2,7 +2,7 @@ import yaml
 from k8s.models.common import ObjectMeta
 from mock import MagicMock, patch
 
-from fiaas_mast.deployer import Deployer
+from fiaas_mast.deployer import Deployer, generate_random_uuid_string
 from fiaas_mast.models import Release
 from fiaas_mast.paasbeta import PaasbetaApplicationSpec
 
@@ -163,3 +163,8 @@ class TestCreateDeploymentInK8s(object):
         http_client.get = http_client_get
 
         return http_client
+
+    def test_uuid_generation(self):
+        uuid1 = generate_random_uuid_string()
+        uuid2 = generate_random_uuid_string()
+        assert uuid1 != uuid2
