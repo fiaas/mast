@@ -100,13 +100,19 @@ class TestCreateDeploymentInK8s(object):
             (VALID_DEPLOY_CONFIG_WITH_NAMESPACE, ANY_NAMESPACE, "custom-namespace"),
             (VALID_DEPLOY_CONFIG_WITH_NAMESPACE_V3, "target-namespace", "target-namespace"),
     ))
-    def test_deployer_creates_object_of_given_type(self, get_or_create, k8s_model, object_types, config, target_namespace,
+    def test_deployer_creates_object_of_given_type(self,
+                                                   get_or_create,
+                                                   k8s_model,
+                                                   object_types,
+                                                   config,
+                                                   target_namespace,
                                                    expected_namespace):
         http_client = _given_config_url_response_content_is(config)
         application_model, spec_model = object_types
         deployer = Deployer(http_client, create_deployment_id=lambda: DEPLOYMENT_ID)
         returned_namespace, returned_name, returned_id = deployer.deploy(
-            target_namespace=target_namespace, release=Release(VALID_IMAGE_NAME, VALID_DEPLOY_CONFIG_URL, APPLICATION_NAME)
+            target_namespace=target_namespace,
+            release=Release(VALID_IMAGE_NAME, VALID_DEPLOY_CONFIG_URL, APPLICATION_NAME)
         )
 
         assert returned_namespace == expected_namespace

@@ -1,4 +1,5 @@
 import uuid
+import logging
 
 import yaml
 
@@ -7,6 +8,8 @@ from k8s.models.common import ObjectMeta
 
 from .paasbeta import PaasbetaApplication, PaasbetaApplicationSpec
 from .fiaas import FiaasApplication, FiaasApplicationSpec
+
+LOG = logging.getLogger(__name__)
 
 
 def generate_random_uuid_string():
@@ -23,7 +26,7 @@ def select_models():
             app_model.list()
             return app_model, spec_model
         except NotFound:
-            print("{} was not found".format(app_model))
+            LOG.debug("{} was not found".format(app_model))
     raise DeployerError("Unable to find support for either PaasbetaApplication or FiaasApplication in the cluster")
 
 
