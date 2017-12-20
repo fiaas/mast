@@ -36,13 +36,6 @@ def status():
         yield mock_status
 
 
-@pytest.fixture(autouse=True)
-def select_models():
-    with mock.patch('fiaas_mast.deployer.select_models') as m:
-        m.return_value = (None, None)
-        yield m
-
-
 @pytest.fixture
 def client():
     app = create_app(DEFAULT_CONFIG)
