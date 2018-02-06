@@ -48,6 +48,13 @@ complain if an interpreter is not available.
     * If using bash, try `which fiaas-mast` inside the virtualenv
 * Python Interpreter: Make sure to add the virtualenv as an SDK, and use that interpreter
 
+Set the following env variables to run locally:
+```
+export ARTIFACTORY_USER="user.name@schibsted.com"
+export ARTIFACTORY_PWD="artifactory-api-key"
+export APISERVER_TOKEN="foo"
+export APISERVER_CA_CERT="bar"
+```
 
 #### Tests
 
