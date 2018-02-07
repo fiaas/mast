@@ -4,6 +4,7 @@ from flask import url_for, jsonify, request, abort, Blueprint
 from werkzeug.exceptions import UnprocessableEntity
 
 from .deployer import Deployer
+from .generator import Generator
 from .models import Release
 from .status import status
 
@@ -38,6 +39,20 @@ def deploy_handler():
 def status_handler(namespace, application, deployment_id):
     response = status(namespace, application, deployment_id)
     return jsonify(response._asdict())
+
+
+@web.route("/generate/paasbeta_application", methods=["POST"])
+def generate_paasbeta_application():
+    data = request.get_json(force=True)
+    required_fields = ("application_name", "config_url", "image")
+    errors = ["Missing key {!r} in input".format(key) for key in required_fields if key not in data]
+    if errors:
+        abort(UnprocessableEntity.code, errors)
+    generator = Generator(get_http_client())
+    paasbeta_application = generator.generate_paasbeta_application(
+        data["namespace"], Release(data["image"], data["config_url"], data["application_name"])
+    )
+    return jsonify(paasbeta_application), 201
 
 
 def get_http_client():

@@ -6,6 +6,7 @@ import pytest
 
 from fiaas_mast.app import create_app
 from fiaas_mast.deployer import Deployer
+from fiaas_mast.generator import Generator
 from fiaas_mast.models import Release, Status
 
 DEFAULT_NAMESPACE = "default-namespace"
@@ -14,7 +15,8 @@ VALID_DEPLOY_DATA = dumps({
     "image": "test_image",
     "config_url": "http://example.com",
     "application_name": "example",
-    "namespace": DEFAULT_NAMESPACE})
+    "namespace": DEFAULT_NAMESPACE
+})
 
 INVALID_DEPLOY_DATA = dumps({"definitely_not_image": "test_image", "something_other_than_url": "http://example.com"})
 
@@ -77,6 +79,22 @@ def test_deploy(client, status):
 
         deploy.assert_called_with(DEFAULT_NAMESPACE, Release("test_image", "http://example.com", "example"))
         status.assert_called_with("some-namespace", "app-name", "deploy_id")
+
+
+def test_generate_paasbeta_application(client, status):
+    with mock.patch.object(Generator, 'generate_paasbeta_application', return_value=({
+        "foo": "bar"
+    })) as generate_paasbeta_application:
+        resp = client.post("/generate/paasbeta_application", data=VALID_DEPLOY_DATA, content_type="application/json")
+        assert resp.status_code == 201
+        generate_paasbeta_application.assert_called_with(
+            DEFAULT_NAMESPACE, Release("test_image", "http://example.com", "example")
+        )
+
+
+def test_generate_paasbeta_application_invalid_data(client, status):
+    resp = client.post("/generate/paasbeta_application", data=INVALID_DEPLOY_DATA, content_type="application/json")
+    assert resp.status_code == 422
 
 
 def test_status(client, status):
