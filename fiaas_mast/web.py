@@ -52,7 +52,7 @@ def generate_paasbeta_application():
     paasbeta_application = generator.generate_paasbeta_application(
         data["namespace"], Release(data["image"], data["config_url"], data["application_name"])
     )
-    return jsonify(paasbeta_application), 201
+    return jsonify(paasbeta_application), 200
 
 
 def get_http_client():

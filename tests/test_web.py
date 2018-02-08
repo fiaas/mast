@@ -86,7 +86,7 @@ def test_generate_paasbeta_application(client, status):
         "foo": "bar"
     })) as generate_paasbeta_application:
         resp = client.post("/generate/paasbeta_application", data=VALID_DEPLOY_DATA, content_type="application/json")
-        assert resp.status_code == 201
+        assert resp.status_code == 200
         generate_paasbeta_application.assert_called_with(
             DEFAULT_NAMESPACE, Release("test_image", "http://example.com", "example")
         )
