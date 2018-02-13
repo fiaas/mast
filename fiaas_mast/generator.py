@@ -35,38 +35,41 @@ class Generator:
         annotations = {}
         for k, v, in release.spinnaker_tags.items():
             annotations["pipeline.schibsted.io/{}".format(k)] = v
-        return annotations
+        objects = ["deployment", "pod", "service", "ingress", "horizontal_pod_autoscaler"]
+        return {k: annotations for k in objects}
 
     def spec(self, release):
         spec = self.download_config(release.config_url)
-
-        spinnaker_annotations = self.spinnaker_annotations(release)
 
         merge_spec = {
             "image": release.image,
         }
 
-        if spinnaker_annotations:
-            merge_spec["annotations"] = {
-                "deployment": spinnaker_annotations,
-                "pod": spinnaker_annotations,
-                "service": spinnaker_annotations,
-                "ingress": spinnaker_annotations,
-                "horizontal_pod_autoscaler": spinnaker_annotations,
-            }
+        if release.spinnaker_tags:
+            merge_spec["annotations"] = self.spinnaker_annotations(release)
 
         dict_merge(spec, merge_spec)
 
         return spec
 
+    def metadata(self, release, spec, target_namespace):
+        deployment_id = self.create_deployment_id()
+        application_name = release.application_name
+        labels = {"fiaas/deployment_id": deployment_id, "app": application_name}
+
+        namespace = spec["namespace"] if (spec['version'] < 3) and ("namespace" in spec) else target_namespace
+
+        metadata = {"labels": labels, "name": application_name, "namespace": namespace}
+
+        if release.spinnaker_tags:
+            metadata["annotations"] = self.spinnaker_annotations(release)
+
+        return metadata
+
     def generate_paasbeta_application(self, target_namespace, release):
         """Generate PaasbetaApplication manifest for application"""
-        application_name = release.application_name
         spec = self.spec(release)
-        namespace = spec["namespace"] if (spec['version'] < 3) and ("namespace" in spec) else target_namespace
-        deployment_id = self.create_deployment_id()
-        labels = {"fiaas/deployment_id": deployment_id, "app": application_name}
-        metadata = {"labels": labels, "name": application_name, "namespace": namespace}
+        metadata = self.metadata(release, spec, target_namespace)
         manifest = {
             "apiVersion": "schibsted.io/v1beta",
             "kind": "PaasbetaApplication",
