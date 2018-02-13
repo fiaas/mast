@@ -10,6 +10,7 @@ from fiaas_mast.models import Release
 from fiaas_mast.paasbeta import PaasbetaApplicationSpec, PaasbetaApplication
 
 APPLICATION_NAME = "test_image"
+SPINNAKER_TAGS = {}
 DEPLOYMENT_ID = "deadbeef-abba-cafe-1337-baaaaaaaaaad"
 VALID_IMAGE_NAME = "test_image:a1b2c3d"
 VALID_DEPLOY_CONFIG_URL = "http://url_to_config.file"
@@ -112,7 +113,7 @@ class TestCreateDeploymentInK8s(object):
         deployer = Deployer(http_client, create_deployment_id=lambda: DEPLOYMENT_ID)
         returned_namespace, returned_name, returned_id = deployer.deploy(
             target_namespace=target_namespace,
-            release=Release(VALID_IMAGE_NAME, VALID_DEPLOY_CONFIG_URL, APPLICATION_NAME)
+            release=Release(VALID_IMAGE_NAME, VALID_DEPLOY_CONFIG_URL, APPLICATION_NAME, SPINNAKER_TAGS)
         )
 
         assert returned_namespace == expected_namespace

@@ -26,7 +26,11 @@ def deploy_handler():
     deployer = Deployer(get_http_client())
     namespace, application_name, deployment_id = deployer.deploy(
         data["namespace"],
-        Release(data["image"], data["config_url"], data["application_name"])
+        Release(
+            data["image"],
+            data["config_url"],
+            data["application_name"],
+            data["spinnaker_tags"] if "spinnaker_tags" in data else {})
     )
     response = status(namespace, application_name, deployment_id)
     return jsonify(response._asdict()), 201, {
@@ -50,7 +54,12 @@ def generate_paasbeta_application():
         abort(UnprocessableEntity.code, errors)
     generator = Generator(get_http_client())
     paasbeta_application = generator.generate_paasbeta_application(
-        data["namespace"], Release(data["image"], data["config_url"], data["application_name"])
+        data["namespace"],
+        Release(
+            data["image"],
+            data["config_url"],
+            data["application_name"],
+            data["spinnaker_tags"] if "spinnaker_tags" in data else {})
     )
     return jsonify(paasbeta_application), 200
 

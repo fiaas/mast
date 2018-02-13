@@ -30,6 +30,8 @@ DEFAULT_CONFIG = {
     'ARTIFACTORY_PWD': "default_password",
 }
 
+SPINNAKER_TAGS = {}
+
 
 @pytest.fixture(autouse=True)
 def status():
@@ -77,7 +79,8 @@ def test_deploy(client, status):
         body = loads(resp.data.decode(resp.charset))
         assert all(x in body.keys() for x in ("status", "info"))
 
-        deploy.assert_called_with(DEFAULT_NAMESPACE, Release("test_image", "http://example.com", "example"))
+        deploy.assert_called_with(DEFAULT_NAMESPACE,
+                                  Release("test_image", "http://example.com", "example", SPINNAKER_TAGS))
         status.assert_called_with("some-namespace", "app-name", "deploy_id")
 
 
@@ -88,7 +91,7 @@ def test_generate_paasbeta_application(client, status):
         resp = client.post("/generate/paasbeta_application", data=VALID_DEPLOY_DATA, content_type="application/json")
         assert resp.status_code == 200
         generate_paasbeta_application.assert_called_with(
-            DEFAULT_NAMESPACE, Release("test_image", "http://example.com", "example")
+            DEFAULT_NAMESPACE, Release("test_image", "http://example.com", "example", SPINNAKER_TAGS)
         )
 
 
