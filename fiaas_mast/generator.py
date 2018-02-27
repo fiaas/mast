@@ -34,7 +34,7 @@ class Generator:
     def spinnaker_annotations(self, release):
         annotations = {}
         for k, v, in release.spinnaker_tags.items():
-            annotations["pipeline.schibsted.io/{}".format(k)] = v
+            annotations["pipeline.schibsted.io/{}".format(k)] = str(v)
         objects = ["deployment", "pod", "service", "ingress", "horizontal_pod_autoscaler"]
         return {k: annotations for k in objects}
 

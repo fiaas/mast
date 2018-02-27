@@ -84,18 +84,23 @@ BASE_PAASBETA_APPLICATION = {
 ANNOTATIONS_WITH_SPINNAKER_TAGS = {
     "deployment": {
         "pipeline.schibsted.io/foo": "bar",
+        "pipeline.schibsted.io/numeric": "1337",
     },
     "pod": {
         "pipeline.schibsted.io/foo": "bar",
+        "pipeline.schibsted.io/numeric": "1337",
     },
     "service": {
         "pipeline.schibsted.io/foo": "bar",
+        "pipeline.schibsted.io/numeric": "1337",
     },
     "ingress": {
         "pipeline.schibsted.io/foo": "bar",
+        "pipeline.schibsted.io/numeric": "1337",
     },
     "horizontal_pod_autoscaler": {
         "pipeline.schibsted.io/foo": "bar",
+        "pipeline.schibsted.io/numeric": "1337",
     },
 }
 
@@ -137,7 +142,7 @@ class TestGeneratePaasbetaApplication(object):
         assert returned_paasbeta_application == expected_paasbeta_application
 
     def test_generator_adds_spinnaker_annotations(self):
-        spinnaker_tags = {'foo': 'bar'}
+        spinnaker_tags = {'foo': 'bar', 'numeric': 1337}
 
         http_client = _given_config_url_response_content_is(VALID_DEPLOY_CONFIG_V3)
         generator = Generator(http_client, create_deployment_id=lambda: DEPLOYMENT_ID)
