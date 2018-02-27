@@ -43,6 +43,7 @@ class Generator:
 
         merge_spec = {
             "image": release.image,
+            "application": release.application_name,
         }
 
         if release.spinnaker_tags:

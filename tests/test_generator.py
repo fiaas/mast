@@ -60,6 +60,7 @@ BASE_PAASBETA_APPLICATION = {
         "namespace": "target-namespace"
     },
     "spec": {
+        "application": "test_image",
         "admin_access": True,
         "config": {
             "volume": True
