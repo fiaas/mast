@@ -39,17 +39,18 @@ class Generator:
         return {k: annotations for k in objects}
 
     def spec(self, release):
-        spec = self.download_config(release.config_url)
-
-        merge_spec = {
-            "image": release.image,
-            "application": release.application_name,
-        }
+        config = self.download_config(release.config_url)
 
         if release.spinnaker_tags:
-            merge_spec["annotations"] = self.spinnaker_annotations(release)
+            if "annotations" not in config:
+                config["annotations"] = {}
+            dict_merge(config["annotations"], self.spinnaker_annotations(release))
 
-        dict_merge(spec, merge_spec)
+        spec = {
+            "image": release.image,
+            "application": release.application_name,
+            "config": config
+        }
 
         return spec
 
@@ -58,7 +59,8 @@ class Generator:
         application_name = release.application_name
         labels = {"fiaas/deployment_id": deployment_id, "app": application_name}
 
-        namespace = spec["namespace"] if (spec['version'] < 3) and ("namespace" in spec) else target_namespace
+        config = spec["config"]
+        namespace = config["namespace"] if (config['version'] < 3) and ("namespace" in config) else target_namespace
 
         metadata = {"labels": labels, "name": application_name, "namespace": namespace}
 

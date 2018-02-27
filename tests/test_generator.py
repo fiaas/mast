@@ -24,8 +24,6 @@ healthchecks:
   liveness:
     http:
       path: /healthz
-config:
-  volume: true
 """
 
 VALID_DEPLOY_CONFIG_V3_WITH_ANNOTATIONS = """
@@ -44,8 +42,6 @@ healthchecks:
   liveness:
     http:
       path: /healthz
-config:
-  volume: true
 """
 
 BASE_PAASBETA_APPLICATION = {
@@ -61,28 +57,27 @@ BASE_PAASBETA_APPLICATION = {
     },
     "spec": {
         "application": "test_image",
-        "admin_access": True,
-        "config": {
-            "volume": True
-        },
-        "healthchecks": {
-            "liveness": {
-                "http": {
-                    "path": "/healthz"
-                }
-            }
-        },
         "image": "test_image:a1b2c3d",
-        "ports": [{
-            "target_port": 5000
-        }],
-        "replicas": 1,
-        "resources": {
-            "requests": {
-                "memory": "128m"
-            }
+        "config": {
+            "admin_access": True,
+            "healthchecks": {
+                "liveness": {
+                    "http": {
+                        "path": "/healthz"
+                    }
+                }
+            },
+            "ports": [{
+                "target_port": 5000
+            }],
+            "replicas": 1,
+            "resources": {
+                "requests": {
+                    "memory": "128m"
+                }
+            },
+            "version": 3
         },
-        "version": 3
     }
 }
 
@@ -128,7 +123,7 @@ class TestGeneratePaasbetaApplication(object):
     @pytest.mark.parametrize(
         "config,target_namespace,expected_namespace", ((VALID_DEPLOY_CONFIG_V3, ANY_NAMESPACE, ANY_NAMESPACE),
                                                        (VALID_DEPLOY_CONFIG_V3, "custom-namespace",
-                                                        "custom-namespace"), )
+                                                        "custom-namespace"),)
     )
     def test_generator_creates_object_of_given_type(self, config, target_namespace, expected_namespace):
         http_client = _given_config_url_response_content_is(config)
@@ -151,7 +146,7 @@ class TestGeneratePaasbetaApplication(object):
             release=Release(VALID_IMAGE_NAME, VALID_DEPLOY_CONFIG_URL, APPLICATION_NAME, spinnaker_tags)
         )
         expected_paasbeta_annotations = ANNOTATIONS_WITH_SPINNAKER_TAGS
-        assert returned_paasbeta_application["spec"]["annotations"] == expected_paasbeta_annotations
+        assert returned_paasbeta_application["spec"]["config"]["annotations"] == expected_paasbeta_annotations
 
     def test_generator_merges_spinnaker_annotations(self):
         spinnaker_tags = {'foo': 'bar'}
@@ -163,7 +158,7 @@ class TestGeneratePaasbetaApplication(object):
             release=Release(VALID_IMAGE_NAME, VALID_DEPLOY_CONFIG_URL, APPLICATION_NAME, spinnaker_tags)
         )
         expected_paasbeta_annotations = ANNOTATIONS_WITH_MERGED_SPINNAKER_TAGS
-        assert returned_paasbeta_application["spec"]["annotations"] == expected_paasbeta_annotations
+        assert returned_paasbeta_application["spec"]["config"]["annotations"] == expected_paasbeta_annotations
 
     def test_generator_without_annotations(self):
         spinnaker_tags = {}
@@ -174,7 +169,7 @@ class TestGeneratePaasbetaApplication(object):
             target_namespace=ANY_NAMESPACE,
             release=Release(VALID_IMAGE_NAME, VALID_DEPLOY_CONFIG_URL, APPLICATION_NAME, spinnaker_tags)
         )
-        assert "annotations" not in returned_paasbeta_application["spec"]
+        assert "annotations" not in returned_paasbeta_application["spec"]["config"]
 
 
 class TestUUID:
