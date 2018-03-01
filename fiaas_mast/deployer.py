@@ -1,4 +1,3 @@
-import uuid
 import logging
 
 import yaml
@@ -8,13 +7,9 @@ from k8s.models.common import ObjectMeta
 
 from .paasbeta import PaasbetaApplication, PaasbetaApplicationSpec
 from .fiaas import FiaasApplication, FiaasApplicationSpec
+from .common import generate_random_uuid_string
 
 LOG = logging.getLogger(__name__)
-
-
-def generate_random_uuid_string():
-    id = uuid.uuid4()
-    return str(id)
 
 
 def select_models():
