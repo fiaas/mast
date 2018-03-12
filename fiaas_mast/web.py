@@ -7,6 +7,7 @@ from .deployer import Deployer
 from .generator import Generator
 from .models import Release
 from .status import status
+from .common import make_safe_name
 
 web = Blueprint("web", __name__)
 
@@ -29,6 +30,7 @@ def deploy_handler():
         Release(
             data["image"],
             data["config_url"],
+            make_safe_name(data["application_name"]),
             data["application_name"],
             data["spinnaker_tags"] if "spinnaker_tags" in data else {})
     )
@@ -58,6 +60,7 @@ def generate_paasbeta_application():
         Release(
             data["image"],
             data["config_url"],
+            make_safe_name(data["application_name"]),
             data["application_name"],
             data["spinnaker_tags"] if "spinnaker_tags" in data else {})
     )

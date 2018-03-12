@@ -3,8 +3,9 @@ from mock import MagicMock
 
 from fiaas_mast.generator import generate_random_uuid_string, Generator
 from fiaas_mast.models import Release
+from fiaas_mast.common import make_safe_name
 
-APPLICATION_NAME = "test_image"
+APPLICATION_NAME = "test-image"
 SPINNAKER_TAGS = {}
 DEPLOYMENT_ID = "deadbeef-abba-cafe-1337-baaaaaaaaaad"
 VALID_IMAGE_NAME = "test_image:a1b2c3d"
@@ -45,6 +46,7 @@ healthchecks:
 """
 
 BASE_PAASBETA_APPLICATION = {
+<<<<<<< HEAD
     "deployment_id": "deadbeef-abba-cafe-1337-baaaaaaaaaad",
     "manifest": {
         "apiVersion": "schibsted.io/v1beta",
@@ -138,7 +140,7 @@ class TestGeneratePaasbetaApplication(object):
         generator = Generator(http_client, create_deployment_id=lambda: DEPLOYMENT_ID)
         returned_paasbeta_application = generator.generate_paasbeta_application(
             target_namespace=target_namespace,
-            release=Release(VALID_IMAGE_NAME, VALID_DEPLOY_CONFIG_URL, APPLICATION_NAME, SPINNAKER_TAGS)
+            release=Release(VALID_IMAGE_NAME, VALID_DEPLOY_CONFIG_URL, APPLICATION_NAME, APPLICATION_NAME, SPINNAKER_TAGS)
         )
         expected_paasbeta_application = BASE_PAASBETA_APPLICATION
         expected_paasbeta_application["manifest"]["metadata"]["namespace"] = expected_namespace
@@ -151,7 +153,7 @@ class TestGeneratePaasbetaApplication(object):
         generator = Generator(http_client, create_deployment_id=lambda: DEPLOYMENT_ID)
         returned_paasbeta_application = generator.generate_paasbeta_application(
             target_namespace=ANY_NAMESPACE,
-            release=Release(VALID_IMAGE_NAME, VALID_DEPLOY_CONFIG_URL, APPLICATION_NAME, spinnaker_tags)
+            release=Release(VALID_IMAGE_NAME, VALID_DEPLOY_CONFIG_URL, APPLICATION_NAME, APPLICATION_NAME, spinnaker_tags)
         )
         expected_paasbeta_annotations = ANNOTATIONS_WITH_SPINNAKER_TAGS
         returned_annotations = returned_paasbeta_application["manifest"]["spec"]["config"]["annotations"]
@@ -164,7 +166,7 @@ class TestGeneratePaasbetaApplication(object):
         generator = Generator(http_client, create_deployment_id=lambda: DEPLOYMENT_ID)
         returned_paasbeta_application = generator.generate_paasbeta_application(
             target_namespace=ANY_NAMESPACE,
-            release=Release(VALID_IMAGE_NAME, VALID_DEPLOY_CONFIG_URL, APPLICATION_NAME, spinnaker_tags)
+            release=Release(VALID_IMAGE_NAME, VALID_DEPLOY_CONFIG_URL, APPLICATION_NAME, APPLICATION_NAME, spinnaker_tags)
         )
         expected_paasbeta_annotations = ANNOTATIONS_WITH_MERGED_SPINNAKER_TAGS
         returned_annotations = returned_paasbeta_application["manifest"]["spec"]["config"]["annotations"]
@@ -177,9 +179,24 @@ class TestGeneratePaasbetaApplication(object):
         generator = Generator(http_client, create_deployment_id=lambda: DEPLOYMENT_ID)
         returned_paasbeta_application = generator.generate_paasbeta_application(
             target_namespace=ANY_NAMESPACE,
-            release=Release(VALID_IMAGE_NAME, VALID_DEPLOY_CONFIG_URL, APPLICATION_NAME, spinnaker_tags)
+            release=Release(VALID_IMAGE_NAME, VALID_DEPLOY_CONFIG_URL, APPLICATION_NAME, APPLICATION_NAME, spinnaker_tags)
         )
         assert "annotations" not in returned_paasbeta_application["manifest"]["spec"]["config"]
+
+    def test_generator_with_app_name_bad_chars(self):
+        app_name_with_underscores = "test_app"
+        spinnaker_tags = {}
+
+        http_client = _given_config_url_response_content_is(VALID_DEPLOY_CONFIG_V3)
+        generator = Generator(http_client, create_deployment_id=lambda: DEPLOYMENT_ID)
+        returned_paasbeta_application = generator.generate_paasbeta_application(
+            target_namespace=ANY_NAMESPACE,
+            release=Release(VALID_IMAGE_NAME, VALID_DEPLOY_CONFIG_URL, make_safe_name(app_name_with_underscores), app_name_with_underscores, spinnaker_tags)
+        )
+        assert returned_paasbeta_application["spec"]["application"] == make_safe_name(app_name_with_underscores)
+        assert returned_paasbeta_application["metadata"]["name"] == make_safe_name(app_name_with_underscores)
+        assert returned_paasbeta_application["metadata"]["labels"]["app"] == make_safe_name(app_name_with_underscores)
+        assert returned_paasbeta_application["spec"]["config"]["annotations"]["mast"]["originalApplicationName"] == app_name_with_underscores
 
 
 class TestUUID:

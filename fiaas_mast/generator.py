@@ -2,7 +2,6 @@ import yaml
 
 from .common import dict_merge, generate_random_uuid_string
 
-
 class Generator:
     def __init__(self, http_client, create_deployment_id=generate_random_uuid_string):
         self.http_client = http_client
@@ -22,6 +21,14 @@ class Generator:
             if "annotations" not in config:
                 config["annotations"] = {}
             dict_merge(config["annotations"], self.spinnaker_annotations(release))
+
+        if release.application_name != release.original_application_name:
+            if "annotations" not in config:
+                config["annotations"] = {}
+
+            config['annotations']['mast'] = {
+                'originalApplicationName': release.original_application_name
+            }
 
         spec = {
             "image": release.image,

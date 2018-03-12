@@ -22,3 +22,9 @@ def dict_merge(dct, merge_dct):
 def generate_random_uuid_string():
     id = uuid.uuid4()
     return str(id)
+
+
+def make_safe_name(name):
+    safe_name = name.replace('_', '-')
+    return safe_name
+
