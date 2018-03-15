@@ -2,6 +2,7 @@ import yaml
 
 from .common import dict_merge, generate_random_uuid_string
 
+
 class Generator:
     def __init__(self, http_client, create_deployment_id=generate_random_uuid_string):
         self.http_client = http_client

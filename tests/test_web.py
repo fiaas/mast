@@ -80,7 +80,7 @@ def test_deploy(client, status):
         assert all(x in body.keys() for x in ("status", "info"))
 
         deploy.assert_called_with(DEFAULT_NAMESPACE,
-                                  Release("test_image", "http://example.com", "example", SPINNAKER_TAGS))
+                                  Release("test_image", "http://example.com", "example", "example", SPINNAKER_TAGS))
         status.assert_called_with("some-namespace", "app-name", "deploy_id")
 
 
@@ -91,7 +91,7 @@ def test_generate_paasbeta_application(client, status):
         resp = client.post("/generate/paasbeta_application", data=VALID_DEPLOY_DATA, content_type="application/json")
         assert resp.status_code == 200
         generate_paasbeta_application.assert_called_with(
-            DEFAULT_NAMESPACE, Release("test_image", "http://example.com", "example", SPINNAKER_TAGS)
+            DEFAULT_NAMESPACE, Release("test_image", "http://example.com", "example", "example", SPINNAKER_TAGS)
         )
 
 

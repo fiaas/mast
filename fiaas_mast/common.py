@@ -27,4 +27,3 @@ def generate_random_uuid_string():
 def make_safe_name(name):
     safe_name = name.replace('_', '-')
     return safe_name
-

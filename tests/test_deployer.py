@@ -113,7 +113,13 @@ class TestCreateDeploymentInK8s(object):
         deployer = Deployer(http_client, create_deployment_id=lambda: DEPLOYMENT_ID)
         returned_namespace, returned_name, returned_id = deployer.deploy(
             target_namespace=target_namespace,
-            release=Release(VALID_IMAGE_NAME, VALID_DEPLOY_CONFIG_URL, APPLICATION_NAME, SPINNAKER_TAGS)
+            release=Release(
+                VALID_IMAGE_NAME,
+                VALID_DEPLOY_CONFIG_URL,
+                APPLICATION_NAME,
+                APPLICATION_NAME,
+                SPINNAKER_TAGS
+            )
         )
 
         assert returned_namespace == expected_namespace
