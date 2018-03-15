@@ -46,21 +46,20 @@ healthchecks:
 """
 
 BASE_PAASBETA_APPLICATION = {
-<<<<<<< HEAD
     "deployment_id": "deadbeef-abba-cafe-1337-baaaaaaaaaad",
     "manifest": {
         "apiVersion": "schibsted.io/v1beta",
         "kind": "PaasbetaApplication",
         "metadata": {
             "labels": {
-                "app": "test_image",
+                "app": "test-image",
                 "fiaas/deployment_id": "deadbeef-abba-cafe-1337-baaaaaaaaaad"
             },
-            "name": "test_image",
+            "name": "test-image",
             "namespace": "target-namespace"
         },
         "spec": {
-            "application": "test_image",
+            "application": "test-image",
             "image": "test_image:a1b2c3d",
             "config": {
                 "admin_access": True,
@@ -225,10 +224,11 @@ class TestGeneratePaasbetaApplication(object):
                 spinnaker_tags,
             )
         )
-        assert returned_paasbeta_application["spec"]["application"] == make_safe_name(app_name_with_underscores)
-        assert returned_paasbeta_application["metadata"]["name"] == make_safe_name(app_name_with_underscores)
-        assert returned_paasbeta_application["metadata"]["labels"]["app"] == make_safe_name(app_name_with_underscores)
-        assert returned_paasbeta_application["spec"]["config"]["annotations"]["mast"]["originalApplicationName"] == \
+        returned_manifest = returned_paasbeta_application["manifest"]
+        assert returned_manifest["spec"]["application"] == make_safe_name(app_name_with_underscores)
+        assert returned_manifest["metadata"]["name"] == make_safe_name(app_name_with_underscores)
+        assert returned_manifest["metadata"]["labels"]["app"] == make_safe_name(app_name_with_underscores)
+        assert returned_manifest["spec"]["config"]["annotations"]["mast"]["originalApplicationName"] == \
             app_name_with_underscores
 
 
