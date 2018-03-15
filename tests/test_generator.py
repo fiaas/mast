@@ -45,39 +45,42 @@ healthchecks:
 """
 
 BASE_PAASBETA_APPLICATION = {
-    "apiVersion": "schibsted.io/v1beta",
-    "kind": "PaasbetaApplication",
-    "metadata": {
-        "labels": {
-            "app": "test_image",
-            "fiaas/deployment_id": "deadbeef-abba-cafe-1337-baaaaaaaaaad"
+    "deployment_id": "deadbeef-abba-cafe-1337-baaaaaaaaaad",
+    "manifest": {
+        "apiVersion": "schibsted.io/v1beta",
+        "kind": "PaasbetaApplication",
+        "metadata": {
+            "labels": {
+                "app": "test_image",
+                "fiaas/deployment_id": "deadbeef-abba-cafe-1337-baaaaaaaaaad"
+            },
+            "name": "test_image",
+            "namespace": "target-namespace"
         },
-        "name": "test_image",
-        "namespace": "target-namespace"
-    },
-    "spec": {
-        "application": "test_image",
-        "image": "test_image:a1b2c3d",
-        "config": {
-            "admin_access": True,
-            "healthchecks": {
-                "liveness": {
-                    "http": {
-                        "path": "/healthz"
+        "spec": {
+            "application": "test_image",
+            "image": "test_image:a1b2c3d",
+            "config": {
+                "admin_access": True,
+                "healthchecks": {
+                    "liveness": {
+                        "http": {
+                            "path": "/healthz"
+                        }
                     }
-                }
+                },
+                "ports": [{
+                    "target_port": 5000
+                }],
+                "replicas": 1,
+                "resources": {
+                    "requests": {
+                        "memory": "128m"
+                    }
+                },
+                "version": 3
             },
-            "ports": [{
-                "target_port": 5000
-            }],
-            "replicas": 1,
-            "resources": {
-                "requests": {
-                    "memory": "128m"
-                }
-            },
-            "version": 3
-        },
+        }
     }
 }
 
@@ -138,7 +141,7 @@ class TestGeneratePaasbetaApplication(object):
             release=Release(VALID_IMAGE_NAME, VALID_DEPLOY_CONFIG_URL, APPLICATION_NAME, SPINNAKER_TAGS)
         )
         expected_paasbeta_application = BASE_PAASBETA_APPLICATION
-        expected_paasbeta_application["metadata"]["namespace"] = expected_namespace
+        expected_paasbeta_application["manifest"]["metadata"]["namespace"] = expected_namespace
         assert returned_paasbeta_application == expected_paasbeta_application
 
     def test_generator_adds_spinnaker_annotations(self):
@@ -151,7 +154,8 @@ class TestGeneratePaasbetaApplication(object):
             release=Release(VALID_IMAGE_NAME, VALID_DEPLOY_CONFIG_URL, APPLICATION_NAME, spinnaker_tags)
         )
         expected_paasbeta_annotations = ANNOTATIONS_WITH_SPINNAKER_TAGS
-        assert returned_paasbeta_application["spec"]["config"]["annotations"] == expected_paasbeta_annotations
+        returned_annotations = returned_paasbeta_application["manifest"]["spec"]["config"]["annotations"]
+        assert returned_annotations == expected_paasbeta_annotations
 
     def test_generator_merges_spinnaker_annotations(self):
         spinnaker_tags = {'foo': 'bar'}
@@ -163,7 +167,8 @@ class TestGeneratePaasbetaApplication(object):
             release=Release(VALID_IMAGE_NAME, VALID_DEPLOY_CONFIG_URL, APPLICATION_NAME, spinnaker_tags)
         )
         expected_paasbeta_annotations = ANNOTATIONS_WITH_MERGED_SPINNAKER_TAGS
-        assert returned_paasbeta_application["spec"]["config"]["annotations"] == expected_paasbeta_annotations
+        returned_annotations = returned_paasbeta_application["manifest"]["spec"]["config"]["annotations"]
+        assert returned_annotations == expected_paasbeta_annotations
 
     def test_generator_without_annotations(self):
         spinnaker_tags = {}
@@ -174,7 +179,7 @@ class TestGeneratePaasbetaApplication(object):
             target_namespace=ANY_NAMESPACE,
             release=Release(VALID_IMAGE_NAME, VALID_DEPLOY_CONFIG_URL, APPLICATION_NAME, spinnaker_tags)
         )
-        assert "annotations" not in returned_paasbeta_application["spec"]["config"]
+        assert "annotations" not in returned_paasbeta_application["manifest"]["spec"]["config"]
 
 
 class TestUUID:

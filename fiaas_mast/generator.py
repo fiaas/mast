@@ -31,8 +31,7 @@ class Generator:
 
         return spec
 
-    def metadata(self, release, spec, target_namespace):
-        deployment_id = self.create_deployment_id()
+    def metadata(self, release, spec, target_namespace, deployment_id):
         application_name = release.application_name
         labels = {"fiaas/deployment_id": deployment_id, "app": application_name}
 
@@ -49,14 +48,19 @@ class Generator:
     def generate_paasbeta_application(self, target_namespace, release):
         """Generate PaasbetaApplication manifest for application"""
         spec = self.spec(release)
-        metadata = self.metadata(release, spec, target_namespace)
+        deployment_id = self.create_deployment_id()
+        metadata = self.metadata(release, spec, target_namespace, deployment_id)
         manifest = {
             "apiVersion": "schibsted.io/v1beta",
             "kind": "PaasbetaApplication",
             "metadata": metadata,
             "spec": spec
         }
-        return manifest
+        body = {
+            "manifest": manifest,
+            "deployment_id": deployment_id
+        }
+        return body
 
     def download_config(self, config_url):
         resp = self.http_client.get(config_url)
