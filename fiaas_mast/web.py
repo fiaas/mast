@@ -55,7 +55,7 @@ def generate_paasbeta_application():
     if errors:
         abort(UnprocessableEntity.code, errors)
     generator = Generator(get_http_client())
-    paasbeta_application = generator.generate_paasbeta_application(
+    deployment_id, paasbeta_application = generator.generate_paasbeta_application(
         data["namespace"],
         Release(
             data["image"],
@@ -64,7 +64,17 @@ def generate_paasbeta_application():
             data["application_name"],
             data["spinnaker_tags"] if "spinnaker_tags" in data else {})
     )
-    return jsonify(paasbeta_application), 200
+    return_body = {
+            "manifest": paasbeta_application,
+            "deployment_id": deployment_id,
+            "status_url": url_for("web.status_handler",
+                                  _external=True,
+                                  _scheme="https",
+                                  namespace=data["namespace"],
+                                  application=make_safe_name(data["application_name"]),
+                                  deployment_id=deployment_id)
+        }
+    return jsonify(return_body), 200
 
 
 def get_http_client():

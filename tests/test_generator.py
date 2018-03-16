@@ -46,42 +46,39 @@ healthchecks:
 """
 
 BASE_PAASBETA_APPLICATION = {
-    "deployment_id": "deadbeef-abba-cafe-1337-baaaaaaaaaad",
-    "manifest": {
-        "apiVersion": "schibsted.io/v1beta",
-        "kind": "PaasbetaApplication",
-        "metadata": {
-            "labels": {
-                "app": "test-image",
-                "fiaas/deployment_id": "deadbeef-abba-cafe-1337-baaaaaaaaaad"
-            },
-            "name": "test-image",
-            "namespace": "target-namespace"
+    "apiVersion": "schibsted.io/v1beta",
+    "kind": "PaasbetaApplication",
+    "metadata": {
+        "labels": {
+            "app": "test-image",
+            "fiaas/deployment_id": "deadbeef-abba-cafe-1337-baaaaaaaaaad"
         },
-        "spec": {
-            "application": "test-image",
-            "image": "test_image:a1b2c3d",
-            "config": {
-                "admin_access": True,
-                "healthchecks": {
-                    "liveness": {
-                        "http": {
-                            "path": "/healthz"
-                        }
+        "name": "test-image",
+        "namespace": "target-namespace"
+    },
+    "spec": {
+        "application": "test-image",
+        "image": "test_image:a1b2c3d",
+        "config": {
+            "admin_access": True,
+            "healthchecks": {
+                "liveness": {
+                    "http": {
+                        "path": "/healthz"
                     }
-                },
-                "ports": [{
-                    "target_port": 5000
-                }],
-                "replicas": 1,
-                "resources": {
-                    "requests": {
-                        "memory": "128m"
-                    }
-                },
-                "version": 3
+                }
             },
-        }
+            "ports": [{
+                "target_port": 5000
+            }],
+            "replicas": 1,
+            "resources": {
+                "requests": {
+                    "memory": "128m"
+                }
+            },
+            "version": 3
+        },
     }
 }
 
@@ -139,7 +136,7 @@ class TestGeneratePaasbetaApplication(object):
 
         http_client = _given_config_url_response_content_is(config)
         generator = Generator(http_client, create_deployment_id=lambda: DEPLOYMENT_ID)
-        returned_paasbeta_application = generator.generate_paasbeta_application(
+        deployment_id, returned_paasbeta_application = generator.generate_paasbeta_application(
             target_namespace=target_namespace,
             release=Release(
                 VALID_IMAGE_NAME,
@@ -150,7 +147,7 @@ class TestGeneratePaasbetaApplication(object):
             )
         )
         expected_paasbeta_application = BASE_PAASBETA_APPLICATION
-        expected_paasbeta_application["manifest"]["metadata"]["namespace"] = expected_namespace
+        expected_paasbeta_application["metadata"]["namespace"] = expected_namespace
         assert returned_paasbeta_application == expected_paasbeta_application
 
     def test_generator_adds_spinnaker_annotations(self):
@@ -158,7 +155,7 @@ class TestGeneratePaasbetaApplication(object):
 
         http_client = _given_config_url_response_content_is(VALID_DEPLOY_CONFIG_V3)
         generator = Generator(http_client, create_deployment_id=lambda: DEPLOYMENT_ID)
-        returned_paasbeta_application = generator.generate_paasbeta_application(
+        deployment_id, returned_paasbeta_application = generator.generate_paasbeta_application(
             target_namespace=ANY_NAMESPACE,
             release=Release(
                 VALID_IMAGE_NAME,
@@ -169,7 +166,7 @@ class TestGeneratePaasbetaApplication(object):
             )
         )
         expected_paasbeta_annotations = ANNOTATIONS_WITH_SPINNAKER_TAGS
-        returned_annotations = returned_paasbeta_application["manifest"]["spec"]["config"]["annotations"]
+        returned_annotations = returned_paasbeta_application["spec"]["config"]["annotations"]
         assert returned_annotations == expected_paasbeta_annotations
 
     def test_generator_merges_spinnaker_annotations(self):
@@ -177,7 +174,7 @@ class TestGeneratePaasbetaApplication(object):
 
         http_client = _given_config_url_response_content_is(VALID_DEPLOY_CONFIG_V3_WITH_ANNOTATIONS)
         generator = Generator(http_client, create_deployment_id=lambda: DEPLOYMENT_ID)
-        returned_paasbeta_application = generator.generate_paasbeta_application(
+        deployment_id, returned_paasbeta_application = generator.generate_paasbeta_application(
             target_namespace=ANY_NAMESPACE,
             release=Release(
                 VALID_IMAGE_NAME,
@@ -188,7 +185,7 @@ class TestGeneratePaasbetaApplication(object):
             )
         )
         expected_paasbeta_annotations = ANNOTATIONS_WITH_MERGED_SPINNAKER_TAGS
-        returned_annotations = returned_paasbeta_application["manifest"]["spec"]["config"]["annotations"]
+        returned_annotations = returned_paasbeta_application["spec"]["config"]["annotations"]
         assert returned_annotations == expected_paasbeta_annotations
 
     def test_generator_without_annotations(self):
@@ -196,7 +193,7 @@ class TestGeneratePaasbetaApplication(object):
 
         http_client = _given_config_url_response_content_is(VALID_DEPLOY_CONFIG_V3)
         generator = Generator(http_client, create_deployment_id=lambda: DEPLOYMENT_ID)
-        returned_paasbeta_application = generator.generate_paasbeta_application(
+        deployment_id, returned_paasbeta_application = generator.generate_paasbeta_application(
             target_namespace=ANY_NAMESPACE,
             release=Release(
                 VALID_IMAGE_NAME,
@@ -206,7 +203,7 @@ class TestGeneratePaasbetaApplication(object):
                 spinnaker_tags,
             )
         )
-        assert "annotations" not in returned_paasbeta_application["manifest"]["spec"]["config"]
+        assert "annotations" not in returned_paasbeta_application["spec"]["config"]
 
     def test_generator_with_app_name_bad_chars(self):
         app_name_with_underscores = "test_app"
@@ -214,7 +211,7 @@ class TestGeneratePaasbetaApplication(object):
 
         http_client = _given_config_url_response_content_is(VALID_DEPLOY_CONFIG_V3)
         generator = Generator(http_client, create_deployment_id=lambda: DEPLOYMENT_ID)
-        returned_paasbeta_application = generator.generate_paasbeta_application(
+        deployment_id, returned_paasbeta_application = generator.generate_paasbeta_application(
             target_namespace=ANY_NAMESPACE,
             release=Release(
                 VALID_IMAGE_NAME,
@@ -224,11 +221,10 @@ class TestGeneratePaasbetaApplication(object):
                 spinnaker_tags,
             )
         )
-        returned_manifest = returned_paasbeta_application["manifest"]
-        assert returned_manifest["spec"]["application"] == make_safe_name(app_name_with_underscores)
-        assert returned_manifest["metadata"]["name"] == make_safe_name(app_name_with_underscores)
-        assert returned_manifest["metadata"]["labels"]["app"] == make_safe_name(app_name_with_underscores)
-        assert returned_manifest["spec"]["config"]["annotations"]["mast"]["originalApplicationName"] == \
+        assert returned_paasbeta_application["spec"]["application"] == make_safe_name(app_name_with_underscores)
+        assert returned_paasbeta_application["metadata"]["name"] == make_safe_name(app_name_with_underscores)
+        assert returned_paasbeta_application["metadata"]["labels"]["app"] == make_safe_name(app_name_with_underscores)
+        assert returned_paasbeta_application["spec"]["config"]["annotations"]["mast"]["originalApplicationName"] == \
             app_name_with_underscores
 
 

@@ -85,11 +85,13 @@ def test_deploy(client, status):
 
 
 def test_generate_paasbeta_application(client, status):
-    with mock.patch.object(Generator, 'generate_paasbeta_application', return_value=({
+    with mock.patch.object(Generator, 'generate_paasbeta_application', return_value=("deployment_id", {
         "foo": "bar"
     })) as generate_paasbeta_application:
         resp = client.post("/generate/paasbeta_application", data=VALID_DEPLOY_DATA, content_type="application/json")
         assert resp.status_code == 200
+        body = loads(resp.data.decode(resp.charset))
+        assert urlparse(body["status_url"]).path == "/status/default-namespace/example/deployment_id/"
         generate_paasbeta_application.assert_called_with(
             DEFAULT_NAMESPACE, Release("test_image", "http://example.com", "example", "example", SPINNAKER_TAGS)
         )

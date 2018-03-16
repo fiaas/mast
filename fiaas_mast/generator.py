@@ -64,11 +64,7 @@ class Generator:
             "metadata": metadata,
             "spec": spec
         }
-        body = {
-            "manifest": manifest,
-            "deployment_id": deployment_id
-        }
-        return body
+        return deployment_id, manifest
 
     def download_config(self, config_url):
         resp = self.http_client.get(config_url)
