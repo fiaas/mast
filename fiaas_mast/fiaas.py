@@ -28,12 +28,25 @@ class FiaasApplication(Model):
 
 
 class FiaasStatus(Model):
+    """Deprecated. This model will be removed as soon as migration to ApplicationStatus is complete"""
     class Meta:
         url_template = "/apis/fiaas.schibsted.io/v1/namespaces/{namespace}/statuses/{name}"
 
     # Workaround for https://github.com/kubernetes/kubernetes/issues/44182
     apiVersion = Field(six.text_type, "fiaas.schibsted.io/v1")
     kind = Field(six.text_type, "Status")
+
+    metadata = Field(ObjectMeta)
+    result = Field(six.text_type)
+
+
+class FiaasApplicationStatus(Model):
+    class Meta:
+        url_template = "/apis/fiaas.schibsted.io/v1/namespaces/{namespace}/application-statuses/{name}"
+
+    # Workaround for https://github.com/kubernetes/kubernetes/issues/44182
+    apiVersion = Field(six.text_type, "fiaas.schibsted.io/v1")
+    kind = Field(six.text_type, "ApplicationStatus")
 
     metadata = Field(ObjectMeta)
     result = Field(six.text_type)

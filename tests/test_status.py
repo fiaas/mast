@@ -12,7 +12,6 @@ from k8s.client import NotFound
 NAMESPACE = "somespace"
 APPLICATION_NAME = "some_app"
 DEPLOYMENT_ID = "some_id"
-RESPONSE_FILE = os.path.join(os.path.dirname(__file__), "statuses.yml")
 
 
 @pytest.fixture(autouse=True)
@@ -21,7 +20,7 @@ def get():
         yield m
 
 
-@pytest.fixture(params=("paasbeta", "fiaas"))
+@pytest.fixture(params=("paasbetastatuses", "statuses", "application-statuses"))
 def status_type(request):
     return request.param
 
@@ -46,7 +45,7 @@ def test_empty_response(get, status_type):
 
 
 def _setup_response(modifier, get, status_type):
-    response_file = os.path.join(os.path.dirname(__file__), status_type + "_status.yml")
+    response_file = os.path.join(os.path.dirname(__file__), status_type + ".yml")
     with open(response_file) as fobj:
         response_data = yaml.safe_load(fobj)
         modifier(response_data)
@@ -54,7 +53,7 @@ def _setup_response(modifier, get, status_type):
         response.json.return_value = response_data
 
         def _get(url, **kwargs):
-            if status_type in url:
+            if url.endswith("{}/".format(status_type)):
                 return response
             else:
                 raise NotFound()

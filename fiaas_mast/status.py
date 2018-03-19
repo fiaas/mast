@@ -2,7 +2,7 @@ import logging
 
 from k8s.client import NotFound
 
-from .fiaas import FiaasStatus
+from .fiaas import FiaasStatus, FiaasApplicationStatus
 from .models import Status
 from .paasbeta import PaasbetaStatus
 
@@ -11,7 +11,7 @@ LOGGER = logging.getLogger(__name__)
 
 def status(namespace, application, deployment_id):
     """Get status of a deployment"""
-    for model in (PaasbetaStatus, FiaasStatus):
+    for model in (PaasbetaStatus, FiaasStatus, FiaasApplicationStatus):
         try:
             search_result = model.find(application, namespace, {"fiaas/deployment_id": deployment_id})
             if len(search_result) > 1:
