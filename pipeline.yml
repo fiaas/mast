@@ -1,0 +1,103 @@
+schema: '1'
+id: fiaas-mast
+
+metadata:
+  name: Deploy fiaas-ais application
+  description: Deploy fiaas-mast to delivery-dev and delivery-pro
+  owner: platform-delivery@schibsted.com
+
+variables:
+- name: namespaceDev
+  description: Development namespace
+  type: string
+  defaultValue: delivery-dev
+
+- name: namespacePro
+  description: Production namespace
+  type: string
+  defaultValue: delivery-pro
+
+- name: schipProd02ApiserverHost
+  description: Apiserver hostname for the schip-prod02 cluster
+  type: string
+  defaultValue: "https://schip.cre-pro.schibsted.io"
+
+- name: schipBetaApiserverHost
+  description: Apiserver hostname for the schip-beta cluster
+  type: string
+  defaultValue: "https://beta-admin.cre-pro.schibsted.io"
+
+- name: schipProd02K8sVersion
+  description: Kubernetes version of the schip-prod02 cluster
+  type: string
+  defaultValue: "v1.6.13"
+
+- name: schipBetaK8sVersion
+  description: Kubernetes version of the schip-beta cluster
+  type: string
+  defaultValue: "v1.9.6"
+
+stages:
+- id: deployDeliveryDevProd02
+  type: partial.DeployWithHelmOnTravis
+  config:
+    namespace: "{{ namespaceDev }}"
+    apiserverHost: "{{ schipProd02ApiserverHost }}"
+    k8sVersion: "{{ schipProd02K8sVersion }}"
+
+- id: deployDeliveryDevBeta
+  type: partial.DeployWithHelmOnTravis
+  config:
+    namespace: "{{ namespaceDev }}"
+    apiserverHost: "{{ schipBetaApiserverHost }}"
+    k8sVersion: "{{ schipBetaK8sVersion }}"
+
+- id: manualJudgment
+  type: manualJudgment
+  dependsOn:
+    - deployDeliveryDevBeta
+    - deployDeliveryDevProd02
+
+- id: deployDeliveryProProd02
+  type: partial.DeployWithHelmOnTravis
+  config:
+    namespace: "{{ namespacePro }}"
+    apiserverHost: "{{ schipProd02ApiserverHost }}"
+    k8sVersion: "{{ schipProd02K8sVersion }}"
+
+  dependsOn:
+    - manualJudgment
+
+- id: deployDeliveryProBeta
+  type: partial.DeployWithHelmOnTravis
+  config:
+    namespace: "{{ namespacePro }}"
+    apiserverHost: "{{ schipBetaApiserverHost }}"
+    k8sVersion: "{{ schipBetaK8sVersion }}"
+  dependsOn:
+    - manualJudgment
+
+partials:
+- id: DeployWithHelmOnTravis
+  usage: Deploy using Helm with Travis
+  variables:
+  - name: namespace
+    description: The Kubernetes namespace to deploy to
+  - name: apiserverHost
+    description: The Kubernetes apiserver host to execute the deployment via
+  - name: k8sVersion
+    description: The Kubernetes version to deploy to (used to determine which kubectl version to use)
+  stages:
+  - id: deployHelm
+    type: travis
+    name: "Deploy to {{ namespace }}"
+    config:
+      job: "spt-infrastructure/fiaas-mast"
+      master: "travis-schibsted"
+      parameters:
+        HELM_DEPLOY: "true"
+        K8S_NAMESPACE: "{{ namespace }}"
+        K8S_HOST: "{{ apiserverHost }}"
+        K8S_VERSION: "{{ k8sVersion }}"
+      continuePipeline: false
+      failPipeline: true
