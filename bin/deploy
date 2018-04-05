@@ -3,7 +3,7 @@
 set -evuo pipefail
 
 helm upgrade --tiller-namespace="${K8S_NAMESPACE}" --install --namespace="${K8S_NAMESPACE}" "fiaas-mast" "./helm/fiaas-mast" \
-    --set image.tag="${TRAVIS_COMMIT:-"latest"}" \
+    --set image.tag="${IMAGE_TAG}" \
     --set secrets.token="${HEIMDALL_TOKEN}" \
     --set secrets.artifactoryUser="${ARTIFACTORY_USER}" \
     --set secrets.artifactoryPassword="${ARTIFACTORY_PWD}"

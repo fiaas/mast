@@ -99,5 +99,6 @@ partials:
         K8S_NAMESPACE: "{{ namespace }}"
         K8S_HOST: "{{ apiserverHost }}"
         K8S_VERSION: "{{ k8sVersion }}"
+        DEPLOY_IMAGE: "${trigger.buildInfo.artifacts.?[type == 'docker].?[name matches 'containers.schibsted.io/spt-infrastructure/fiaas-mast:.+'].![reference][0]}"
       continuePipeline: false
       failPipeline: true
