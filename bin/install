@@ -6,8 +6,8 @@ set -evuo pipefail
 
 install_kubectl() {
 	echo "Installing kubectl"
-	local url="https://storage.googleapis.com/kubernetes-release/release/v${K8S_VERSION}/bin/linux/amd64/kubectl"
-	local checksum_url="https://storage.googleapis.com/kubernetes-release/release/v${K8S_VERSION}/bin/linux/amd64/kubectl.sha1"
+	local url="https://storage.googleapis.com/kubernetes-release/release/${K8S_VERSION}/bin/linux/amd64/kubectl"
+	local checksum_url="https://storage.googleapis.com/kubernetes-release/release/${K8S_VERSION}/bin/linux/amd64/kubectl.sha1"
 	local install_dir="$(pwd)/kubectl/bin"
 
 	mkdir -p "$install_dir"

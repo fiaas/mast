@@ -5,22 +5,12 @@ cache: pip
 install:
   - bin/install
 script:
-  - bin/test && bin/build
-deploy:
-  provider: script
-  script: bin/docker_push && bin/deploy
-  skip_cleanup: true
-  on:
-    branch: master
-    condition: $TRAVIS_PULL_REQUEST = false
+  - bin/ci_entrypoint
 env:
   global:
     - DOCKER_REGISTRY="containers.schibsted.io"
     - DOCKER_IMAGE="${DOCKER_REGISTRY}/${TRAVIS_REPO_SLUG}"
     - HELM_VERSION="v2.5.0"
-    - K8S_VERSION="1.6.2"
-    - K8S_HOST="https://schip.cre-pro.schibsted.io"
-    - K8S_NAMESPACE="delivery-pro"
     - secure: "REMOVED"
 after_failure:
   - reports-publisher
@@ -31,4 +21,3 @@ after_success:
 notifications:
   webhooks:
     - https://devhose.spt-engprod-pro.schibsted.io/devhose/travis
-

@@ -1,0 +1,30 @@
+#!/usr/bin/env bash
+set -euo pipefail
+IFS=$'\n\t'
+
+cd "$(git rev-parse --show-toplevel)" || exit 1
+
+function build() {
+    bin/test && bin/build
+}
+
+function push_artifacts() {
+    bin/docker_push
+}
+
+function helm_deploy() {
+    bin/deploy
+}
+
+if [[ "$TRAVIS" != "true" ]]; then
+    exit 1
+fi
+
+if [[ "$HELM_DEPLOY" == "true" ]]; then
+    helm_deploy
+else
+    build
+    if [[ "$TRAVIS_BRANCH" == "master" ]] && [[ "$TRAVIS_PULL_REQUEST" == "false" ]]; then
+        push_artifacts
+    fi
+fi
