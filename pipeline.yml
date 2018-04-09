@@ -2,7 +2,7 @@ schema: '1'
 id: fiaas-mast
 
 metadata:
-  name: Deploy fiaas-ais application
+  name: Deploy fiaas-mast application
   description: Deploy fiaas-mast to delivery-dev and delivery-pro
   owner: platform-delivery@schibsted.com
 
