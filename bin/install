@@ -42,8 +42,10 @@ echo Uninstalling mock, pytest and py
 pip uninstall -y mock pytest py # Get rid of old versions, so that we get the ones we want
 
 sudo start-docker-daemon
-install_kubectl
-configure_kubectl
-install_helm
-helm init --tiller-namespace="${K8S_NAMESPACE}"
+if [[ "$HELM_DEPLOY" == 'true' ]]; then
+    install_kubectl
+    configure_kubectl
+    install_helm
+    helm init --tiller-namespace="${K8S_NAMESPACE}"
+fi
 pip install -r requirements.txt
