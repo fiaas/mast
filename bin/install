@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
 
+. /usr/local/share/bash/travis_dependencies.bash
+
 set -evuo pipefail
 
 HELM_DEPLOY="${HELM_DEPLOY:-false}" # default $HELM_DEPLOY to 'false' to avoid unset variable error
-
-. /usr/local/share/bash/travis_dependencies.bash
 
 install_kubectl() {
 	echo "Installing kubectl"
