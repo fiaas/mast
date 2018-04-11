@@ -56,8 +56,11 @@ spec:
           valueFrom:
             fieldRef:
               fieldPath: metadata.namespace
+
+{{- if not .Values.besteffortQoS }}
         resources:
 {{ toYaml .Values.resources | indent 10 }}
+{{- end }}
       - name: heimdall-challenge
         image: "containers.schibsted.io/spt-infrastructure/heimdall-challenge:{{ .Values.heimdallChallengeTag }}"
         imagePullPolicy: IfNotPresent
@@ -79,6 +82,7 @@ spec:
             secretKeyRef:
               name: {{.Release.Name}}-secret
               key: heimdall_token
+{{- if not .Values.besteffortQoS }}
         resources:
           limits:
             cpu: 50m
@@ -86,3 +90,4 @@ spec:
           requests:
             cpu: 50m
             memory: 32Mi
+{{- end }}

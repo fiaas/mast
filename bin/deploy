@@ -2,8 +2,21 @@
 
 set -evuo pipefail
 
-helm upgrade --tiller-namespace="${K8S_NAMESPACE}" --install --namespace="${K8S_NAMESPACE}" "fiaas-mast" "./helm/fiaas-mast" \
-    --set image.tag="${IMAGE_TAG}" \
-    --set secrets.token="${HEIMDALL_TOKEN}" \
-    --set secrets.artifactoryUser="${ARTIFACTORY_USER}" \
-    --set secrets.artifactoryPassword="${ARTIFACTORY_PWD}"
+ARGS=(
+"--tiller-namespace=${K8S_NAMESPACE}"
+'--install'
+"--namespace=${K8S_NAMESPACE}"
+'fiaas-mast'
+'./helm/fiaas-mast'
+'--set' "image.tag=${IMAGE_TAG}"
+'--set' "secrets.token=${HEIMDALL_TOKEN}"
+'--set' "secrets.artifactoryUser=${ARTIFACTORY_USER}"
+'--set' "secrets.artifactoryPassword=${ARTIFACTORY_PWD}"
+)
+
+if [[ $K8S_NAMESPACE =~ "delivery-dev" ]]; then
+    ARGS=("${ARGS[@]}" '--set besteffortQoS=true')
+fi
+
+
+helm upgrade "${ARGS[@]}"

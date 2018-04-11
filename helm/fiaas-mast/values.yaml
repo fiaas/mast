@@ -17,6 +17,7 @@ ingress:
   host: "fiaas-mast.ingress.cre-pro.schibsted.io"
   whitelistSourceRange: "52.30.77.67/32,52.17.229.60/32,52.30.18.198/32,52.208.55.195/32,52.48.200.41/32,52.209.202.216/32,52.210.95.229/32"
 
+besteffortQoS: false # if set to true, will force BestEffort QoS by not setting any resource limits or requests, even if these values are  specified
 resources:
   limits:
     cpu: 100m
@@ -24,4 +25,3 @@ resources:
   requests:
     cpu: 100m
     memory: 64Mi
-
