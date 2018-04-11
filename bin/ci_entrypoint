@@ -26,7 +26,5 @@ if [[ "$HELM_DEPLOY" == "true" ]]; then
     helm_deploy
 else
     build
-    if [[ "$TRAVIS_BRANCH" == "master" ]] && [[ "$TRAVIS_PULL_REQUEST" == "false" ]]; then
-        push_artifacts
-    fi
+    push_artifacts
 fi
