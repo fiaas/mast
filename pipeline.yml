@@ -49,6 +49,7 @@ stages:
     namespace: "{{ namespaceDev }}"
     apiserverHost: "{{ schipProd02ApiserverHost }}"
     k8sVersion: "{{ schipProd02K8sVersion }}"
+  dependsOn: []
 
 - id: deployDeliveryDevProd01
   type: partial.DeployWithHelmOnTravis
@@ -56,6 +57,7 @@ stages:
     namespace: "{{ namespaceDev }}"
     apiserverHost: "{{ schipProd01ApiserverHost }}"
     k8sVersion: "{{ schipProd01K8sVersion }}"
+  dependsOn: []
 
 - id: manualJudgment
   type: manualJudgment
