@@ -49,6 +49,7 @@ stages:
     namespace: "{{ namespaceDev }}"
     apiserverHost: "{{ schipProd02ApiserverHost }}"
     k8sVersion: "{{ schipProd02K8sVersion }}"
+    cluster: "schip-prod02"
   dependsOn: []
 
 - id: deployDeliveryDevProd01
@@ -57,6 +58,7 @@ stages:
     namespace: "{{ namespaceDev }}"
     apiserverHost: "{{ schipProd01ApiserverHost }}"
     k8sVersion: "{{ schipProd01K8sVersion }}"
+    cluster: "schip-prod01"
   dependsOn: []
 
 - id: manualJudgment
@@ -80,6 +82,7 @@ stages:
     namespace: "{{ namespacePro }}"
     apiserverHost: "{{ schipProd02ApiserverHost }}"
     k8sVersion: "{{ schipProd02K8sVersion }}"
+    cluster: "schip-prod02"
   dependsOn:
   - manualJudgment
 
@@ -89,6 +92,7 @@ stages:
     namespace: "{{ namespacePro }}"
     apiserverHost: "{{ schipProd01ApiserverHost }}"
     k8sVersion: "{{ schipProd01K8sVersion }}"
+    cluster: "schip-prod01"
   dependsOn:
   - manualJudgment
 
@@ -102,10 +106,12 @@ partials:
     description: The Kubernetes apiserver host to execute the deployment via
   - name: k8sVersion
     description: The Kubernetes version to deploy to (used to determine which kubectl version to use)
+  - name: cluster
+    description: Name of the Kubernetes cluster to deploy to. Only used to name the stage
   stages:
   - id: deployHelm
     type: travis
-    name: "Deploy to {{ namespace }}"
+    name: "Deploy to {{ namespace }} in {{ cluster }}"
     config:
       job: "spt-infrastructure/fiaas-mast"
       master: "travis-schibsted"
