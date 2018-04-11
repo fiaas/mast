@@ -3,7 +3,7 @@ id: fiaas-mast
 
 metadata:
   name: Deploy fiaas-mast application
-  description: Deploy fiaas-mast to delivery-dev and delivery-pro
+  description: Deploy fiaas-mast to delivery-dev and delivery-pro in schip-prod01 and schip-prod02
   owner: platform-delivery@schibsted.com
 
 variables:
@@ -22,18 +22,18 @@ variables:
   type: string
   defaultValue: "https://schip.cre-pro.schibsted.io"
 
-- name: schipBetaApiserverHost
-  description: Apiserver hostname for the schip-beta cluster
+- name: schipProd01ApiserverHost
+  description: Apiserver hostname for the schip-prod01 cluster
   type: string
-  defaultValue: "https://beta-admin.cre-pro.schibsted.io"
+  defaultValue: "https://api.prod01.eu-west-1.admin.cre-pro.schibsted.io"
 
 - name: schipProd02K8sVersion
   description: Kubernetes version of the schip-prod02 cluster
   type: string
   defaultValue: "v1.6.13"
 
-- name: schipBetaK8sVersion
-  description: Kubernetes version of the schip-beta cluster
+- name: schipProd01K8sVersion
+  description: Kubernetes version of the schip-prod01 cluster
   type: string
   defaultValue: "v1.9.6"
 
@@ -45,17 +45,17 @@ stages:
     apiserverHost: "{{ schipProd02ApiserverHost }}"
     k8sVersion: "{{ schipProd02K8sVersion }}"
 
-- id: deployDeliveryDevBeta
+- id: deployDeliveryDevProd01
   type: partial.DeployWithHelmOnTravis
   config:
     namespace: "{{ namespaceDev }}"
-    apiserverHost: "{{ schipBetaApiserverHost }}"
-    k8sVersion: "{{ schipBetaK8sVersion }}"
+    apiserverHost: "{{ schipProd01ApiserverHost }}"
+    k8sVersion: "{{ schipProd01K8sVersion }}"
 
 - id: manualJudgment
   type: manualJudgment
   dependsOn:
-    - deployDeliveryDevBeta
+    - deployDeliveryDevProd01
     - deployDeliveryDevProd02
 
 - id: deployDeliveryProProd02
@@ -68,12 +68,12 @@ stages:
   dependsOn:
     - manualJudgment
 
-- id: deployDeliveryProBeta
+- id: deployDeliveryProProd01
   type: partial.DeployWithHelmOnTravis
   config:
     namespace: "{{ namespacePro }}"
-    apiserverHost: "{{ schipBetaApiserverHost }}"
-    k8sVersion: "{{ schipBetaK8sVersion }}"
+    apiserverHost: "{{ schipProd01ApiserverHost }}"
+    k8sVersion: "{{ schipProd01K8sVersion }}"
   dependsOn:
     - manualJudgment
 
