@@ -113,7 +113,7 @@ partials:
     type: travis
     name: "Deploy to {{ namespace }} in {{ cluster }}"
     config:
-      job: "spt-infrastructure/fiaas-mast"
+      job: "spt-infrastructure/fiaas-mast/DOCD-1538-add-pipeline"
       master: "travis-schibsted"
       parameters:
         HELM_DEPLOY: "true"
