@@ -11,7 +11,7 @@ function build() {
 }
 
 function push_artifacts() {
-    bin/docker_push
+    bin/push_artifacts
 }
 
 function helm_deploy() {
