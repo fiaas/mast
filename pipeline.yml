@@ -62,15 +62,15 @@ stages:
   config:
     sendNotifications: "true"
     notifications:
-      - type: slack
-        address: "{{ notifySlackChannel }}"
-        when:
-          - manualJudgement
-          - manualJudgmentContinue
-          - manualJudgmentStop
+    - type: slack
+      address: "{{ notifySlackChannel }}"
+      when:
+      - manualJudgement
+      - manualJudgmentContinue
+      - manualJudgmentStop
   dependsOn:
-    - deployDeliveryDevProd01
-    - deployDeliveryDevProd02
+  - deployDeliveryDevProd01
+  - deployDeliveryDevProd02
 
 - id: deployDeliveryProProd02
   type: partial.DeployWithHelmOnTravis
@@ -78,9 +78,8 @@ stages:
     namespace: "{{ namespacePro }}"
     apiserverHost: "{{ schipProd02ApiserverHost }}"
     k8sVersion: "{{ schipProd02K8sVersion }}"
-
   dependsOn:
-    - manualJudgment
+  - manualJudgment
 
 - id: deployDeliveryProProd01
   type: partial.DeployWithHelmOnTravis
@@ -89,7 +88,7 @@ stages:
     apiserverHost: "{{ schipProd01ApiserverHost }}"
     k8sVersion: "{{ schipProd01K8sVersion }}"
   dependsOn:
-    - manualJudgment
+  - manualJudgment
 
 partials:
 - id: DeployWithHelmOnTravis
