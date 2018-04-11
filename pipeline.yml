@@ -7,6 +7,11 @@ metadata:
   owner: platform-delivery@schibsted.com
 
 variables:
+- name: notifySlackChannel
+  description: Slack channel to notify about manual judgement
+  type: string
+  defaultValue: paas-internal
+
 - name: namespaceDev
   description: Development namespace
   type: string
@@ -54,6 +59,15 @@ stages:
 
 - id: manualJudgment
   type: manualJudgment
+  config:
+    sendNotifications: "true"
+    notifications:
+      - type: slack
+        address: "{{ notifySlackChannel }}"
+        when:
+          - manualJudgement
+          - manualJudgmentContinue
+          - manualJudgmentStop
   dependsOn:
     - deployDeliveryDevProd01
     - deployDeliveryDevProd02
