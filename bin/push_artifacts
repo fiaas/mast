@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+. /usr/local/share/bash/travis_dependencies.bash
+
 set -evuo pipefail
 
 sudo docker login --username "${ARTIFACTORY_USER}" --password "${ARTIFACTORY_PWD}" "${DOCKER_REGISTRY}"
