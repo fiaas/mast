@@ -5,7 +5,7 @@ FIAAS Mast
 [![Badger](https://badger.spt-engprod-pro.schibsted.io/badge/travis/spt-infrastructure/fiaas-mast)](https://travis.schibsted.io/spt-infrastructure/fiaas-mast) [![Badger](https://badger.spt-engprod-pro.schibsted.io/badge/coverage/spt-infrastructure/fiaas-mast)](https://reports.spt-engprod-pro.schibsted.io/#/spt-infrastructure/fiaas-mast?branch=master&type=push&daterange&daterange) [![Badger](https://badger.spt-engprod-pro.schibsted.io/badge/issues/spt-infrastructure/fiaas-mast)](https://reports.spt-engprod-pro.schibsted.io/#/spt-infrastructure/fiaas-mast?branch=master&type=push&daterange&daterange) [![Badger](https://badger.spt-engprod-pro.schibsted.io/badge/engprod/spt-infrastructure/fiaas-mast)](https://github.schibsted.io/spt-engprod/badger)
 <!-- Badger end badges -->
 
-FIAAS Mast connects the Spinnaker to FIAAS.
+FIAAS Mast connects Spinnaker to FIAAS.
 
 Receives HTTP requests from Spinnaker for deployments, and creates or updates a FIAAS-app object
 in the containing Kubernetes cluster.
