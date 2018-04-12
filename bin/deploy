@@ -17,8 +17,8 @@ ARGS=(
 if [[ $K8S_NAMESPACE =~ "delivery-dev" ]]; then
     ARGS=(
         "${ARGS[@]}"
-        '--set besteffortQoS=true'
-        '--set ingress.host=fiaas-mast-dev.ingress.cre-pro.schibsted.io'
+        '--set' 'besteffortQoS=true'
+        '--set' 'ingress.host=fiaas-mast-dev.ingress.cre-pro.schibsted.io'
     )
 fi
 
