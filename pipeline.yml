@@ -120,6 +120,6 @@ partials:
         K8S_NAMESPACE: "{{ namespace }}"
         K8S_HOST: "{{ apiserverHost }}"
         K8S_VERSION: "{{ k8sVersion }}"
-        IMAGE_TAG: "${trigger.buildInfo.artifacts.^[type == 'docker' and version != 'latest'].reference}"
+        IMAGE_TAG: "${trigger.buildInfo.artifacts.^[type == 'docker' and version != 'latest'].version}"
       continuePipeline: false
       failPipeline: true
