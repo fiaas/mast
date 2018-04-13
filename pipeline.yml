@@ -69,7 +69,7 @@ stages:
     - type: slack
       address: "{{ notifySlackChannel }}"
       when:
-      - manualJudgement
+      - manualJudgment
       - manualJudgmentContinue
       - manualJudgmentStop
   dependsOn:
