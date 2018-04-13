@@ -25,3 +25,5 @@ resources:
   requests:
     cpu: 100m
     memory: 64Mi
+
+annotations: {} # can be used to set custom annotations on every resource
