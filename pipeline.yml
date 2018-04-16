@@ -50,6 +50,7 @@ stages:
     apiserverHost: "{{ schipProd02ApiserverHost }}"
     k8sVersion: "{{ schipProd02K8sVersion }}"
     cluster: "schip-prod02"
+    ingressHost: "fiaas-mast-dev.ingress.cre-pro.schibsted.io"
   dependsOn: []
 
 - id: deployDeliveryDevProd01
@@ -59,6 +60,7 @@ stages:
     apiserverHost: "{{ schipProd01ApiserverHost }}"
     k8sVersion: "{{ schipProd01K8sVersion }}"
     cluster: "schip-prod01"
+    ingressHost: "fiaas-mast-dev.ingress.prod01.cre-pro.schibsted.io"
   dependsOn: []
 
 - id: manualJudgment
@@ -83,6 +85,7 @@ stages:
     apiserverHost: "{{ schipProd02ApiserverHost }}"
     k8sVersion: "{{ schipProd02K8sVersion }}"
     cluster: "schip-prod02"
+    ingressHost: "fiaas-mast.ingress.cre-pro.schibsted.io"
   dependsOn:
   - manualJudgment
 
@@ -93,6 +96,7 @@ stages:
     apiserverHost: "{{ schipProd01ApiserverHost }}"
     k8sVersion: "{{ schipProd01K8sVersion }}"
     cluster: "schip-prod01"
+    ingressHost: "fiaas-mast.ingress.prod01.cre-pro.schibsted.io"
   dependsOn:
   - manualJudgment
 
@@ -108,6 +112,8 @@ partials:
     description: The Kubernetes version to deploy to (used to determine which kubectl version to use)
   - name: cluster
     description: Name of the Kubernetes cluster to deploy to. Only used to name the stage
+  - name: ingressHost
+    description: Hostname fiaas-mast should be available from
   stages:
   - id: deployHelm
     type: travis
@@ -121,5 +127,6 @@ partials:
         K8S_HOST: "{{ apiserverHost }}"
         K8S_VERSION: "{{ k8sVersion }}"
         IMAGE_TAG: "${trigger.buildInfo.artifacts.^[type == 'docker' and version != 'latest'].version}"
+        INGRESS_HOST: "{{ ingressHost }}"
       continuePipeline: false
       failPipeline: true
