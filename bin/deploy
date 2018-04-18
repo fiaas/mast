@@ -13,9 +13,9 @@ ARGS=(
 '--set' "secrets.artifactoryUser=${ARTIFACTORY_USER}"
 '--set' "secrets.artifactoryPassword=${ARTIFACTORY_PWD}"
 '--set' "ingress.host=${INGRESS_HOST}"
+'--set' "annotations.fiaas/log-aggregation=sumologic"
 # XXX: because of quoting and helm magic parsing of values containing '.', these values can not be cli args, but have to come from a file to actually work
 '--values' './moniker_values.yml'
-'--values' './logging_values.yml'
 )
 
 if [[ $K8S_NAMESPACE =~ "delivery-dev" ]]; then
