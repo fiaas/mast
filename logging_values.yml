@@ -1,2 +1,2 @@
 annotations:
-   "fiaas/log-aggregation": "'\"sumologic\"'"
+   "fiaas/log-aggregation": "sumologic"
