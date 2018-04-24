@@ -40,7 +40,12 @@ class Deployer:
         labels = {"fiaas/deployment_id": deployment_id, "app": application_name}
         metadata = ObjectMeta(name=application_name, namespace=namespace, labels=labels)
         spec = self.spec_model(application=application_name, image=release.image, config=config)
-        application = self.application_model.get_or_create(metadata=metadata, spec=spec)
+        try:
+            application = self.application_model.get(application_name, namespace)
+            application.metadata = metadata
+            application.spec = spec
+        except NotFound:
+            application = self.application_model(metadata=metadata, spec=spec)
         application.save()
 
         return namespace, application_name, deployment_id

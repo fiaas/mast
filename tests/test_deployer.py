@@ -85,6 +85,12 @@ class TestCreateDeploymentInK8s(object):
         return k8s_model
 
     @pytest.fixture
+    def get(self, k8s_model):
+        with patch('k8s.base.ApiMixIn.get') as m:
+            m.return_value = k8s_model
+            yield m
+
+    @pytest.fixture
     def get_or_create(self, k8s_model):
         with patch('k8s.base.ApiMixIn.get_or_create') as m:
             m.return_value = k8s_model
@@ -102,6 +108,7 @@ class TestCreateDeploymentInK8s(object):
             (VALID_DEPLOY_CONFIG_WITH_NAMESPACE_V3, "target-namespace", "target-namespace"),
     ))
     def test_deployer_creates_object_of_given_type(self,
+                                                   get,
                                                    get_or_create,
                                                    k8s_model,
                                                    object_types,
@@ -137,8 +144,9 @@ class TestCreateDeploymentInK8s(object):
             image=VALID_IMAGE_NAME,
             config=yaml.safe_load(config)
         )
-        get_or_create.assert_called_once_with(metadata=metadata, spec=spec)
-        assert isinstance(get_or_create.call_args_list[-1][-1]["spec"], spec_model)
+        get.assert_called_once_with(APPLICATION_NAME, expected_namespace)
+        assert metadata == k8s_model.metadata
+        assert spec == k8s_model.spec
         k8s_model.save.assert_called_once()
 
 
