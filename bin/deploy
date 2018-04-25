@@ -2,6 +2,24 @@
 
 set -evuo pipefail
 
+case "$INGRESS_HOST" in
+'fiaas-mast-dev.ingress.prod01.cre-pro.schibsted.io')
+    HEIMDALL_TOKEN=$HEIMDALL_TOKEN_PROD01_DEV
+    ;;
+'fiaas-mast.ingress.prod01.cre-pro.schibsted.io')
+    HEIMDALL_TOKEN=$HEIMDALL_TOKEN_PROD01
+    ;;
+'fiaas-mast-dev.ingress.cre-pro.schibsted.io')
+    HEIMDALL_TOKEN=$HEIMDALL_TOKEN_PROD02_DEV
+    ;;
+'fiaas-mast.ingress.cre-pro.schibsted.io')
+    HEIMDALL_TOKEN=$HEIMDALL_TOKEN_PROD02
+    ;;
+*)
+    echo "Heimdall token not found"; exit 1
+    ;;
+esac
+
 ARGS=(
 "--tiller-namespace=${K8S_NAMESPACE}"
 '--install'
