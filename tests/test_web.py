@@ -71,8 +71,8 @@ def test_deploy_bad_request_from_client(client):
 
 
 @pytest.mark.parametrize("config_url", (
-    "missing_schema", # should cause MissingSchema
-    "http://",        # should cause InvalidURL
+    "missing_schema",  # should cause MissingSchema
+    "http://",         # should cause InvalidURL
 ))
 def test_deploy_invalid_config_url(client, status, config_url):
     deploy_data = VALID_DEPLOY_DATA.copy()
@@ -118,8 +118,8 @@ def test_generate_paasbeta_application_invalid_data(client, status):
 
 
 @pytest.mark.parametrize("config_url", (
-    "missing_schema", # should cause MissingSchema
-    "http://",        # should cause InvalidURL
+    "missing_schema",  # should cause MissingSchema
+    "http://",         # should cause InvalidURL
 ))
 def test_generate_paasbeta_application_invalid_config_url(client, status, config_url):
     deploy_data = VALID_DEPLOY_DATA.copy()
