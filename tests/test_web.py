@@ -70,18 +70,13 @@ def test_deploy_bad_request_from_client(client):
         assert resp.status_code == 422
 
 
-def test_deploy_config_url_missing_schema(client, status):
+@pytest.mark.parametrize("config_url", (
+    "missing_schema", # should cause MissingSchema
+    "http://",        # should cause InvalidURL
+))
+def test_deploy_invalid_config_url(client, status, config_url):
     deploy_data = VALID_DEPLOY_DATA.copy()
-    deploy_data.update({"config_url": "missing_schema"})
-    resp = client.post("/deploy/", data=dumps(deploy_data), content_type="application/json")
-    assert resp.status_code == 422
-    response_json = loads(resp.get_data())
-    assert response_json == {"code": 422, "name": "Unprocessable Entity", "description": "Invalid config_url"}
-
-
-def test_deploy_config_url_missing_host(client, status):
-    deploy_data = VALID_DEPLOY_DATA.copy()
-    deploy_data.update({"config_url": "http://"})
+    deploy_data.update({"config_url": config_url})
     resp = client.post("/deploy/", data=dumps(deploy_data), content_type="application/json")
     assert resp.status_code == 422
     response_json = loads(resp.get_data())
@@ -122,18 +117,13 @@ def test_generate_paasbeta_application_invalid_data(client, status):
     assert resp.status_code == 422
 
 
-def test_generate_paasbeta_application_config_url_missing_schema(client, status):
+@pytest.mark.parametrize("config_url", (
+    "missing_schema", # should cause MissingSchema
+    "http://",        # should cause InvalidURL
+))
+def test_generate_paasbeta_application_invalid_config_url(client, status, config_url):
     deploy_data = VALID_DEPLOY_DATA.copy()
-    deploy_data.update({"config_url": "missing_schema"})
-    resp = client.post("/generate/paasbeta_application", data=dumps(deploy_data), content_type="application/json")
-    assert resp.status_code == 422
-    response_json = loads(resp.get_data())
-    assert response_json == {"code": 422, "name": "Unprocessable Entity", "description": "Invalid config_url"}
-
-
-def test_generate_paasbeta_application_config_url_missing_host(client, status):
-    deploy_data = VALID_DEPLOY_DATA.copy()
-    deploy_data.update({"config_url": "http://"})
+    deploy_data.update({"config_url": config_url})
     resp = client.post("/generate/paasbeta_application", data=dumps(deploy_data), content_type="application/json")
     assert resp.status_code == 422
     response_json = loads(resp.get_data())
