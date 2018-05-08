@@ -1,6 +1,8 @@
 import yaml
 
-from .common import dict_merge, generate_random_uuid_string
+from requests.exceptions import MissingSchema, InvalidURL
+
+from .common import dict_merge, generate_random_uuid_string, ClientError
 
 
 class Generator:
@@ -67,7 +69,10 @@ class Generator:
         return deployment_id, manifest
 
     def download_config(self, config_url):
-        resp = self.http_client.get(config_url)
+        try:
+            resp = self.http_client.get(config_url)
+        except (InvalidURL, MissingSchema) as e:
+            raise ClientError("Invalid config_url") from e
         resp.raise_for_status()
         app_config = yaml.safe_load(resp.text)
         return app_config

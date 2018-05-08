@@ -27,3 +27,10 @@ def generate_random_uuid_string():
 def make_safe_name(name):
     safe_name = name.replace('_', '-')
     return safe_name
+
+
+class ClientError(Exception):
+    def __init__(self, description, *args, **kwargs):
+        self.code = 422
+        self.name = "Unprocessable Entity"
+        self.description = description

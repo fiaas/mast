@@ -4,10 +4,11 @@ import yaml
 
 from k8s.client import NotFound
 from k8s.models.common import ObjectMeta
+from requests.exceptions import MissingSchema, InvalidURL
 
 from .paasbeta import PaasbetaApplication, PaasbetaApplicationSpec
 from .fiaas import FiaasApplication, FiaasApplicationSpec
-from .common import generate_random_uuid_string
+from .common import generate_random_uuid_string, ClientError
 
 LOG = logging.getLogger(__name__)
 
@@ -51,7 +52,10 @@ class Deployer:
         return namespace, application_name, deployment_id
 
     def download_config(self, config_url):
-        resp = self.http_client.get(config_url)
+        try:
+            resp = self.http_client.get(config_url)
+        except (InvalidURL, MissingSchema) as e:
+            raise ClientError("Invalid config_url") from e
         resp.raise_for_status()
         app_config = yaml.safe_load(resp.text)
         return app_config

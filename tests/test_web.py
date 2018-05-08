@@ -11,14 +11,14 @@ from fiaas_mast.models import Release, Status
 
 DEFAULT_NAMESPACE = "default-namespace"
 
-VALID_DEPLOY_DATA = dumps({
+VALID_DEPLOY_DATA = {
     "image": "test_image",
     "config_url": "http://example.com",
     "application_name": "example",
     "namespace": DEFAULT_NAMESPACE
-})
+}
 
-INVALID_DEPLOY_DATA = dumps({"definitely_not_image": "test_image", "something_other_than_url": "http://example.com"})
+INVALID_DEPLOY_DATA = {"definitely_not_image": "test_image", "something_other_than_url": "http://example.com"}
 
 DEFAULT_CONFIG = {
     'PORT': 5000,
@@ -55,24 +55,42 @@ def client():
             yield client
 
 
-def test_500_error(client):
+def test_deploy_500_error_on_unhandled_exception(client):
     with mock.patch.object(Deployer, 'deploy', side_effect=Exception):
-        resp = client.post("/deploy/", data=VALID_DEPLOY_DATA, content_type="application/json")
+        resp = client.post("/deploy/", data=dumps(VALID_DEPLOY_DATA), content_type="application/json")
         assert resp.status_code == 500
         body = loads(resp.data.decode(resp.charset))
         assert body["code"] == 500
         assert all(x in body.keys() for x in ("name", "description"))
 
 
-def test_bad_request_from_client(client):
+def test_deploy_bad_request_from_client(client):
     with mock.patch.object(Deployer, 'deploy', return_value=("name", "id")):
-        resp = client.post("/deploy/", data=INVALID_DEPLOY_DATA, content_type="application/json")
+        resp = client.post("/deploy/", data=dumps(INVALID_DEPLOY_DATA), content_type="application/json")
         assert resp.status_code == 422
+
+
+def test_deploy_config_url_missing_schema(client, status):
+    deploy_data = VALID_DEPLOY_DATA.copy()
+    deploy_data.update({"config_url": "missing_schema"})
+    resp = client.post("/deploy/", data=dumps(deploy_data), content_type="application/json")
+    assert resp.status_code == 422
+    response_json = loads(resp.get_data())
+    assert response_json == {"code": 422, "name": "Unprocessable Entity", "description": "Invalid config_url"}
+
+
+def test_deploy_config_url_missing_host(client, status):
+    deploy_data = VALID_DEPLOY_DATA.copy()
+    deploy_data.update({"config_url": "http://"})
+    resp = client.post("/deploy/", data=dumps(deploy_data), content_type="application/json")
+    assert resp.status_code == 422
+    response_json = loads(resp.get_data())
+    assert response_json == {"code": 422, "name": "Unprocessable Entity", "description": "Invalid config_url"}
 
 
 def test_deploy(client, status):
     with mock.patch.object(Deployer, 'deploy', return_value=("some-namespace", "app-name", "deploy_id")) as deploy:
-        resp = client.post("/deploy/", data=VALID_DEPLOY_DATA, content_type="application/json")
+        resp = client.post("/deploy/", data=dumps(VALID_DEPLOY_DATA), content_type="application/json")
         assert resp.status_code == 201
         assert urlparse(resp.location).path == "/status/some-namespace/app-name/deploy_id/"
 
@@ -88,7 +106,8 @@ def test_generate_paasbeta_application(client, status):
     with mock.patch.object(Generator, 'generate_paasbeta_application', return_value=("deployment_id", {
         "foo": "bar"
     })) as generate_paasbeta_application:
-        resp = client.post("/generate/paasbeta_application", data=VALID_DEPLOY_DATA, content_type="application/json")
+        resp = client.post("/generate/paasbeta_application", data=dumps(VALID_DEPLOY_DATA),
+                           content_type="application/json")
         assert resp.status_code == 200
         body = loads(resp.data.decode(resp.charset))
         assert urlparse(body["status_url"]).path == "/status/default-namespace/example/deployment_id/"
@@ -98,8 +117,27 @@ def test_generate_paasbeta_application(client, status):
 
 
 def test_generate_paasbeta_application_invalid_data(client, status):
-    resp = client.post("/generate/paasbeta_application", data=INVALID_DEPLOY_DATA, content_type="application/json")
+    resp = client.post("/generate/paasbeta_application", data=dumps(INVALID_DEPLOY_DATA),
+                       content_type="application/json")
     assert resp.status_code == 422
+
+
+def test_generate_paasbeta_application_config_url_missing_schema(client, status):
+    deploy_data = VALID_DEPLOY_DATA.copy()
+    deploy_data.update({"config_url": "missing_schema"})
+    resp = client.post("/generate/paasbeta_application", data=dumps(deploy_data), content_type="application/json")
+    assert resp.status_code == 422
+    response_json = loads(resp.get_data())
+    assert response_json == {"code": 422, "name": "Unprocessable Entity", "description": "Invalid config_url"}
+
+
+def test_generate_paasbeta_application_config_url_missing_host(client, status):
+    deploy_data = VALID_DEPLOY_DATA.copy()
+    deploy_data.update({"config_url": "http://"})
+    resp = client.post("/generate/paasbeta_application", data=dumps(deploy_data), content_type="application/json")
+    assert resp.status_code == 422
+    response_json = loads(resp.get_data())
+    assert response_json == {"code": 422, "name": "Unprocessable Entity", "description": "Invalid config_url"}
 
 
 def test_status(client, status):
