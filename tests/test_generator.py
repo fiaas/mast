@@ -105,6 +105,29 @@ ANNOTATIONS_WITH_SPINNAKER_TAGS = {
     },
 }
 
+ANNOTATIONS_WITH_RAW_TAGS = {
+    "deployment": {
+        "my_domain.io/some_annotation": "and_some_value",
+        "my_domain_aux.io/some_annotation": "and_some_value"
+    },
+    "pod": {
+        "my_domain.io/some_annotation": "and_some_value",
+        "my_domain_aux.io/some_annotation": "and_some_value"
+    },
+    "service": {
+        "my_domain.io/some_annotation": "and_some_value",
+        "my_domain_aux.io/some_annotation": "and_some_value"
+    },
+    "ingress": {
+        "my_domain.io/some_annotation": "and_some_value",
+        "my_domain_aux.io/some_annotation": "and_some_value"
+    },
+    "horizontal_pod_autoscaler": {
+        "my_domain.io/some_annotation": "and_some_value",
+        "my_domain_aux.io/some_annotation": "and_some_value"
+    },
+}
+
 ANNOTATIONS_WITH_MERGED_SPINNAKER_TAGS = {
     "deployment": {
         "i_was_here": "first",
@@ -124,6 +147,49 @@ ANNOTATIONS_WITH_MERGED_SPINNAKER_TAGS = {
     },
 }
 
+ANNOTATIONS_WITH_MERGED_SPINNAKER_TAGS_AND_RAW_TAGS = {
+    "deployment": {
+        "i_was_here": "first",
+        "pipeline.schibsted.io/foo": "bar",
+        'my_domain.io/some_annotation': 'and_some_value'
+    },
+    "pod": {
+        "pipeline.schibsted.io/foo": "bar",
+        'my_domain.io/some_annotation': 'and_some_value'
+    },
+    "service": {
+        "pipeline.schibsted.io/foo": "bar",
+        'my_domain.io/some_annotation': 'and_some_value'
+    },
+    "ingress": {
+        "pipeline.schibsted.io/foo": "bar",
+        'my_domain.io/some_annotation': 'and_some_value'
+    },
+    "horizontal_pod_autoscaler": {
+        "pipeline.schibsted.io/foo": "bar",
+        'my_domain.io/some_annotation': 'and_some_value'
+    },
+}
+
+ANNOTATIONS_WITH_MERGED_RAW_TAGS = {
+    "deployment": {
+        "i_was_here": "first",
+        'my_domain.io/some_annotation': 'and_some_value'
+    },
+    "pod": {
+        'my_domain.io/some_annotation': 'and_some_value'
+    },
+    "service": {
+        'my_domain.io/some_annotation': 'and_some_value'
+    },
+    "ingress": {
+        'my_domain.io/some_annotation': 'and_some_value'
+    },
+    "horizontal_pod_autoscaler": {
+        'my_domain.io/some_annotation': 'and_some_value'
+    },
+}
+
 
 class TestGeneratePaasbetaApplication(object):
     @pytest.mark.parametrize(
@@ -133,6 +199,7 @@ class TestGeneratePaasbetaApplication(object):
     )
     def test_generator_creates_object_of_given_type(self, config, target_namespace, expected_namespace):
         spinnaker_tags = {}
+        raw_tags = {}
 
         http_client = _given_config_url_response_content_is(config)
         generator = Generator(http_client, create_deployment_id=lambda: DEPLOYMENT_ID)
@@ -144,6 +211,7 @@ class TestGeneratePaasbetaApplication(object):
                 make_safe_name(APPLICATION_NAME),
                 APPLICATION_NAME,
                 spinnaker_tags,
+                raw_tags
             )
         )
         expected_paasbeta_application = BASE_PAASBETA_APPLICATION
@@ -152,6 +220,7 @@ class TestGeneratePaasbetaApplication(object):
 
     def test_generator_adds_spinnaker_annotations(self):
         spinnaker_tags = {'foo': 'bar', 'numeric': 1337}
+        raw_tags = {}
 
         http_client = _given_config_url_response_content_is(VALID_DEPLOY_CONFIG_V3)
         generator = Generator(http_client, create_deployment_id=lambda: DEPLOYMENT_ID)
@@ -163,14 +232,38 @@ class TestGeneratePaasbetaApplication(object):
                 make_safe_name(APPLICATION_NAME),
                 APPLICATION_NAME,
                 spinnaker_tags,
+                raw_tags
             )
         )
         expected_paasbeta_annotations = ANNOTATIONS_WITH_SPINNAKER_TAGS
         returned_annotations = returned_paasbeta_application["spec"]["config"]["annotations"]
         assert returned_annotations == expected_paasbeta_annotations
 
+    def test_generator_adds_raw_annotations(self):
+        spinnaker_tags = {}
+        raw_tags = {'my_domain.io/some_annotation': 'and_some_value',
+                    'my_domain_aux.io/some_annotation': 'and_some_value'}
+
+        http_client = _given_config_url_response_content_is(VALID_DEPLOY_CONFIG_V3)
+        generator = Generator(http_client, create_deployment_id=lambda: DEPLOYMENT_ID)
+        deployment_id, returned_paasbeta_application = generator.generate_paasbeta_application(
+            target_namespace=ANY_NAMESPACE,
+            release=Release(
+                VALID_IMAGE_NAME,
+                VALID_DEPLOY_CONFIG_URL,
+                make_safe_name(APPLICATION_NAME),
+                APPLICATION_NAME,
+                spinnaker_tags,
+                raw_tags
+            )
+        )
+        expected_paasbeta_annotations = ANNOTATIONS_WITH_RAW_TAGS
+        returned_annotations = returned_paasbeta_application["spec"]["config"]["annotations"]
+        assert returned_annotations == expected_paasbeta_annotations
+
     def test_generator_merges_spinnaker_annotations(self):
         spinnaker_tags = {'foo': 'bar'}
+        raw_tags = {}
 
         http_client = _given_config_url_response_content_is(VALID_DEPLOY_CONFIG_V3_WITH_ANNOTATIONS)
         generator = Generator(http_client, create_deployment_id=lambda: DEPLOYMENT_ID)
@@ -182,14 +275,58 @@ class TestGeneratePaasbetaApplication(object):
                 make_safe_name(APPLICATION_NAME),
                 APPLICATION_NAME,
                 spinnaker_tags,
+                raw_tags
             )
         )
         expected_paasbeta_annotations = ANNOTATIONS_WITH_MERGED_SPINNAKER_TAGS
         returned_annotations = returned_paasbeta_application["spec"]["config"]["annotations"]
         assert returned_annotations == expected_paasbeta_annotations
 
+    def test_generator_merges_raw_annotations(self):
+        spinnaker_tags = {}
+        raw_tags = {'my_domain.io/some_annotation': 'and_some_value'}
+
+        http_client = _given_config_url_response_content_is(VALID_DEPLOY_CONFIG_V3_WITH_ANNOTATIONS)
+        generator = Generator(http_client, create_deployment_id=lambda: DEPLOYMENT_ID)
+        deployment_id, returned_paasbeta_application = generator.generate_paasbeta_application(
+            target_namespace=ANY_NAMESPACE,
+            release=Release(
+                VALID_IMAGE_NAME,
+                VALID_DEPLOY_CONFIG_URL,
+                make_safe_name(APPLICATION_NAME),
+                APPLICATION_NAME,
+                spinnaker_tags,
+                raw_tags
+            )
+        )
+        expected_paasbeta_annotations = ANNOTATIONS_WITH_MERGED_RAW_TAGS
+        returned_annotations = returned_paasbeta_application["spec"]["config"]["annotations"]
+        assert returned_annotations == expected_paasbeta_annotations
+
+    def test_generator_merges_spinnaker_and_raw_annotations(self):
+        spinnaker_tags = {'foo': 'bar'}
+        raw_tags = {'my_domain.io/some_annotation': 'and_some_value'}
+
+        http_client = _given_config_url_response_content_is(VALID_DEPLOY_CONFIG_V3_WITH_ANNOTATIONS)
+        generator = Generator(http_client, create_deployment_id=lambda: DEPLOYMENT_ID)
+        deployment_id, returned_paasbeta_application = generator.generate_paasbeta_application(
+            target_namespace=ANY_NAMESPACE,
+            release=Release(
+                VALID_IMAGE_NAME,
+                VALID_DEPLOY_CONFIG_URL,
+                make_safe_name(APPLICATION_NAME),
+                APPLICATION_NAME,
+                spinnaker_tags,
+                raw_tags
+            )
+        )
+        expected_paasbeta_annotations = ANNOTATIONS_WITH_MERGED_SPINNAKER_TAGS_AND_RAW_TAGS
+        returned_annotations = returned_paasbeta_application["spec"]["config"]["annotations"]
+        assert returned_annotations == expected_paasbeta_annotations
+
     def test_generator_without_annotations(self):
         spinnaker_tags = {}
+        raw_tags = {}
 
         http_client = _given_config_url_response_content_is(VALID_DEPLOY_CONFIG_V3)
         generator = Generator(http_client, create_deployment_id=lambda: DEPLOYMENT_ID)
@@ -201,6 +338,7 @@ class TestGeneratePaasbetaApplication(object):
                 make_safe_name(APPLICATION_NAME),
                 APPLICATION_NAME,
                 spinnaker_tags,
+                raw_tags
             )
         )
         assert "annotations" not in returned_paasbeta_application["spec"]["config"]
@@ -208,6 +346,7 @@ class TestGeneratePaasbetaApplication(object):
     def test_generator_with_app_name_bad_chars(self):
         app_name_with_underscores = "test_app"
         spinnaker_tags = {}
+        raw_tags = {}
 
         http_client = _given_config_url_response_content_is(VALID_DEPLOY_CONFIG_V3)
         generator = Generator(http_client, create_deployment_id=lambda: DEPLOYMENT_ID)
@@ -219,6 +358,7 @@ class TestGeneratePaasbetaApplication(object):
                 make_safe_name(app_name_with_underscores),
                 app_name_with_underscores,
                 spinnaker_tags,
+                raw_tags
             )
         )
         assert returned_paasbeta_application["spec"]["application"] == make_safe_name(app_name_with_underscores)

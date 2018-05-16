@@ -11,6 +11,7 @@ from fiaas_mast.paasbeta import PaasbetaApplicationSpec, PaasbetaApplication
 
 APPLICATION_NAME = "test_image"
 SPINNAKER_TAGS = {}
+RAW_TAGS = {}
 DEPLOYMENT_ID = "deadbeef-abba-cafe-1337-baaaaaaaaaad"
 VALID_IMAGE_NAME = "test_image:a1b2c3d"
 VALID_DEPLOY_CONFIG_URL = "http://url_to_config.file"
@@ -125,7 +126,8 @@ class TestCreateDeploymentInK8s(object):
                 VALID_DEPLOY_CONFIG_URL,
                 APPLICATION_NAME,
                 APPLICATION_NAME,
-                SPINNAKER_TAGS
+                SPINNAKER_TAGS,
+                RAW_TAGS
             )
         )
 

@@ -5,7 +5,8 @@ Release = namedtuple("Release", [
     "config_url",
     "application_name",
     "original_application_name",
-    "spinnaker_tags"
+    "spinnaker_tags",
+    "raw_tags"
 ])
 
 Status = namedtuple("Status", ["status", "info"])

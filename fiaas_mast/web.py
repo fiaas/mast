@@ -32,7 +32,8 @@ def deploy_handler():
             data["config_url"],
             make_safe_name(data["application_name"]),
             data["application_name"],
-            data["spinnaker_tags"] if "spinnaker_tags" in data else {})
+            data["spinnaker_tags"] if "spinnaker_tags" in data else {},
+            data["raw_tags"] if "raw_tags" in data else {})
     )
     response = status(namespace, application_name, deployment_id)
     return jsonify(response._asdict()), 201, {
@@ -62,7 +63,8 @@ def generate_paasbeta_application():
             data["config_url"],
             make_safe_name(data["application_name"]),
             data["application_name"],
-            data["spinnaker_tags"] if "spinnaker_tags" in data else {})
+            data["spinnaker_tags"] if "spinnaker_tags" in data else {},
+            data["raw_tags"] if "raw_tags" in data else {})
     )
     return_body = {
             "manifest": paasbeta_application,

@@ -10,12 +10,18 @@ class Generator:
         self.http_client = http_client
         self.create_deployment_id = create_deployment_id
 
-    def spinnaker_annotations(self, release):
+    def build_annotations(self, items, prefix=""):
         annotations = {}
-        for k, v, in release.spinnaker_tags.items():
-            annotations["pipeline.schibsted.io/{}".format(k)] = str(v)
+        for k, v, in items:
+            annotations[prefix + "{}".format(k)] = str(v)
         objects = ["deployment", "pod", "service", "ingress", "horizontal_pod_autoscaler"]
         return {k: annotations for k in objects}
+
+    def spinnaker_annotations(self, release):
+        return self.build_annotations(release.spinnaker_tags.items(), "pipeline.schibsted.io/")
+
+    def raw_annotations(self, release):
+        return self.build_annotations(release.raw_tags.items())
 
     def spec(self, release):
         config = self.download_config(release.config_url)
@@ -24,6 +30,11 @@ class Generator:
             if "annotations" not in config:
                 config["annotations"] = {}
             dict_merge(config["annotations"], self.spinnaker_annotations(release))
+
+        if release.raw_tags:
+            if "annotations" not in config:
+                config["annotations"] = {}
+            dict_merge(config["annotations"], self.raw_annotations(release))
 
         if release.application_name != release.original_application_name:
             if "annotations" not in config:
@@ -52,6 +63,11 @@ class Generator:
 
         if release.spinnaker_tags:
             metadata["annotations"] = self.spinnaker_annotations(release)
+
+        if release.raw_tags:
+            if "annotations" not in metadata:
+                metadata["annotations"] = {}
+            dict_merge(metadata["annotations"], self.raw_annotations(release))
 
         return metadata
 
