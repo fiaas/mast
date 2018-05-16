@@ -222,92 +222,38 @@ class TestGeneratePaasbetaApplication(object):
         spinnaker_tags = {'foo': 'bar', 'numeric': 1337}
         raw_tags = {}
 
-        http_client = _given_config_url_response_content_is(VALID_DEPLOY_CONFIG_V3)
-        generator = Generator(http_client, create_deployment_id=lambda: DEPLOYMENT_ID)
-        deployment_id, returned_paasbeta_application = generator.generate_paasbeta_application(
-            target_namespace=ANY_NAMESPACE,
-            release=Release(
-                VALID_IMAGE_NAME,
-                VALID_DEPLOY_CONFIG_URL,
-                make_safe_name(APPLICATION_NAME),
-                APPLICATION_NAME,
-                spinnaker_tags,
-                raw_tags
-            )
-        )
-        expected_paasbeta_annotations = ANNOTATIONS_WITH_SPINNAKER_TAGS
-        returned_annotations = returned_paasbeta_application["spec"]["config"]["annotations"]
-        assert returned_annotations == expected_paasbeta_annotations
+        self.annotations_verification(spinnaker_tags, raw_tags, ANNOTATIONS_WITH_SPINNAKER_TAGS, VALID_DEPLOY_CONFIG_V3)
 
     def test_generator_adds_raw_annotations(self):
         spinnaker_tags = {}
         raw_tags = {'my_domain.io/some_annotation': 'and_some_value',
                     'my_domain_aux.io/some_annotation': 'and_some_value'}
 
-        http_client = _given_config_url_response_content_is(VALID_DEPLOY_CONFIG_V3)
-        generator = Generator(http_client, create_deployment_id=lambda: DEPLOYMENT_ID)
-        deployment_id, returned_paasbeta_application = generator.generate_paasbeta_application(
-            target_namespace=ANY_NAMESPACE,
-            release=Release(
-                VALID_IMAGE_NAME,
-                VALID_DEPLOY_CONFIG_URL,
-                make_safe_name(APPLICATION_NAME),
-                APPLICATION_NAME,
-                spinnaker_tags,
-                raw_tags
-            )
-        )
-        expected_paasbeta_annotations = ANNOTATIONS_WITH_RAW_TAGS
-        returned_annotations = returned_paasbeta_application["spec"]["config"]["annotations"]
-        assert returned_annotations == expected_paasbeta_annotations
+        self.annotations_verification(spinnaker_tags, raw_tags, ANNOTATIONS_WITH_RAW_TAGS, VALID_DEPLOY_CONFIG_V3)
 
     def test_generator_merges_spinnaker_annotations(self):
         spinnaker_tags = {'foo': 'bar'}
         raw_tags = {}
 
-        http_client = _given_config_url_response_content_is(VALID_DEPLOY_CONFIG_V3_WITH_ANNOTATIONS)
-        generator = Generator(http_client, create_deployment_id=lambda: DEPLOYMENT_ID)
-        deployment_id, returned_paasbeta_application = generator.generate_paasbeta_application(
-            target_namespace=ANY_NAMESPACE,
-            release=Release(
-                VALID_IMAGE_NAME,
-                VALID_DEPLOY_CONFIG_URL,
-                make_safe_name(APPLICATION_NAME),
-                APPLICATION_NAME,
-                spinnaker_tags,
-                raw_tags
-            )
-        )
-        expected_paasbeta_annotations = ANNOTATIONS_WITH_MERGED_SPINNAKER_TAGS
-        returned_annotations = returned_paasbeta_application["spec"]["config"]["annotations"]
-        assert returned_annotations == expected_paasbeta_annotations
+        self.annotations_verification(spinnaker_tags, raw_tags, ANNOTATIONS_WITH_MERGED_SPINNAKER_TAGS,
+                             VALID_DEPLOY_CONFIG_V3_WITH_ANNOTATIONS)
 
     def test_generator_merges_raw_annotations(self):
         spinnaker_tags = {}
         raw_tags = {'my_domain.io/some_annotation': 'and_some_value'}
 
-        http_client = _given_config_url_response_content_is(VALID_DEPLOY_CONFIG_V3_WITH_ANNOTATIONS)
-        generator = Generator(http_client, create_deployment_id=lambda: DEPLOYMENT_ID)
-        deployment_id, returned_paasbeta_application = generator.generate_paasbeta_application(
-            target_namespace=ANY_NAMESPACE,
-            release=Release(
-                VALID_IMAGE_NAME,
-                VALID_DEPLOY_CONFIG_URL,
-                make_safe_name(APPLICATION_NAME),
-                APPLICATION_NAME,
-                spinnaker_tags,
-                raw_tags
-            )
-        )
-        expected_paasbeta_annotations = ANNOTATIONS_WITH_MERGED_RAW_TAGS
-        returned_annotations = returned_paasbeta_application["spec"]["config"]["annotations"]
-        assert returned_annotations == expected_paasbeta_annotations
+        self.annotations_verification(spinnaker_tags, raw_tags, ANNOTATIONS_WITH_MERGED_RAW_TAGS,
+                             VALID_DEPLOY_CONFIG_V3_WITH_ANNOTATIONS)
 
     def test_generator_merges_spinnaker_and_raw_annotations(self):
         spinnaker_tags = {'foo': 'bar'}
         raw_tags = {'my_domain.io/some_annotation': 'and_some_value'}
 
-        http_client = _given_config_url_response_content_is(VALID_DEPLOY_CONFIG_V3_WITH_ANNOTATIONS)
+        self.annotations_verification(spinnaker_tags, raw_tags, ANNOTATIONS_WITH_MERGED_SPINNAKER_TAGS_AND_RAW_TAGS,
+                             VALID_DEPLOY_CONFIG_V3_WITH_ANNOTATIONS)
+
+    def annotations_verification(self, spinnaker_tags, raw_tags, exptected_paasbeta_result, deploy_config):
+        http_client = _given_config_url_response_content_is(deploy_config)
         generator = Generator(http_client, create_deployment_id=lambda: DEPLOYMENT_ID)
         deployment_id, returned_paasbeta_application = generator.generate_paasbeta_application(
             target_namespace=ANY_NAMESPACE,
@@ -320,9 +266,8 @@ class TestGeneratePaasbetaApplication(object):
                 raw_tags
             )
         )
-        expected_paasbeta_annotations = ANNOTATIONS_WITH_MERGED_SPINNAKER_TAGS_AND_RAW_TAGS
         returned_annotations = returned_paasbeta_application["spec"]["config"]["annotations"]
-        assert returned_annotations == expected_paasbeta_annotations
+        assert returned_annotations == exptected_paasbeta_result
 
     def test_generator_without_annotations(self):
         spinnaker_tags = {}
