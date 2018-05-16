@@ -236,21 +236,21 @@ class TestGeneratePaasbetaApplication(object):
         raw_tags = {}
 
         self.annotations_verification(spinnaker_tags, raw_tags, ANNOTATIONS_WITH_MERGED_SPINNAKER_TAGS,
-                             VALID_DEPLOY_CONFIG_V3_WITH_ANNOTATIONS)
+                                      VALID_DEPLOY_CONFIG_V3_WITH_ANNOTATIONS)
 
     def test_generator_merges_raw_annotations(self):
         spinnaker_tags = {}
         raw_tags = {'my_domain.io/some_annotation': 'and_some_value'}
 
         self.annotations_verification(spinnaker_tags, raw_tags, ANNOTATIONS_WITH_MERGED_RAW_TAGS,
-                             VALID_DEPLOY_CONFIG_V3_WITH_ANNOTATIONS)
+                                      VALID_DEPLOY_CONFIG_V3_WITH_ANNOTATIONS)
 
     def test_generator_merges_spinnaker_and_raw_annotations(self):
         spinnaker_tags = {'foo': 'bar'}
         raw_tags = {'my_domain.io/some_annotation': 'and_some_value'}
 
         self.annotations_verification(spinnaker_tags, raw_tags, ANNOTATIONS_WITH_MERGED_SPINNAKER_TAGS_AND_RAW_TAGS,
-                             VALID_DEPLOY_CONFIG_V3_WITH_ANNOTATIONS)
+                                      VALID_DEPLOY_CONFIG_V3_WITH_ANNOTATIONS)
 
     def annotations_verification(self, spinnaker_tags, raw_tags, exptected_paasbeta_result, deploy_config):
         http_client = _given_config_url_response_content_is(deploy_config)
