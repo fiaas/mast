@@ -13,7 +13,7 @@ class Generator:
     def build_annotations(self, items, prefix=""):
         annotations = {}
         for k, v, in items:
-            annotations[prefix + "{}".format(k)] = str(v)
+            annotations["{}{}".format(prefix, k)] = str(v)
         objects = ["deployment", "pod", "service", "ingress", "horizontal_pod_autoscaler"]
         return {k: annotations for k in objects}
 
