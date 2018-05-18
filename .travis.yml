@@ -10,7 +10,7 @@ env:
   global:
     - DOCKER_REGISTRY="containers.schibsted.io"
     - DOCKER_IMAGE="${DOCKER_REGISTRY}/${TRAVIS_REPO_SLUG}"
-    - HELM_VERSION="v2.5.0"
+    - HELM_VERSION="v2.8.2"
     - secure: "REMOVED"
 after_failure:
   - reports-publisher

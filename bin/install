@@ -48,6 +48,6 @@ if [[ "$HELM_DEPLOY" == 'true' ]]; then
     install_kubectl
     configure_kubectl
     install_helm
-    helm init --tiller-namespace="${K8S_NAMESPACE}"
+    helm init --upgrade --wait --tiller-namespace="${K8S_NAMESPACE}"
 fi
 pip install -r requirements.txt
