@@ -70,6 +70,16 @@ config:
   volume: true
 """
 
+VALID_DEPLOY_CONFIG_WITH_INGRESS_1 = """
+version: 3
+ingress:
+  - host: foo.example.com
+"""
+
+VALID_DEPLOY_CONFIG_WITH_INGRESS_2 = """
+version: 3
+"""
+
 
 class TestCreateDeploymentInK8s(object):
     @pytest.fixture(params=["fiaas", "paasbeta"])
@@ -80,10 +90,11 @@ class TestCreateDeploymentInK8s(object):
             return PaasbetaApplication, PaasbetaApplicationSpec
 
     @pytest.fixture
-    def k8s_model(self):
-        k8s_model = MagicMock()
-        k8s_model.save = MagicMock()
-        return k8s_model
+    def k8s_model(self, object_types):
+        application_model, _ = object_types
+        application_instance = application_model()
+        application_instance.save = MagicMock()
+        return application_instance
 
     @pytest.fixture
     def get(self, k8s_model):
@@ -110,14 +121,13 @@ class TestCreateDeploymentInK8s(object):
     ))
     def test_deployer_creates_object_of_given_type(self,
                                                    get,
-                                                   get_or_create,
                                                    k8s_model,
                                                    object_types,
                                                    config,
                                                    target_namespace,
                                                    expected_namespace):
         http_client = _given_config_url_response_content_is(config)
-        application_model, spec_model = object_types
+        _, spec_model = object_types
         deployer = Deployer(http_client, create_deployment_id=lambda: DEPLOYMENT_ID)
         returned_namespace, returned_name, returned_id = deployer.deploy(
             target_namespace=target_namespace,
@@ -149,6 +159,36 @@ class TestCreateDeploymentInK8s(object):
         get.assert_called_once_with(APPLICATION_NAME, expected_namespace)
         assert metadata == k8s_model.metadata
         assert spec == k8s_model.spec
+        k8s_model.save.assert_called_once()
+
+    @pytest.mark.usefixtures("get")
+    def test_ingress_is_updated(self, k8s_model, object_types):
+        _, spec_model = object_types
+        existing_spec = spec_model(
+            application=APPLICATION_NAME,
+            image=VALID_IMAGE_NAME,
+            config=yaml.safe_load(VALID_DEPLOY_CONFIG_WITH_INGRESS_1)
+        )
+        k8s_model.spec = existing_spec
+        http_client = _given_config_url_response_content_is(VALID_DEPLOY_CONFIG_WITH_INGRESS_2)
+        deployer = Deployer(http_client, create_deployment_id=lambda: DEPLOYMENT_ID)
+        deployer.deploy(
+            target_namespace="default",
+            release=Release(
+                VALID_IMAGE_NAME,
+                VALID_DEPLOY_CONFIG_URL,
+                APPLICATION_NAME,
+                APPLICATION_NAME,
+                SPINNAKER_TAGS,
+                RAW_TAGS
+            )
+        )
+        expected_spec = spec_model(
+            application=APPLICATION_NAME,
+            image=VALID_IMAGE_NAME,
+            config=yaml.safe_load(VALID_DEPLOY_CONFIG_WITH_INGRESS_2)
+        )
+        assert k8s_model.spec == expected_spec
         k8s_model.save.assert_called_once()
 
 

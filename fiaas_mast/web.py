@@ -20,7 +20,7 @@ def health_check():
 @web.route("/deploy/", methods=["PUT", "POST"])
 def deploy_handler():
     data = request.get_json(force=True)
-    required_fields = ("application_name", "config_url", "image")
+    required_fields = ("application_name", "config_url", "image", "namespace")
     errors = ["Missing key {!r} in input".format(key) for key in required_fields if key not in data]
     if errors:
         abort(UnprocessableEntity.code, errors)

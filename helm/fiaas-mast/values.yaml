@@ -27,3 +27,8 @@ resources:
     memory: 64Mi
 
 annotations: {} # can be used to set custom annotations on every resource
+
+secrets: # Must be set by user
+#  token: replace_me  # Heimdall token
+#  artifactoryUser: replace_me
+#  artifactoryPassword: replace_me
