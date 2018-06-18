@@ -2,12 +2,12 @@ import logging
 import sys
 
 from flask import Flask, jsonify
+from flask_talisman import Talisman, DENY
+from k8s import config as k8s_config
 from werkzeug.exceptions import InternalServerError, HTTPException
 
 from fiaas_mast.config import Config
-from k8s import config as k8s_config
 from fiaas_mast.web import web
-
 
 LOGGER = logging.getLogger(__name__)
 
@@ -22,6 +22,7 @@ def create_app(config=None):
     configure_k8s_client(app)
     configure_logging()
 
+    Talisman(app, frame_options=DENY)
     return app
 
 
