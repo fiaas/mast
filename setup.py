@@ -35,6 +35,7 @@ setup(
         "six==1.10.0",
         "ipaddress==1.0.18",
         "k8s==0.10.0",
+        "prometheus_client == 0.3.1",
     ],
     extras_require={
         "dev": [
