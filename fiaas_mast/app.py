@@ -22,7 +22,8 @@ def create_app(config=None):
     configure_k8s_client(app)
     configure_logging()
 
-    Talisman(app, frame_options=DENY)
+    csp = {"default-src": "'none'", "object-src": ["'none'"]}
+    Talisman(app, frame_options=DENY, content_security_policy=csp)
     return app
 
 
