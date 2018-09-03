@@ -1,7 +1,7 @@
 FROM alpine:3.6
 LABEL maintainer="Platform Delivery <platform-delivery@schibsted.com>"
 
-RUN apk add --update ca-certificates git curl tini=0.14.0-r0 python3=3.6.1-r3 && \
+RUN apk add --update ca-certificates git curl tini=0.14.0-r0 python3=3.6.5-r0 && \
     mkdir -p /opt/fiaas-mast && \
     adduser -u 10001 -D -h /opt/fiaas-mast fiaas-mast && \
     rm -rf /var/cache/apk/*
