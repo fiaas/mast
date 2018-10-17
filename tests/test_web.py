@@ -6,14 +6,27 @@ import pytest
 
 from fiaas_mast.app import create_app
 from fiaas_mast.deployer import Deployer
-from fiaas_mast.generator import Generator
-from fiaas_mast.models import Release, Status
+from fiaas_mast.paasbeta_generator import PaasBetaApplicationGenerator
+from fiaas_mast.configmap_generator import ConfigMapGenerator
+from fiaas_mast.models import Release, Status, ApplicationConfiguration
 
 DEFAULT_NAMESPACE = "default-namespace"
 
 VALID_DEPLOY_DATA = {
     "image": "test_image",
     "config_url": "http://example.com",
+    "application_name": "example",
+    "namespace": DEFAULT_NAMESPACE
+}
+
+VALID_APPLICATIONDATA_REQUEST = {
+    "applications_data_url": "http://example.com",
+    "application_name": "example",
+    "namespace": DEFAULT_NAMESPACE
+}
+
+INVALID_APPLICATIONDATA_REQUEST = {
+    "not_application_data_url": "http://example.com",
     "application_name": "example",
     "namespace": DEFAULT_NAMESPACE
 }
@@ -100,9 +113,8 @@ def test_deploy(client, status):
 
 
 def test_generate_paasbeta_application(client, status):
-    with mock.patch.object(Generator, 'generate_paasbeta_application', return_value=("deployment_id", {
-        "foo": "bar"
-    })) as generate_paasbeta_application:
+    with mock.patch.object(PaasBetaApplicationGenerator, 'generate_paasbeta_application',
+                           return_value=("deployment_id", {"foo": "bar"})) as generate_paasbeta_application:
         resp = client.post("/generate/paasbeta_application", data=dumps(VALID_DEPLOY_DATA),
                            content_type="application/json")
         assert resp.status_code == 200
@@ -112,6 +124,26 @@ def test_generate_paasbeta_application(client, status):
             DEFAULT_NAMESPACE, Release("test_image", "http://example.com", "example", "example", SPINNAKER_TAGS,
                                        RAW_TAGS)
         )
+
+
+def test_generate_configmap(client, status):
+    with mock.patch.object(ConfigMapGenerator, 'generate_configmap', return_value=("deployment_id", {
+        "foo": "bar"
+    })) as generate_configmap:
+        resp = client.post("/generate/configmap", data=dumps(VALID_APPLICATIONDATA_REQUEST),
+                           content_type="application/json")
+        assert resp.status_code == 200
+
+        generate_configmap.assert_called_with(
+            DEFAULT_NAMESPACE, ApplicationConfiguration("http://example.com", "example", "example", SPINNAKER_TAGS,
+                                                        RAW_TAGS)
+        )
+
+
+def test_generate_configmap_invalid_data(client, status):
+    resp = client.post("/generate/configmap", data=dumps(INVALID_APPLICATIONDATA_REQUEST),
+                       content_type="application/json")
+    assert resp.status_code == 422
 
 
 def test_generate_paasbeta_application_invalid_data(client, status):

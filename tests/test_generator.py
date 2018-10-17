@@ -1,8 +1,10 @@
 import pytest
 from mock import MagicMock
 
-from fiaas_mast.generator import generate_random_uuid_string, Generator
-from fiaas_mast.models import Release
+from fiaas_mast.common import generate_random_uuid_string
+from fiaas_mast.paasbeta_generator import PaasBetaApplicationGenerator
+from fiaas_mast.configmap_generator import ConfigMapGenerator
+from fiaas_mast.models import Release, ApplicationConfiguration
 from fiaas_mast.common import make_safe_name
 
 APPLICATION_NAME = "test-image"
@@ -10,6 +12,7 @@ SPINNAKER_TAGS = {}
 DEPLOYMENT_ID = "deadbeef-abba-cafe-1337-baaaaaaaaaad"
 VALID_IMAGE_NAME = "test_image:a1b2c3d"
 VALID_DEPLOY_CONFIG_URL = "http://url_to_config.file"
+VALID_CONFIGMAP_URL = "http://url_to_configmap.file"
 ANY_NAMESPACE = "any-namespace"
 
 VALID_DEPLOY_CONFIG_V3 = """
@@ -43,6 +46,30 @@ healthchecks:
   liveness:
     http:
       path: /healthz
+"""
+
+BASE_CONFIGMAP = {
+            "apiVersion": "v1",
+            "data": {
+                "rules.yml": "# put your recording rules here"
+            },
+            "kind": "ConfigMap",
+            "metadata": {
+                "annotations": {
+                    "strategy.spinnaker.io/versioned": "false"
+                },
+                "labels": {
+                    "app": "test-image",
+                    "fiaas/deployment_id": "deadbeef-abba-cafe-1337-baaaaaaaaaad"
+                },
+                "name": "test-image",
+                "namespace": "any-namespace"
+            }
+        }
+
+
+APPLICATION_DATA = """
+rules.yml: '# put your recording rules here'
 """
 
 BASE_PAASBETA_APPLICATION = {
@@ -202,7 +229,7 @@ class TestGeneratePaasbetaApplication(object):
         raw_tags = {}
 
         http_client = _given_config_url_response_content_is(config)
-        generator = Generator(http_client, create_deployment_id=lambda: DEPLOYMENT_ID)
+        generator = PaasBetaApplicationGenerator(http_client, create_deployment_id=lambda: DEPLOYMENT_ID)
         deployment_id, returned_paasbeta_application = generator.generate_paasbeta_application(
             target_namespace=target_namespace,
             release=Release(
@@ -254,7 +281,7 @@ class TestGeneratePaasbetaApplication(object):
 
     def annotations_verification(self, spinnaker_tags, raw_tags, exptected_paasbeta_result, deploy_config):
         http_client = _given_config_url_response_content_is(deploy_config)
-        generator = Generator(http_client, create_deployment_id=lambda: DEPLOYMENT_ID)
+        generator = PaasBetaApplicationGenerator(http_client, create_deployment_id=lambda: DEPLOYMENT_ID)
         deployment_id, returned_paasbeta_application = generator.generate_paasbeta_application(
             target_namespace=ANY_NAMESPACE,
             release=Release(
@@ -274,7 +301,7 @@ class TestGeneratePaasbetaApplication(object):
         raw_tags = {}
 
         http_client = _given_config_url_response_content_is(VALID_DEPLOY_CONFIG_V3)
-        generator = Generator(http_client, create_deployment_id=lambda: DEPLOYMENT_ID)
+        generator = PaasBetaApplicationGenerator(http_client, create_deployment_id=lambda: DEPLOYMENT_ID)
         deployment_id, returned_paasbeta_application = generator.generate_paasbeta_application(
             target_namespace=ANY_NAMESPACE,
             release=Release(
@@ -294,7 +321,7 @@ class TestGeneratePaasbetaApplication(object):
         raw_tags = {}
 
         http_client = _given_config_url_response_content_is(VALID_DEPLOY_CONFIG_V3)
-        generator = Generator(http_client, create_deployment_id=lambda: DEPLOYMENT_ID)
+        generator = PaasBetaApplicationGenerator(http_client, create_deployment_id=lambda: DEPLOYMENT_ID)
         deployment_id, returned_paasbeta_application = generator.generate_paasbeta_application(
             target_namespace=ANY_NAMESPACE,
             release=Release(
@@ -311,6 +338,27 @@ class TestGeneratePaasbetaApplication(object):
         assert returned_paasbeta_application["metadata"]["labels"]["app"] == make_safe_name(app_name_with_underscores)
         assert returned_paasbeta_application["spec"]["config"]["annotations"]["mast"]["originalApplicationName"] == \
             app_name_with_underscores
+
+    @pytest.mark.parametrize("config,namespace", ((APPLICATION_DATA, ANY_NAMESPACE), (APPLICATION_DATA, ANY_NAMESPACE)))
+    def test_configmap_generator(self, config, namespace):
+        spinnaker_tags = {}
+        raw_tags = {'strategy.spinnaker.io/versioned': 'false'}
+
+        http_client = _given_config_url_response_content_is(config)
+        generator = ConfigMapGenerator(http_client, create_deployment_id=lambda: DEPLOYMENT_ID)
+        deployment_id, returned_configmap = generator.generate_configmap(
+            target_namespace=namespace,
+            configmap_request=ApplicationConfiguration(
+                APPLICATION_DATA,
+                make_safe_name(APPLICATION_NAME),
+                APPLICATION_NAME,
+                spinnaker_tags,
+                raw_tags
+            )
+        )
+        expected_configmap = BASE_CONFIGMAP
+        expected_configmap["metadata"]["namespace"] = namespace
+        assert returned_configmap == expected_configmap
 
 
 class TestUUID:

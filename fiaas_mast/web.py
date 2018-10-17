@@ -5,16 +5,20 @@ from prometheus_client import generate_latest, CONTENT_TYPE_LATEST, Histogram
 from werkzeug.exceptions import UnprocessableEntity
 
 from .deployer import Deployer
-from .generator import Generator
 from .models import Release
+from .models import ApplicationConfiguration
 from .status import status
 from .common import make_safe_name
+from .paasbeta_generator import PaasBetaApplicationGenerator
+from .configmap_generator import ConfigMapGenerator
+
 
 web = Blueprint("web", __name__)
 
 request_histogram = Histogram("web_request_latency", "Request latency in seconds", ["page"])
 status_histogram = request_histogram.labels("status")
 generate_paasbetaapplication_histogram = request_histogram.labels("generate_paasbetaapplication")
+generate_configmap_histogram = request_histogram.labels("generate_configmap")
 deploy_histogram = request_histogram.labels("deploy")
 metrics_histogram = request_histogram.labels("metrics")
 health_histogram = request_histogram.labels("health")
@@ -67,7 +71,7 @@ def generate_paasbeta_application():
     errors = ["Missing key {!r} in input".format(key) for key in required_fields if key not in data]
     if errors:
         abort(UnprocessableEntity.code, errors)
-    generator = Generator(get_http_client())
+    generator = PaasBetaApplicationGenerator(get_http_client())
     deployment_id, paasbeta_application = generator.generate_paasbeta_application(
         data["namespace"],
         Release(
@@ -88,6 +92,32 @@ def generate_paasbeta_application():
                                   application=make_safe_name(data["application_name"]),
                                   deployment_id=deployment_id)
         }
+    return jsonify(return_body), 200
+
+
+@web.route("/generate/configmap", methods=["POST"])
+@generate_configmap_histogram.time()
+def generate_configmap_application():
+    data = request.get_json(force=True)
+    required_fields = ("application_name", "applications_data_url")
+    errors = ["Missing key {!r} in input".format(key) for key in required_fields if key not in data]
+    if errors:
+        abort(UnprocessableEntity.code, errors)
+    generator = ConfigMapGenerator(get_http_client())
+
+    deployment_id, configmap_manifest = generator.generate_configmap(
+        data["namespace"],
+        ApplicationConfiguration(
+            data["applications_data_url"],
+            make_safe_name(data["application_name"]),
+            data["application_name"],
+            data.get("spinnaker_tags", {}),
+            data.get("raw_tags", {}))
+    )
+    return_body = {
+        "manifest": configmap_manifest,
+        "deployment_id": deployment_id
+    }
     return jsonify(return_body), 200
 
 

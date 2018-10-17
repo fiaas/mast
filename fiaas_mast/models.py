@@ -10,3 +10,11 @@ Release = namedtuple("Release", [
 ])
 
 Status = namedtuple("Status", ["status", "info"])
+
+ApplicationConfiguration = namedtuple("ApplicationConfiguration", [
+    "application_data_url",
+    "application_name",
+    "original_application_name",
+    "spinnaker_tags",
+    "raw_tags"
+])
