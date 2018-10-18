@@ -20,7 +20,7 @@ install_kubectl() {
 
 	chmod +x "$install_dir/kubectl"
 
-	mkdir ~/bin
+	mkdir -p ~/bin
 	install "$install_dir/kubectl" ~/bin/kubectl
 }
 
