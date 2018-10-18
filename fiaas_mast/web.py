@@ -99,7 +99,7 @@ def generate_paasbeta_application():
 @generate_configmap_histogram.time()
 def generate_configmap_application():
     data = request.get_json(force=True)
-    required_fields = ("application_name", "applications_data_url")
+    required_fields = ("application_name", "application_data_url")
     errors = ["Missing key {!r} in input".format(key) for key in required_fields if key not in data]
     if errors:
         abort(UnprocessableEntity.code, errors)
@@ -108,7 +108,7 @@ def generate_configmap_application():
     deployment_id, configmap_manifest = generator.generate_configmap(
         data["namespace"],
         ApplicationConfiguration(
-            data["applications_data_url"],
+            data["application_data_url"],
             make_safe_name(data["application_name"]),
             data["application_name"],
             data.get("spinnaker_tags", {}),

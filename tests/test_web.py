@@ -20,7 +20,7 @@ VALID_DEPLOY_DATA = {
 }
 
 VALID_APPLICATIONDATA_REQUEST = {
-    "applications_data_url": "http://example.com",
+    "application_data_url": "http://example.com",
     "application_name": "example",
     "namespace": DEFAULT_NAMESPACE
 }
