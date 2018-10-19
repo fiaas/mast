@@ -4,20 +4,19 @@ from flask import url_for, jsonify, request, abort, Blueprint, make_response
 from prometheus_client import generate_latest, CONTENT_TYPE_LATEST, Histogram
 from werkzeug.exceptions import UnprocessableEntity
 
-from .deployer import Deployer
-from .models import Release
-from .models import ApplicationConfiguration
-from .status import status
+from .application_generator import ApplicationGenerator
 from .common import make_safe_name
-from .paasbeta_generator import PaasBetaApplicationGenerator
 from .configmap_generator import ConfigMapGenerator
-
+from .deployer import Deployer
+from .models import ApplicationConfiguration
+from .models import Release
+from .status import status
 
 web = Blueprint("web", __name__)
 
 request_histogram = Histogram("web_request_latency", "Request latency in seconds", ["page"])
 status_histogram = request_histogram.labels("status")
-generate_paasbetaapplication_histogram = request_histogram.labels("generate_paasbetaapplication")
+generate_application_histogram = request_histogram.labels("generate_paasbetaapplication")
 generate_configmap_histogram = request_histogram.labels("generate_configmap")
 deploy_histogram = request_histogram.labels("deploy")
 metrics_histogram = request_histogram.labels("metrics")
@@ -64,15 +63,16 @@ def status_handler(namespace, application, deployment_id):
 
 
 @web.route("/generate/paasbeta_application", methods=["POST"])
-@generate_paasbetaapplication_histogram.time()
-def generate_paasbeta_application():
+@web.route("/generate/application", methods=["POST"])
+@generate_application_histogram.time()
+def generate_application():
     data = request.get_json(force=True)
     required_fields = ("application_name", "config_url", "image")
     errors = ["Missing key {!r} in input".format(key) for key in required_fields if key not in data]
     if errors:
         abort(UnprocessableEntity.code, errors)
-    generator = PaasBetaApplicationGenerator(get_http_client())
-    deployment_id, paasbeta_application = generator.generate_paasbeta_application(
+    generator = ApplicationGenerator(get_http_client())
+    deployment_id, application = generator.generate_application(
         data["namespace"],
         Release(
             data["image"],
@@ -83,7 +83,7 @@ def generate_paasbeta_application():
             data.get("raw_tags", {}))
     )
     return_body = {
-            "manifest": paasbeta_application,
+            "manifest": application.as_dict(),
             "deployment_id": deployment_id,
             "status_url": url_for("web.status_handler",
                                   _external=True,
@@ -105,7 +105,7 @@ def generate_configmap_application():
         abort(UnprocessableEntity.code, errors)
     generator = ConfigMapGenerator(get_http_client())
 
-    deployment_id, configmap_manifest = generator.generate_configmap(
+    deployment_id, config_map = generator.generate_configmap(
         data["namespace"],
         ApplicationConfiguration(
             data["application_data_url"],
@@ -115,7 +115,7 @@ def generate_configmap_application():
             data.get("raw_tags", {}))
     )
     return_body = {
-        "manifest": configmap_manifest,
+        "manifest": config_map.as_dict(),
         "deployment_id": deployment_id
     }
     return jsonify(return_body), 200

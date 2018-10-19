@@ -1,10 +1,9 @@
 import pytest
 import yaml
-from k8s.client import NotFound
 from k8s.models.common import ObjectMeta
 from mock import MagicMock, patch
 
-from fiaas_mast.deployer import generate_random_uuid_string, Deployer, select_models, DeployerError
+from fiaas_mast.deployer import generate_random_uuid_string, Deployer
 from fiaas_mast.fiaas import FiaasApplicationSpec, FiaasApplication
 from fiaas_mast.models import Release
 from fiaas_mast.paasbeta import PaasbetaApplicationSpec, PaasbetaApplication
@@ -197,34 +196,6 @@ class TestUUID:
         uuid1 = generate_random_uuid_string()
         uuid2 = generate_random_uuid_string()
         assert uuid1 != uuid2
-
-
-class TestSelectModel:
-    @pytest.fixture(params=(True, False))
-    def crd(self, request):
-        with patch('fiaas_mast.fiaas.FiaasApplication.list') as fm:
-            fm.side_effect = None if request.param else NotFound()
-            yield request.param
-
-    @pytest.fixture(params=(True, False))
-    def tpr(self, request):
-        with patch('fiaas_mast.paasbeta.PaasbetaApplication.list') as pm:
-            pm.side_effect = None if request.param else NotFound()
-            yield request.param
-
-    def test_select_models(self, crd, tpr):
-        if not crd and not tpr:
-            with pytest.raises(DeployerError):
-                select_models()
-            return
-
-        if crd:
-            wanted_app, wanted_spec = FiaasApplication, FiaasApplicationSpec
-        else:
-            wanted_app, wanted_spec = PaasbetaApplication, PaasbetaApplicationSpec
-        actual_app, actual_spec = select_models()
-        assert wanted_app == actual_app
-        assert wanted_spec == actual_spec
 
 
 def _given_config_url_response_content_is(config):

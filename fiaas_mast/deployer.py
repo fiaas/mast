@@ -1,29 +1,9 @@
-import logging
-
 import yaml
-
 from k8s.client import NotFound
 from k8s.models.common import ObjectMeta
 from requests.exceptions import MissingSchema, InvalidURL
 
-from .paasbeta import PaasbetaApplication, PaasbetaApplicationSpec
-from .fiaas import FiaasApplication, FiaasApplicationSpec
-from .common import generate_random_uuid_string, ClientError
-
-LOG = logging.getLogger(__name__)
-
-
-def select_models():
-    for app_model, spec_model in (
-            (FiaasApplication, FiaasApplicationSpec),
-            (PaasbetaApplication, PaasbetaApplicationSpec),
-    ):
-        try:
-            app_model.list()
-            return app_model, spec_model
-        except NotFound:
-            LOG.debug("{} was not found".format(app_model))
-    raise DeployerError("Unable to find support for either PaasbetaApplication or FiaasApplication in the cluster")
+from .common import generate_random_uuid_string, ClientError, select_models
 
 
 class Deployer:

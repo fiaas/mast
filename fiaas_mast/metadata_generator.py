@@ -1,5 +1,5 @@
 import yaml
-
+from k8s.models.common import ObjectMeta
 from requests.exceptions import MissingSchema, InvalidURL
 
 from .common import dict_merge, generate_random_uuid_string, ClientError
@@ -45,15 +45,14 @@ class MetadataGenerator:
     def metadata(self, generator_object, namespace, deployment_id):
         application_name = generator_object.application_name
         labels = {"fiaas/deployment_id": deployment_id, "app": application_name}
-        metadata = {"labels": labels, "name": application_name, "namespace": namespace}
+        # TODO: Why doesn't annotations default to a dict?
+        metadata = ObjectMeta(name=application_name, namespace=namespace, labels=labels, annotations={})
 
         if generator_object.spinnaker_tags:
-            metadata["annotations"] = self.spinnaker_annotations(generator_object)
+            metadata.annotations = self.spinnaker_annotations(generator_object)
 
         if generator_object.raw_tags:
-            if "annotations" not in metadata:
-                metadata["annotations"] = {}
-            dict_merge(metadata["annotations"], self.raw_annotations(generator_object))
+            dict_merge(metadata.annotations, self.raw_annotations(generator_object))
 
         return metadata
 
