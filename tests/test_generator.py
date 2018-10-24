@@ -54,6 +54,8 @@ BASE_CONFIGMAP = {
     "data": {
         "rules.yml": "# put your recording rules here"
     },
+    "kind": "ConfigMap",
+    "apiVersion": "v1",
     "metadata": {
         "annotations": {
             "strategy.spinnaker.io/versioned": "false"
@@ -369,7 +371,7 @@ class TestConfigMapGenerator(object):
         )
         expected_configmap = BASE_CONFIGMAP
         expected_configmap["metadata"]["namespace"] = ANY_NAMESPACE
-        assert returned_configmap.as_dict() == expected_configmap
+        assert returned_configmap == expected_configmap
 
 
 class TestUUID:

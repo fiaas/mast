@@ -3,7 +3,6 @@ from urllib.parse import urlparse
 
 import mock
 import pytest
-from k8s.models.configmap import ConfigMap
 
 from fiaas_mast.app import create_app
 from fiaas_mast.application_generator import ApplicationGenerator
@@ -161,7 +160,7 @@ def test_generate_paasbeta_application_invalid_config_url(client, config_url, ap
 
 def test_generate_configmap(client):
     with mock.patch.object(ConfigMapGenerator, 'generate_configmap',
-                           return_value=("deployment_id", ConfigMap())) as generate_configmap:
+                           return_value=("deployment_id", {"foo": "bar"})) as generate_configmap:
         resp = client.post("/generate/configmap", data=dumps(VALID_APPLICATIONDATA_REQUEST),
                            content_type="application/json")
         assert resp.status_code == 200

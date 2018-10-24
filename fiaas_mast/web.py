@@ -115,7 +115,7 @@ def generate_configmap_application():
             data.get("raw_tags", {}))
     )
     return_body = {
-        "manifest": config_map.as_dict(),
+        "manifest": config_map,
         "deployment_id": deployment_id
     }
     return jsonify(return_body), 200
