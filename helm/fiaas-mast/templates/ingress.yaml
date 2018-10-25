@@ -27,7 +27,24 @@ spec:
             backend:
               serviceName: {{ template "fullname" . }}
               servicePort: heimdall
+
+{{- if eq .Values.ingress.host "fiaas-mast.ingress.cre-pro.schibsted.io" }}
+    - host: fiaas-mast.ingress.prod02.cre-pro.schibsted.io
+      http:
+        paths:
+          - path: /
+            backend:
+              serviceName: {{ template "fullname" . }}
+              servicePort: http
+          - path: /heimdall-token
+            backend:
+              serviceName: {{ template "fullname" . }}
+              servicePort: heimdall
+{{- end }}
   tls:
   - hosts:
     - {{ .Values.ingress.host }}
+{{- if eq .Values.ingress.host "fiaas-mast.ingress.cre-pro.schibsted.io" }}
+    - fiaas-mast.ingress.prod02.cre-pro.schibsted.io
+{{- end }}
     secretName: {{ template "fullname" . }}
