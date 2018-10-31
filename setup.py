@@ -28,7 +28,7 @@ setup(
     version=version(),
     packages=find_packages(),
     install_requires=[
-        "Flask==0.12.1",
+        "Flask==0.12.4",
         "flask-talisman==0.5.1",
         "PyYAML==3.12",
         "requests==2.13.0",
