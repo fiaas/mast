@@ -30,6 +30,7 @@ setup(
     install_requires=[
         "Flask==0.12.4",
         "flask-talisman==0.5.1",
+        "flask-bootstrap==3.3.7.1",
         "PyYAML==3.12",
         "requests==2.13.0",
         "six==1.10.0",

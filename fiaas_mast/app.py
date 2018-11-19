@@ -2,6 +2,7 @@ import logging
 import sys
 
 from flask import Flask, jsonify
+from flask_bootstrap import Bootstrap
 from flask_talisman import Talisman, DENY
 from k8s import config as k8s_config
 from werkzeug.exceptions import InternalServerError, HTTPException
@@ -20,11 +21,16 @@ def create_app(config=None):
     configure_blueprints(app)
     configure_error_handler(app)
     configure_k8s_client(app)
+    configure_bootstrap(app)
     configure_logging()
 
     csp = {"default-src": "'none'", "object-src": ["'none'"]}
     Talisman(app, frame_options=DENY, content_security_policy=csp)
     return app
+
+
+def configure_bootstrap(app):
+    Bootstrap(app)
 
 
 def configure_app(app, config):

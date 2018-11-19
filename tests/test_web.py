@@ -181,10 +181,25 @@ def test_status(client, status):
     resp = client.get("/status/test_namespace/test_application/test_id/")
     assert resp.status_code == 200
     body = loads(resp.data.decode(resp.charset))
-    assert all(x in body.keys() for x in ("status", "info"))
+    assert all(x in body.keys() for x in ("status", "info", "deployment_status_url"))
+    status.assert_called_with("test_namespace", "test_application", "test_id")
+
+
+def test_status_view(client, status):
+    resp = client.get("/status/view/test_namespace/test_application/test_id/")
+    assert resp.status_code == 200
     status.assert_called_with("test_namespace", "test_application", "test_id")
 
 
 def test_health(client):
     resp = client.get("/health")
     assert resp.status_code == 200
+
+
+def test_status_bootstrap_filter():
+    app = create_app(DEFAULT_CONFIG)
+    assert app.jinja_env.filters['status_bootstrap']('not_a_valid_status') == 'warning'
+    assert app.jinja_env.filters['status_bootstrap']('UNKNOWN') == 'warning'
+    assert app.jinja_env.filters['status_bootstrap']('SUCCESS') == 'success'
+    assert app.jinja_env.filters['status_bootstrap']('RUNNING') == 'info'
+    assert app.jinja_env.filters['status_bootstrap']('FAILED') == 'danger'

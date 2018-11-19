@@ -1,0 +1,89 @@
+{% extends "bootstrap/base.html" %}
+
+{% block title %}FIAAS Application Deployment Status{% endblock %}
+
+{% block content %}
+
+<div class="row">
+    <div class="col-md-1"></div>
+    <div class="col-md-10">
+        <div class="page-header">
+            <div class="media">
+                <div class="media-left">
+                    <img src="/static/fiaas_small.png">
+                </div>
+                <div class="media-body">
+                    <h1 class="media-heading"> Application Deployment Status</h1>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-4">
+                <div class="panel panel-primary">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">Namespace</h3>
+                    </div>
+                    <div class="panel-body">
+                        <strong>{{ namespace }}</strong>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="panel panel-primary">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">Application</h3>
+                    </div>
+                    <div class="panel-body">
+                        <strong>{{ application }}</strong>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="panel panel-primary">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">Deployment ID</h3>
+                    </div>
+                    <div class="panel-body">
+                        <strong>{{ deployment_id }}</strong>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="panel panel-{{ status_object.status | status_bootstrap }}">
+            <div class="panel-heading">
+                <h3>{{status_object.status}}</h3>
+            </div>
+            <div class="panel-body">
+                {{status_object.info}}
+            </div>
+        </div>
+        <p>
+            <a class="btn btn-info" role="button" data-toggle="collapse" href="#collapseLogs" aria-expanded="false" aria-controls="collapseLogs">
+                Logs
+            </a>
+            <div class="collapse in" id="collapseLogs">
+                <div class="well">
+                    {% if status_object.logs is defined %}
+                        {{ status_object.logs }}
+                    {% else %}
+                        Feature not implemented yet.
+                    {% endif %}
+                </div>
+            </div>
+        </p>
+        <p>
+            <a class="btn btn-default" role="button" data-toggle="collapse" href="#collapseRawObject" aria-expanded="false" aria-controls="collapseRawObject">
+                Raw status info
+            </a>
+            <div class="collapse" id="collapseRawObject">
+                <div class="well">
+                    {{status_object}}
+                </div>
+            </div>
+        </p>
+    </div>
+    <div class="col-md-1">
+    </div>
+</div>
+
+{% endblock %}

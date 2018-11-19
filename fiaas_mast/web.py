@@ -1,6 +1,6 @@
 import requests
 from flask import current_app as app
-from flask import url_for, jsonify, request, abort, Blueprint, make_response
+from flask import url_for, jsonify, request, abort, Blueprint, make_response, render_template
 from prometheus_client import generate_latest, CONTENT_TYPE_LATEST, Histogram
 from werkzeug.exceptions import UnprocessableEntity
 
@@ -21,6 +21,11 @@ generate_configmap_histogram = request_histogram.labels("generate_configmap")
 deploy_histogram = request_histogram.labels("deploy")
 metrics_histogram = request_histogram.labels("metrics")
 health_histogram = request_histogram.labels("health")
+
+BOOTSTRAP_STATUS = dict(UNKNOWN="warning",
+                        SUCCESS="success",
+                        RUNNING="info",
+                        FAILED="danger")
 
 
 @web.route("/health", methods=["GET"])
@@ -58,8 +63,17 @@ def deploy_handler():
 @web.route("/status/<namespace>/<application>/<deployment_id>/", methods=["GET"])
 @status_histogram.time()
 def status_handler(namespace, application, deployment_id):
-    response = status(namespace, application, deployment_id)
-    return jsonify(response._asdict())
+    status_object = status(namespace, application, deployment_id)
+    status_url = url_for('web.status_view',
+                         _external=True,
+                         _scheme="https",
+                         namespace=namespace,
+                         application=namespace,
+                         deployment_id=deployment_id)
+    response = {"status": status_object.status,
+                "info": "For additional deployment information go to: {}".format(status_url),
+                "deployment_status_url": status_url}
+    return jsonify(response)
 
 
 @web.route("/generate/paasbeta_application", methods=["POST"])
@@ -127,6 +141,22 @@ def metrics():
     resp = make_response(generate_latest())
     resp.mimetype = CONTENT_TYPE_LATEST
     return resp
+
+
+@web.route("/status/view/<namespace>/<application>/<deployment_id>/", methods=["GET"])
+@status_histogram.time()
+def status_view(namespace, application, deployment_id):
+    status_object = status(namespace, application, deployment_id)
+    return render_template('statuspage.html',
+                           status_object=status_object,
+                           namespace=namespace,
+                           application=application,
+                           deployment_id=deployment_id)
+
+
+@web.app_template_filter('status_bootstrap')
+def status_bootstrap_filter(statuz):
+    return BOOTSTRAP_STATUS[statuz] if statuz in BOOTSTRAP_STATUS else BOOTSTRAP_STATUS["UNKNOWN"]
 
 
 def get_http_client():
