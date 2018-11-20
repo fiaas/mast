@@ -183,6 +183,7 @@ def test_status(client, status):
     body = loads(resp.data.decode(resp.charset))
     assert all(x in body.keys() for x in ("status", "info", "deployment_status_url"))
     status.assert_called_with("test_namespace", "test_application", "test_id")
+    assert urlparse(body["deployment_status_url"]).path == "/status/view/test_namespace/test_application/test_id/"
 
 
 def test_status_view(client, status):

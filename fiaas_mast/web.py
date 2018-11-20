@@ -68,7 +68,7 @@ def status_handler(namespace, application, deployment_id):
                          _external=True,
                          _scheme="https",
                          namespace=namespace,
-                         application=namespace,
+                         application=application,
                          deployment_id=deployment_id)
     response = {"status": status_object.status,
                 "info": "For additional deployment information go to: {}".format(status_url),
