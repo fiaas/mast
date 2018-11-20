@@ -24,7 +24,10 @@ def create_app(config=None):
     configure_bootstrap(app)
     configure_logging()
 
-    csp = {"default-src": "'none'", "object-src": ["'none'"]}
+    csp = {'default-src': ["'self'", 'cdnjs.cloudflare.com'],
+           'script-src': "'self'",
+           'style-src': "'self'",
+           'object-src': "'none'"}
     Talisman(app, frame_options=DENY, content_security_policy=csp)
     return app
 
