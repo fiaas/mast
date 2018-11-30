@@ -25,14 +25,23 @@ def status_type(request):
     return request.param
 
 
-@pytest.mark.parametrize("expected", ("SUCCESS", "RUNNING", "FAILED"))
-def test_get_status(expected, get, status_type):
+@pytest.mark.parametrize("result,logs", (
+    ("SUCCESS", []),
+    ("RUNNING", []),
+    ("FAILED", []),
+    ("SUCCESS", ['logline 1', 'logline 2', 'more logs']),
+    ("RUNNING", ['logline 1', 'logline 2', 'more logs']),
+    ("FAILED", ['logline 1', 'logline 2', 'more logs']),
+))
+def test_get_status(result, logs, get, status_type):
     def modifier(data):
-        data["items"][0]["result"] = expected
+        data["items"][0]["result"] = result
+        data["items"][0]["logs"] = logs
 
     _setup_response(modifier, get, status_type)
-    result = status(NAMESPACE, APPLICATION_NAME, DEPLOYMENT_ID)
-    assert result.status == expected
+    status_resource = status(NAMESPACE, APPLICATION_NAME, DEPLOYMENT_ID)
+    assert status_resource.status == result
+    assert status_resource.logs == logs
 
 
 def test_empty_response(get, status_type):

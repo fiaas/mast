@@ -51,7 +51,7 @@ RAW_TAGS = {}
 @pytest.fixture(autouse=True)
 def status():
     with mock.patch("fiaas_mast.web.status") as mock_status:
-        mock_status.return_value = Status(status="status", info="info")
+        mock_status.return_value = Status(status="status", info="info", logs=['logline 1', 'logline 2', 'more logs'])
         yield mock_status
 
 

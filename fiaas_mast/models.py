@@ -9,7 +9,7 @@ Release = namedtuple("Release", [
     "raw_tags"
 ])
 
-Status = namedtuple("Status", ["status", "info"])
+Status = namedtuple("Status", ["status", "info", "logs"])
 
 ApplicationConfiguration = namedtuple("ApplicationConfiguration", [
     "application_data_url",
