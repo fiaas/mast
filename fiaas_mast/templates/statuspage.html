@@ -63,10 +63,10 @@
             </a>
             <div class="collapse in" id="collapseLogs">
                 <div class="well">
-                    {% if status_object.logs is defined %}
+                    {% if status_object.logs %}
                         {{ status_object.logs }}
                     {% else %}
-                        Feature not implemented yet.
+                        There are no logs available right now, please try again later.
                     {% endif %}
                 </div>
             </div>
