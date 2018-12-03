@@ -1,0 +1,5 @@
+.logs {
+    display: block;
+    font-family: monospace;
+    white-space: pre-line;
+}

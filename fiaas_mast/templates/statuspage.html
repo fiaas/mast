@@ -1,4 +1,8 @@
 {% extends "bootstrap/base.html" %}
+{% block styles %}
+{{super()}}
+  <link rel="stylesheet" href="{{url_for('static', filename='style.css')}}">
+{% endblock %}
 
 {% block title %}FIAAS Application Deployment Status{% endblock %}
 
@@ -62,12 +66,12 @@
                 Logs
             </a>
             <div class="collapse in" id="collapseLogs">
-                <div class="well">
-                    {% if status_object.logs %}
-                        {{ status_object.logs }}
-                    {% else %}
+                <div class="well logs">
+                    {%- for line in status_object.logs -%}
+                      {{ line }}
+                    {% else -%}
                         There are no logs available right now, please try again later.
-                    {% endif %}
+                    {%- endfor -%}
                 </div>
             </div>
         </p>
