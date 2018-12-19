@@ -15,6 +15,7 @@ metadata:
     certmanager.k8s.io/cluster-issuer: "letsencrypt"
 {{- end}}
     ingress.kubernetes.io/whitelist-source-range: {{ .Values.ingress.whitelistSourceRange }}
+    nginx.ingress.kubernetes.io/whitelist-source-range: {{ .Values.ingress.whitelistSourceRange }}
     {{- range $key, $value := .Values.annotations }}
     {{ $key }}: {{ $value }}
     {{- end }}
