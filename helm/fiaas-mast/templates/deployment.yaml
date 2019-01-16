@@ -71,7 +71,12 @@ spec:
 
 {{- if not .Values.besteffortQoS }}
         resources:
-{{ toYaml .Values.resources | indent 10 }}
+          limits:
+            cpu: 200m
+            memory: 128Mi
+          requests:
+            cpu: 200m
+            memory: 128Mi
 {{- end }}
       - name: heimdall-challenge
         image: "containers.schibsted.io/spt-infrastructure/heimdall-challenge:{{ .Values.heimdallChallengeTag }}"
@@ -98,8 +103,8 @@ spec:
         resources:
           limits:
             cpu: 50m
-            memory: 32Mi
+            memory: 16Mi
           requests:
             cpu: 50m
-            memory: 32Mi
+            memory: 16Mi
 {{- end }}
