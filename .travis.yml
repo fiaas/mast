@@ -6,7 +6,7 @@ services:
 - docker
 cache: pip
 install:
-  - bin/install
+  - bin/install && echo 'test'
 env:
   global:
   - DOCKER_USERNAME=captainfiaas
