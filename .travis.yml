@@ -1,20 +1,19 @@
 language: python
 python:
-  - '3.6'
+- '3.6'
 sudo: required
 services:
 - docker
 cache: pip
 install:
-  - bin/install && echo 'test'
+- bin/install
 env:
   global:
   - DOCKER_USERNAME=captainfiaas
-  - DOCKER_PASSWORD=not_set
+  - secure: ty5yVId/ovXR9O3yFDA9W7Z2AZEq13BLe9XWZ0BLrtDnYrxlJFJzI+CIzXYBimEfBQmwBHuFS5XNdtfO3hRifFm4PNjdb3jdzrdkWP/IDALAbVXB01+H+K7Iox7jSvragu8G75CNi8UVsViF/dCpfJ60xIZYdH7rRMMr3l4xCh99vGd0tMStMFoeqIUFQSOdxuBpJj4LVQv78OZku0l+D0ZavXm8NCWPoOfcJuAJbvysTUDM+ZIBr8+ajnQW9jMxrTID9Vwod9nucnW2Ad2lkxyaOMBEtTsp+nstPy2t7D/iO51goCfXq1SwxFKYdPjMDXtepjWm4rH9MxIxP3JUjhXUGm3abG6QNnI2bduNvKXL+Lmq4bYZXnKoE8NRO9zAkMxRsHYzYlp6IvjvLb1RrZTAmDr74/qvj8DvGzSrFad6S908L6bdgaTNTSsqXh6IVvK/aRTjKex9UZxIAlAn1nsw+j8yh8QFDxz5qRZZjgn9oj2abtDPJCqAEOfoaoXtGyFZJpE8drX5E53sxZ/NHl/tIIlRISBQVQ0vwLI+akss9DkUxRqlMboaxHqczmSu6jFCiiG67tPxkx8BZo9cwvQnZWfqAXO0lXz1BBqhzRI4T4C4U5iz9yuJ6I6/cs/17yBbp7016ajc6kEKZ1asPYcPQkPdGhTgcxS/qX2TcQA= # DOCKER_PASSWORD
 script:
-  - tox
-  - bin/docker_build
-after_success: tox -e coverage
+- tox
+- bin/docker_build
 deploy:
   provider: script
   script: bin/docker_push

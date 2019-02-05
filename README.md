@@ -5,7 +5,7 @@ Mast connects Spinnaker to FIAAS.
 [build_status_badge]: https://travis-ci.org/fiaas/mast.svg?branch=master "Build Status"
 [build_status]: https://travis-ci.org/fiaas/mast
 [codacy_grade_badge]: https://api.codacy.com/project/badge/Grade/59dbd659e01f4e04ad724ae4c8abe2d5 "Codacy Grade"
-[codacy_grade]: https://app.codacy.com/app/fiaas/skipper?utm_source=github.com&utm_medium=referral&utm_content=fiaas/mast&utm_campaign=badger
+[codacy_grade]: https://app.codacy.com/app/fiaas/mast?utm_source=github.com&utm_medium=referral&utm_content=fiaas/mast&utm_campaign=badger
 [codacy_coverage_badge]: https://api.codacy.com/project/badge/Coverage/59dbd659e01f4e04ad724ae4c8abe2d5 "Codacy Coverage"
 [codacy_coverage]: https://www.codacy.com/app/fiaas/mast?utm_source=github.com&utm_medium=referral&utm_content=fiaas/mast&utm_campaign=Badge_Coverage
 
