@@ -1,24 +1,23 @@
 language: python
-dist: trusty
 python:
   - '3.6'
+sudo: required
+services:
+- docker
 cache: pip
 install:
   - bin/install
-script:
-  - bin/ci_entrypoint
 env:
   global:
-    - DOCKER_REGISTRY="containers.schibsted.io"
-    - DOCKER_IMAGE="${DOCKER_REGISTRY}/${TRAVIS_REPO_SLUG}"
-    - HELM_VERSION="v2.8.2"
-    - secure: "REMOVED"
-after_failure:
-  - reports-publisher
-
-after_success:
-  - reports-publisher
-
-notifications:
-  webhooks:
-    - https://devhose.spt-engprod-pro.schibsted.io/devhose/travis
+  - DOCKER_USERNAME=captainfiaas
+  - DOCKER_PASSWORD=not_set
+script:
+  - tox
+  - bin/docker_build
+after_success: tox -e coverage
+deploy:
+  provider: script
+  script: bin/docker_push
+  skip_cleanup: true
+  on:
+    branch: master

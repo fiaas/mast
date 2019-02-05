@@ -1,5 +1,0 @@
-#!/usr/bin/env bash
-
-set -evuo pipefail
-
-sudo docker build --pull -t "${DOCKER_IMAGE}" "."

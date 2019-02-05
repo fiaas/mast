@@ -20,9 +20,5 @@ spec:
     targetPort: http
     protocol: TCP
     name: http
-  - port: {{ .Values.service.heimdallPort }}
-    targetPort: heimdall
-    protocol: TCP
-    name: heimdall
   selector:
     app: {{ template "name" . }}

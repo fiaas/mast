@@ -22,9 +22,9 @@ def version():
 
 setup(
     name="fiaas-mast",
-    url="https://github.schibsted.io/spt-infrastructure/fiaas-mast",
-    maintainer="Platform Delivery",
-    maintainer_email="platform-delivery@schibsted.com",
+    url="https://github.com/fiaas/mast",
+    maintainer="fiaas",
+    maintainer_email="fiaas@googlegroups.com",
     version=version(),
     packages=find_packages(),
     install_requires=[

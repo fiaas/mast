@@ -5,23 +5,20 @@ image:
   tag: latest
   pullPolicy: IfNotPresent
 
-heimdallChallengeTag: "REMOVED"
-
 service:
   name: nginx
   type: ClusterIP
   externalPort: 80
-  heimdallPort: 8765
 
 ingress:
-  host: "fiaas-mast.ingress.cre-pro.schibsted.io"
-  whitelistSourceRange: "34.252.111.164/32,52.18.42.59/32,52.211.211.121/32,52.48.97.122/32,54.194.251.142/32,54.76.178.193/32,52.30.77.67/32,52.17.229.60/32,52.30.18.198/32,52.208.55.195/32,52.48.200.41/32,52.209.202.216/32,52.210.95.229/32,52.51.116.240,34.252.181.27,34.249.154.80,54.171.239.199,52.213.80.26,52.18.78.125,52.215.55.246,54.229.236.160,34.241.96.172,52.211.118.35,52.214.190.98,34.250.140.187,52.213.102.51"
+  host: "fiaas-mast.ingress.local"
+  whitelistSourceRange: ""
+  enableTLS: false
 
 besteffortQoS: false # if set to true, will force BestEffort QoS by not setting any resource limits or requests, even if these values are  specified
 
 annotations: {} # can be used to set custom annotations on every resource
 
 secrets: # Must be set by user
-#  token: replace_me  # Heimdall token
-#  artifactoryUser: replace_me
-#  artifactoryPassword: replace_me
+  artifactoryUser: replace_me
+  artifactoryPassword: replace_me

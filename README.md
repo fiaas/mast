@@ -1,11 +1,13 @@
-FIAAS Mast
-==========
+# MAST [![build_status_badge]][build_status] [![codacy_grade_badge]][codacy_grade] [![codacy_coverage_badge]][codacy_coverage]
 
-<!-- Badger start badges -->
-[![Badger](https://badger.spt-engprod-pro.schibsted.io/badge/travis/spt-infrastructure/fiaas-mast)](https://travis.schibsted.io/spt-infrastructure/fiaas-mast) [![Badger](https://badger.spt-engprod-pro.schibsted.io/badge/coverage/spt-infrastructure/fiaas-mast)](https://reports.spt-engprod-pro.schibsted.io/#/spt-infrastructure/fiaas-mast?branch=master&type=push&daterange&daterange) [![Badger](https://badger.spt-engprod-pro.schibsted.io/badge/issues/spt-infrastructure/fiaas-mast)](https://reports.spt-engprod-pro.schibsted.io/#/spt-infrastructure/fiaas-mast?branch=master&type=push&daterange&daterange) [![Badger](https://badger.spt-engprod-pro.schibsted.io/badge/engprod/spt-infrastructure/fiaas-mast)](https://github.schibsted.io/spt-engprod/badger)
-<!-- Badger end badges -->
+Mast connects Spinnaker to FIAAS.
 
-FIAAS Mast connects Spinnaker to FIAAS.
+[build_status_badge]: https://travis-ci.org/fiaas/mast.svg?branch=master "Build Status"
+[build_status]: https://travis-ci.org/fiaas/mast
+[codacy_grade_badge]: https://api.codacy.com/project/badge/Grade/59dbd659e01f4e04ad724ae4c8abe2d5 "Codacy Grade"
+[codacy_grade]: https://app.codacy.com/app/fiaas/skipper?utm_source=github.com&utm_medium=referral&utm_content=fiaas/mast&utm_campaign=badger
+[codacy_coverage_badge]: https://api.codacy.com/project/badge/Coverage/59dbd659e01f4e04ad724ae4c8abe2d5 "Codacy Coverage"
+[codacy_coverage]: https://www.codacy.com/app/fiaas/mast?utm_source=github.com&utm_medium=referral&utm_content=fiaas/mast&utm_campaign=Badge_Coverage
 
 Receives HTTP requests from Spinnaker for deployments, and creates or updates a FIAAS-app object
 in the containing Kubernetes cluster.

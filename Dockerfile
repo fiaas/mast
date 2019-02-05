@@ -1,5 +1,5 @@
 FROM alpine:3.6
-LABEL maintainer="Platform Delivery <platform-delivery@schibsted.com>"
+LABEL maintainer="fiaas <fiaas@googlegroups.com>"
 
 RUN apk add --update ca-certificates git curl tini=0.14.0-r0 python3=3.6.5-r0 && \
     mkdir -p /opt/fiaas-mast && \

@@ -78,33 +78,3 @@ spec:
             cpu: 200m
             memory: 128Mi
 {{- end }}
-      - name: heimdall-challenge
-        image: "containers.schibsted.io/spt-infrastructure/heimdall-challenge:{{ .Values.heimdallChallengeTag }}"
-        imagePullPolicy: IfNotPresent
-        ports:
-        - containerPort: 8000
-          name: heimdall
-          protocol: TCP
-        livenessProbe:
-          httpGet:
-            path: /
-            port: heimdall
-        readinessProbe:
-          httpGet:
-            path: /
-            port: heimdall
-        env:
-        - name: TOKEN
-          valueFrom:
-            secretKeyRef:
-              name: {{.Release.Name}}-secret
-              key: heimdall_token
-{{- if not .Values.besteffortQoS }}
-        resources:
-          limits:
-            cpu: 50m
-            memory: 16Mi
-          requests:
-            cpu: 50m
-            memory: 16Mi
-{{- end }}
