@@ -1,7 +1,7 @@
 replicaCount: 2
 
 image:
-  repository: "containers.schibsted.io/spt-infrastructure/fiaas-mast"
+  repository: fiaas/mast
   tag: latest
   pullPolicy: IfNotPresent
 
