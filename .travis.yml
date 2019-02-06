@@ -14,6 +14,7 @@ env:
 script:
 - tox
 - bin/docker_build
+after_success: tox -e coverage
 deploy:
   provider: script
   script: bin/docker_push
