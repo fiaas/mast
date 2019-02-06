@@ -8,4 +8,4 @@ pip install --upgrade pip setuptools # Make sure to always be on latest version 
 echo Uninstalling mock, pytest and py
 pip uninstall -y mock pytest py # Get rid of old versions, so that we get the ones we want
 
-pip install -r requirements.txt
+pip install -e .[ci]
