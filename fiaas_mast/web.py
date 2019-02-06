@@ -97,15 +97,15 @@ def generate_application():
             data.get("raw_tags", {}))
     )
     return_body = {
-            "manifest": application.as_dict(),
-            "deployment_id": deployment_id,
-            "status_url": url_for("web.status_handler",
-                                  _external=True,
-                                  _scheme="https",
-                                  namespace=data["namespace"],
-                                  application=make_safe_name(data["application_name"]),
-                                  deployment_id=deployment_id)
-        }
+        "manifest": application.as_dict(),
+        "deployment_id": deployment_id,
+        "status_url": url_for("web.status_handler",
+                              _external=True,
+                              _scheme="https",
+                              namespace=data["namespace"],
+                              application=make_safe_name(data["application_name"]),
+                              deployment_id=deployment_id)
+    }
     return jsonify(return_body), 200
 
 

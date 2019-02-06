@@ -27,14 +27,12 @@ class TestApp(object):
         assert config.verify_ssl == cert
 
     @pytest.mark.parametrize("action,code", (
-            (lambda c: c.get("/"), 404),
-            (lambda c: c.get("/deploy/"), 405),
-            (lambda c: c.post("/deploy/"), 400),
-            (lambda c: c.post("/deploy/", data="{}", content_type="application/json"), 422),
-            (lambda c: c.post("/deploy/", data=dumps({"image": "test_image"}), content_type="application/json"), 422),
-            (
-                    lambda c: c.post("/deploy/", data=dumps({"config_url": "test_url"}),
-                                     content_type="application/json"), 422),
+        (lambda c: c.get("/"), 404),
+        (lambda c: c.get("/deploy/"), 405),
+        (lambda c: c.post("/deploy/"), 400),
+        (lambda c: c.post("/deploy/", data="{}", content_type="application/json"), 422),
+        (lambda c: c.post("/deploy/", data=dumps({"image": "test_image"}), content_type="application/json"), 422),
+        (lambda c: c.post("/deploy/", data=dumps({"config_url": "test_url"}), content_type="application/json"), 422),
     ))
     def test_error_handler(self, action, code):
         app = create_app(DEFAULT_CONFIG)

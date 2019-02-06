@@ -114,9 +114,9 @@ class TestCreateDeploymentInK8s(object):
             yield m
 
     @pytest.mark.parametrize("config,target_namespace,expected_namespace", (
-            (VALID_DEPLOY_CONFIG, ANY_NAMESPACE, ANY_NAMESPACE),
-            (VALID_DEPLOY_CONFIG_WITH_NAMESPACE, ANY_NAMESPACE, "custom-namespace"),
-            (VALID_DEPLOY_CONFIG_WITH_NAMESPACE_V3, "target-namespace", "target-namespace"),
+        (VALID_DEPLOY_CONFIG, ANY_NAMESPACE, ANY_NAMESPACE),
+        (VALID_DEPLOY_CONFIG_WITH_NAMESPACE, ANY_NAMESPACE, "custom-namespace"),
+        (VALID_DEPLOY_CONFIG_WITH_NAMESPACE_V3, "target-namespace", "target-namespace"),
     ))
     def test_deployer_creates_object_of_given_type(self,
                                                    get,
