@@ -5,7 +5,8 @@ from mock import MagicMock
 from fiaas_mast.application_generator import ApplicationGenerator
 from fiaas_mast.common import generate_random_uuid_string
 from fiaas_mast.common import make_safe_name
-from fiaas_mast.models import Release
+from fiaas_mast.configmap_generator import ConfigMapGenerator
+from fiaas_mast.models import Release, ApplicationConfiguration
 from fiaas_mast.paasbeta import PaasbetaApplication, PaasbetaApplicationSpec
 
 APPLICATION_NAME = "test-image"
@@ -289,7 +290,21 @@ class TestApplicationGenerator(object):
                                        VALID_DEPLOY_CONFIG_V3_WITH_ANNOTATIONS)
 
     def _annotations_verification(self, spinnaker_tags, raw_tags, exptected_paasbeta_result, deploy_config):
-        pass
+        http_client = _given_config_url_response_content_is(deploy_config)
+        generator = ApplicationGenerator(http_client, create_deployment_id=lambda: DEPLOYMENT_ID)
+        deployment_id, returned_paasbeta_application = generator.generate_application(
+            target_namespace=ANY_NAMESPACE,
+            release=Release(
+                VALID_IMAGE_NAME,
+                VALID_DEPLOY_CONFIG_URL,
+                make_safe_name(APPLICATION_NAME),
+                APPLICATION_NAME,
+                spinnaker_tags,
+                raw_tags
+            )
+        )
+        returned_annotations = returned_paasbeta_application.spec.config["annotations"]
+        assert returned_annotations == exptected_paasbeta_result
 
     def test_generator_without_annotations(self):
         spinnaker_tags = {}
@@ -335,6 +350,28 @@ class TestApplicationGenerator(object):
         returned_spec = returned_application.spec
         assert returned_spec.application == make_safe_name(app_name_with_underscores)
         assert returned_spec.config["annotations"]["mast"]["originalApplicationName"] == app_name_with_underscores
+
+
+class TestConfigMapGenerator(object):
+    def test_configmap_generator(self):
+        spinnaker_tags = {}
+        raw_tags = {'strategy.spinnaker.io/versioned': 'false'}
+
+        http_client = _given_config_url_response_content_is(APPLICATION_DATA)
+        generator = ConfigMapGenerator(http_client, create_deployment_id=lambda: DEPLOYMENT_ID)
+        deployment_id, returned_configmap = generator.generate_configmap(
+            target_namespace=ANY_NAMESPACE,
+            configmap_request=ApplicationConfiguration(
+                APPLICATION_DATA,
+                make_safe_name(APPLICATION_NAME),
+                APPLICATION_NAME,
+                spinnaker_tags,
+                raw_tags
+            )
+        )
+        expected_configmap = BASE_CONFIGMAP
+        expected_configmap["metadata"]["namespace"] = ANY_NAMESPACE
+        assert returned_configmap == expected_configmap
 
 
 class TestUUID:
