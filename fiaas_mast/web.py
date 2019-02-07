@@ -55,7 +55,7 @@ def deploy_handler():
     )
     response = status(namespace, application_name, deployment_id)
     return jsonify(response._asdict()), 201, {
-        "Location": url_for("web.status_handler", _external=True, _scheme="https", namespace=namespace,
+        "Location": url_for("web.status_handler", _external=True, _scheme=_get_scheme(), namespace=namespace,
                             application=application_name,
                             deployment_id=deployment_id)}
 
@@ -66,7 +66,7 @@ def status_handler(namespace, application, deployment_id):
     status_object = status(namespace, application, deployment_id)
     status_url = url_for('web.status_view',
                          _external=True,
-                         _scheme="https",
+                         _scheme=_get_scheme(),
                          namespace=namespace,
                          application=application,
                          deployment_id=deployment_id)
@@ -101,7 +101,7 @@ def generate_application():
         "deployment_id": deployment_id,
         "status_url": url_for("web.status_handler",
                               _external=True,
-                              _scheme="https",
+                              _scheme=_get_scheme(),
                               namespace=data["namespace"],
                               application=make_safe_name(data["application_name"]),
                               deployment_id=deployment_id)
@@ -164,3 +164,7 @@ def get_http_client():
     http_client.auth = (app.config['ARTIFACTORY_USER'], app.config['ARTIFACTORY_PWD'])
 
     return http_client
+
+
+def _get_scheme():
+    return app.config.get('scheme', 'https')
