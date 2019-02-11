@@ -25,7 +25,7 @@ spec:
             backend:
               serviceName: {{ template "fullname" . }}
               servicePort: http
-{{- if eq .Values.ingress.enableTLS }}
+{{- if .Values.ingress.enableTLS }}
   tls:
   - hosts:
     - {{ .Values.ingress.host }}
