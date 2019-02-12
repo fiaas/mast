@@ -14,6 +14,7 @@ ingress:
   host: "fiaas-mast.ingress.local"
   whitelistSourceRange: ""
   enableTLS: false
+  certIssuer: ""
 
 besteffortQoS: false # if set to true, will force BestEffort QoS by not setting any resource limits or requests, even if these values are  specified
 
