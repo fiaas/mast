@@ -8,6 +8,9 @@ metadata:
     release: "{{ .Release.Name }}"
     heritage: "{{ .Release.Service }}"
   annotations:
+{{- if .Values.ingress.enableTLS }}
+    kubernetes.io/tls-acme: "true"
+{{- end}}
 {{- if .Values.ingress.certIssuer }}
     certmanager.k8s.io/cluster-issuer: "{{ .Values.ingress.certIssuer }}"
 {{- end}}
