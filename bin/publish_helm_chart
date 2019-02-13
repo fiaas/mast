@@ -6,7 +6,16 @@ if [ $PUBLISH_HELM_CHART != true ]; then
     echo "publish flag not set"
     exit 1
 fi
-echo Publishing helm chart
+
+
+echo "Installing helm"
+
+curl https://raw.githubusercontent.com/kubernetes/helm/master/scripts/get > get_helm.sh
+chmod 700 get_helm.sh
+./get_helm.sh --version "${HELM_VERSION}"
+helm init --client-only
+
+echo "Publishing helm chart"
 
 output="$(cd helm; helm package fiaas-mast)"
 echo $output
