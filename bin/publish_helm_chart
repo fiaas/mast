@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+
+set -evuo pipefail
+
+if [ $PUBLISH_HELM_CHART != true ]; then
+    echo "publish flag not set"
+    exit 1
+fi
+echo Publishing helm chart
+
+output="$(cd helm; helm package fiaas-mast)"
+echo $output
+package=`expr "$output" : 'Successfully packaged chart and saved it to: \(.*\)'`
+echo $package
+
+git clone https://github.com/fiaas/helm helm-repo
+mv $package helm-repo/
+cd helm-repo/ && helm repo index . --url https://fiaas.github.io/helm/ && git add . && git commit -a -m "Release fiaas-mast" && git push https://${GIT_USERNAME}:${GIT_APITOKEN}@github.com/fiaas/helm && echo "Successfully pushed helm chart"
+
