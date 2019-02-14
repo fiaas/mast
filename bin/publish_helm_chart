@@ -12,7 +12,7 @@ helm init --client-only
 echo "Publishing helm chart"
 
 VERSION=$(python setup.py --version)
-sed -i 's/tag: "latest"/tag: "'"${VERSION/+/-}"'"/g' helm/fiaas-mast/values.yaml
+sed -i 's/tag: latest/tag: '"${VERSION/+/-}"'/g' helm/fiaas-mast/values.yaml
 
 output="$(cd helm; helm package fiaas-mast)"
 package=`expr "$output" : 'Successfully packaged chart and saved it to: \(.*\)'`
