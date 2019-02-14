@@ -17,12 +17,18 @@ helm init --client-only
 
 echo "Publishing helm chart"
 
+sed -i 's/tag: "latest"/tag: "'"${VERSION/+/-}"'"/g' helm/fiaas-mast/values.yaml
+
 output="$(cd helm; helm package fiaas-mast)"
-echo $output
 package=`expr "$output" : 'Successfully packaged chart and saved it to: \(.*\)'`
-echo $package
 
 git clone https://github.com/fiaas/helm helm-repo
 mv $package helm-repo/
-cd helm-repo/ && helm repo index . --url https://fiaas.github.io/helm/ && git add . && git commit -a -m "Release fiaas-mast" && git push https://${GIT_USERNAME}:${GIT_APITOKEN}@github.com/fiaas/helm && echo "Successfully pushed helm chart"
+cd helm-repo/
+helm repo index . --url https://fiaas.github.io/helm/
+git add .
+git commit -a -m "Release fiaas-mast ${VERSION/+/-}"
+git push https://${GIT_USERNAME}:${GIT_APITOKEN}@github.com/fiaas/helm
+
+echo "Successfully pushed helm chart"
 
