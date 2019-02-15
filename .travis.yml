@@ -20,7 +20,7 @@ after_success:
 - bin/tag_release
 deploy:
   provider: script
-  script: bin/docker_push && bin/publish_helm_chart
+  script: VERSION=$(python setup.py --version) bash -c 'bin/docker_push && bin/publish_helm_chart'
   skip_cleanup: true
   on:
     branch: master
