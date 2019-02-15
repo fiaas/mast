@@ -64,4 +64,3 @@ export APISERVER_CA_CERT="bar"
 * Target: The specific test-file you wish to run
 * Python Interpreter: Make sure to add the virtualenv as an SDK, and use that interpreter
 
-test
