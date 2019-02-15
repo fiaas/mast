@@ -15,10 +15,13 @@ env:
 script:
 - tox
 - bin/docker_build
-after_success: tox -e coverage
+after_success:
+- tox -e coverage
+- bin/tag_release
 deploy:
   provider: script
   script: bin/docker_push && bin/publish_helm_chart
   skip_cleanup: true
   on:
     branch: master
+    tags: true
