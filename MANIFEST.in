@@ -1,0 +1,2 @@
+graft fiaas_mast/static
+graft fiaas_mast/templates

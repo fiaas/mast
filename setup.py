@@ -55,6 +55,7 @@ setup(
     maintainer_email="fiaas@googlegroups.com",
     version=version(),
     packages=find_packages(),
+    include_package_data=True,
     install_requires=GEN_REQ,
     extras_require={
         "dev": ['yapf==0.16.1'] + TEST_REQ + CODE_QUALITY_REQ + CI_REQ,
