@@ -247,12 +247,44 @@ class TestApplicationGenerator(object):
                 make_safe_name(APPLICATION_NAME),
                 APPLICATION_NAME,
                 spinnaker_tags,
-                raw_tags
+                raw_tags,
+                {}
             )
         )
         expected_paasbeta_application = BASE_PAASBETA_APPLICATION
         expected_paasbeta_application["metadata"]["namespace"] = expected_namespace
+
         assert returned_paasbeta_application.as_dict() == expected_paasbeta_application
+
+    @pytest.mark.parametrize(
+        "config,target_namespace,expected_namespace", ((VALID_DEPLOY_CONFIG_V3, ANY_NAMESPACE, ANY_NAMESPACE),
+                                                       (VALID_DEPLOY_CONFIG_V3, "custom-namespace",
+                                                        "custom-namespace"),)
+    )
+    def test_generator_annotates_moniker_application(self, config, target_namespace, expected_namespace):
+        spinnaker_tags = {}
+        raw_tags = {}
+        metadata_annotation = {"moniker.spinnaker.io/application": "unicorn"}
+
+        http_client = _given_config_url_response_content_is(config)
+        generator = ApplicationGenerator(http_client, create_deployment_id=lambda: DEPLOYMENT_ID)
+        deployment_id, returned_application = generator.generate_application(
+            target_namespace=target_namespace,
+            release=Release(
+                VALID_IMAGE_NAME,
+                VALID_DEPLOY_CONFIG_URL,
+                make_safe_name(APPLICATION_NAME),
+                APPLICATION_NAME,
+                spinnaker_tags,
+                raw_tags,
+                metadata_annotation
+            )
+        )
+        expected_application = BASE_PAASBETA_APPLICATION
+        expected_application["metadata"]["namespace"] = expected_namespace
+        expected_application["metadata"]["annotations"] = metadata_annotation
+
+        assert returned_application.as_dict() == expected_application
 
     def test_generator_adds_spinnaker_annotations(self):
         spinnaker_tags = {'foo': 'bar', 'numeric': 1337}
@@ -300,7 +332,8 @@ class TestApplicationGenerator(object):
                 make_safe_name(APPLICATION_NAME),
                 APPLICATION_NAME,
                 spinnaker_tags,
-                raw_tags
+                raw_tags,
+                {}
             )
         )
         returned_annotations = returned_paasbeta_application.spec.config["annotations"]
@@ -320,7 +353,8 @@ class TestApplicationGenerator(object):
                 make_safe_name(APPLICATION_NAME),
                 APPLICATION_NAME,
                 spinnaker_tags,
-                raw_tags
+                raw_tags,
+                ""
             )
         )
         assert "annotations" not in returned_paasbeta_application.spec.config
@@ -340,7 +374,8 @@ class TestApplicationGenerator(object):
                 make_safe_name(app_name_with_underscores),
                 app_name_with_underscores,
                 spinnaker_tags,
-                raw_tags
+                raw_tags,
+                ""
             )
         )
 
@@ -366,7 +401,8 @@ class TestConfigMapGenerator(object):
                 make_safe_name(APPLICATION_NAME),
                 APPLICATION_NAME,
                 spinnaker_tags,
-                raw_tags
+                raw_tags,
+                {}
             )
         )
         expected_configmap = BASE_CONFIGMAP

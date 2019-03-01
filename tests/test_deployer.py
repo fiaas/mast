@@ -136,7 +136,8 @@ class TestCreateDeploymentInK8s(object):
                 APPLICATION_NAME,
                 APPLICATION_NAME,
                 SPINNAKER_TAGS,
-                RAW_TAGS
+                RAW_TAGS,
+                ""
             )
         )
 
@@ -179,7 +180,8 @@ class TestCreateDeploymentInK8s(object):
                 APPLICATION_NAME,
                 APPLICATION_NAME,
                 SPINNAKER_TAGS,
-                RAW_TAGS
+                RAW_TAGS,
+                ""
             )
         )
         expected_spec = spec_model(
