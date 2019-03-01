@@ -51,7 +51,8 @@ def deploy_handler():
             make_safe_name(data["application_name"]),
             data["application_name"],
             data.get("spinnaker_tags", {}),
-            data.get("raw_tags", {}))
+            data.get("raw_tags", {}),
+            data.get("spinnaker_application", ""))
     )
     response = status(namespace, application_name, deployment_id)
     return jsonify(response._asdict()), 201, {
@@ -94,7 +95,8 @@ def generate_application():
             make_safe_name(data["application_name"]),
             data["application_name"],
             data.get("spinnaker_tags", {}),
-            data.get("raw_tags", {}))
+            data.get("raw_tags", {}),
+            data.get("spinnaker_application", ""))
     )
     return_body = {
         "manifest": application.as_dict(),
@@ -126,7 +128,8 @@ def generate_configmap_application():
             make_safe_name(data["application_name"]),
             data["application_name"],
             data.get("spinnaker_tags", {}),
-            data.get("raw_tags", {}))
+            data.get("raw_tags", {}),
+            data.get("spinnaker_application", ""))
     )
     return_body = {
         "manifest": config_map,
