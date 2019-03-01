@@ -48,6 +48,8 @@ class MetadataGenerator:
         annotations = {}
         if generator_object.spinnaker_application != "":
             annotations["moniker.spinnaker.io/application"] = generator_object.spinnaker_application
+            annotations["moniker.spinnaker.io/cluster"] = application_name
+
         # TODO: Why doesn't annotations default to a dict?
         metadata = ObjectMeta(name=application_name, namespace=namespace, labels=labels, annotations=annotations)
 

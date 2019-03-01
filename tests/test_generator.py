@@ -266,6 +266,7 @@ class TestApplicationGenerator(object):
         spinnaker_tags = {}
         raw_tags = {}
         spinnaker_application = "unicorn"
+        safe_application_name = make_safe_name(APPLICATION_NAME)
 
         http_client = _given_config_url_response_content_is(config)
         generator = ApplicationGenerator(http_client, create_deployment_id=lambda: DEPLOYMENT_ID)
@@ -284,6 +285,7 @@ class TestApplicationGenerator(object):
         expected_application = BASE_PAASBETA_APPLICATION
         expected_application["metadata"]["namespace"] = expected_namespace
         expected_application["metadata"]["annotations"] = {"moniker.spinnaker.io/application": spinnaker_application}
+        expected_application["metadata"]["annotations"]["moniker.spinnaker.io/cluster"] = safe_application_name
 
         assert returned_application.as_dict() == expected_application
 
