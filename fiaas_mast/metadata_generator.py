@@ -48,13 +48,6 @@ class MetadataGenerator:
         annotations = generator_object.metadata_annotations
         # TODO: Why doesn't annotations default to a dict?
         metadata = ObjectMeta(name=application_name, namespace=namespace, labels=labels, annotations=annotations)
-
-        if generator_object.spinnaker_tags:
-            dict_merge(metadata.annotations, self.spinnaker_annotations(generator_object))
-
-        if generator_object.raw_tags:
-            dict_merge(metadata.annotations, self.raw_annotations(generator_object))
-
         return metadata
 
     def get_annotation_objects(self):
