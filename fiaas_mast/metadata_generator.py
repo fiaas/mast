@@ -50,7 +50,7 @@ class MetadataGenerator:
         metadata = ObjectMeta(name=application_name, namespace=namespace, labels=labels, annotations=annotations)
 
         if generator_object.spinnaker_tags:
-            metadata.annotations = self.spinnaker_annotations(generator_object)
+            dict_merge(metadata.annotations, self.spinnaker_annotations(generator_object))
 
         if generator_object.raw_tags:
             dict_merge(metadata.annotations, self.raw_annotations(generator_object))
