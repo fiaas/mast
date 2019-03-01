@@ -52,7 +52,7 @@ def deploy_handler():
             data["application_name"],
             data.get("spinnaker_tags", {}),
             data.get("raw_tags", {}),
-            data.get("spinnaker_application", ""))
+            data.get("metadata_annotations", {}))
     )
     response = status(namespace, application_name, deployment_id)
     return jsonify(response._asdict()), 201, {
@@ -96,7 +96,7 @@ def generate_application():
             data["application_name"],
             data.get("spinnaker_tags", {}),
             data.get("raw_tags", {}),
-            data.get("spinnaker_application", ""))
+            data.get("metadata_annotations", {}))
     )
     return_body = {
         "manifest": application.as_dict(),
@@ -129,7 +129,7 @@ def generate_configmap_application():
             data["application_name"],
             data.get("spinnaker_tags", {}),
             data.get("raw_tags", {}),
-            data.get("spinnaker_application", ""))
+            data.get("metadata_annotations", {}))
     )
     return_body = {
         "manifest": config_map,
