@@ -354,7 +354,7 @@ class TestApplicationGenerator(object):
                 APPLICATION_NAME,
                 spinnaker_tags,
                 raw_tags,
-                ""
+                {}
             )
         )
         assert "annotations" not in returned_paasbeta_application.spec.config
@@ -375,7 +375,7 @@ class TestApplicationGenerator(object):
                 app_name_with_underscores,
                 spinnaker_tags,
                 raw_tags,
-                ""
+                {}
             )
         )
 
