@@ -390,7 +390,8 @@ class TestApplicationGenerator(object):
 class TestConfigMapGenerator(object):
     def test_configmap_generator(self):
         spinnaker_tags = {}
-        raw_tags = {'strategy.spinnaker.io/versioned': 'false'}
+        raw_tags = {}
+        metadata_annotations = {'strategy.spinnaker.io/versioned': 'false'}
 
         http_client = _given_config_url_response_content_is(APPLICATION_DATA)
         generator = ConfigMapGenerator(http_client, create_deployment_id=lambda: DEPLOYMENT_ID)
@@ -402,7 +403,7 @@ class TestConfigMapGenerator(object):
                 APPLICATION_NAME,
                 spinnaker_tags,
                 raw_tags,
-                {}
+                metadata_annotations
             )
         )
         expected_configmap = BASE_CONFIGMAP
