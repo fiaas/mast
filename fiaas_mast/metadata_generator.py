@@ -45,7 +45,7 @@ class MetadataGenerator:
     def metadata(self, generator_object, namespace, deployment_id):
         application_name = generator_object.application_name
         labels = {"fiaas/deployment_id": deployment_id, "app": application_name}
-        annotations = generator_object.metadata_annotations
+        annotations = {k: str(v) for k, v in generator_object.metadata_annotations.items()}
         # TODO: Why doesn't annotations default to a dict?
         metadata = ObjectMeta(name=application_name, namespace=namespace, labels=labels, annotations=annotations)
         return metadata

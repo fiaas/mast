@@ -264,7 +264,19 @@ class TestApplicationGenerator(object):
     def test_generator_annotates_moniker_application(self, config, target_namespace, expected_namespace):
         spinnaker_tags = {}
         raw_tags = {}
-        metadata_annotation = {"moniker.spinnaker.io/application": "unicorn"}
+        metadata_annotation = {
+            "moniker.spinnaker.io/application": "unicorn",
+            "this_is_a_number": 3,
+            "this_is_a_floating_point_number": 3.14,
+            "this_is_a_bool": True,
+        }
+
+        expected_metadata_annotations = {
+            "moniker.spinnaker.io/application": "unicorn",
+            "this_is_a_number": "3",
+            "this_is_a_floating_point_number": "3.14",
+            "this_is_a_bool": "True",
+        }
 
         http_client = _given_config_url_response_content_is(config)
         generator = ApplicationGenerator(http_client, create_deployment_id=lambda: DEPLOYMENT_ID)
@@ -282,7 +294,7 @@ class TestApplicationGenerator(object):
         )
         expected_application = BASE_PAASBETA_APPLICATION
         expected_application["metadata"]["namespace"] = expected_namespace
-        expected_application["metadata"]["annotations"] = metadata_annotation
+        expected_application["metadata"]["annotations"] = expected_metadata_annotations
 
         assert returned_application.as_dict() == expected_application
 
@@ -354,7 +366,7 @@ class TestApplicationGenerator(object):
                 APPLICATION_NAME,
                 spinnaker_tags,
                 raw_tags,
-                ""
+                {}
             )
         )
         assert "annotations" not in returned_paasbeta_application.spec.config
@@ -375,7 +387,7 @@ class TestApplicationGenerator(object):
                 app_name_with_underscores,
                 spinnaker_tags,
                 raw_tags,
-                ""
+                {}
             )
         )
 
