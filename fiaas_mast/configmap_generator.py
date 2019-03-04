@@ -12,6 +12,6 @@ class ConfigMapGenerator(MetadataGenerator):
             "apiVersion": "v1",
             "kind": "ConfigMap",
             "metadata": metadata.as_dict(),
-            "data": {k: str(v) for k, v in data.items()},
+            "data": {k: str(v) for k, v in data.items()} if data else {},
         }
         return deployment_id, configmap_manifest

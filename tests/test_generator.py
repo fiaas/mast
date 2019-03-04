@@ -80,6 +80,28 @@ float_variable: 3.14
 boolean_variable: True
 """
 
+EMPTY_BASE_CONFIGMAP = {
+    "data": {
+    },
+    "kind": "ConfigMap",
+    "apiVersion": "v1",
+    "metadata": {
+        "annotations": {
+            "strategy.spinnaker.io/versioned": "false"
+        },
+        "labels": {
+            "app": "test-image",
+            "fiaas/deployment_id": "deadbeef-abba-cafe-1337-baaaaaaaaaad"
+        },
+        "name": "test-image",
+        "namespace": "any-namespace",
+        "ownerReferences": []
+    }
+}
+
+EMPTY_APPLICATION_DATA = """
+"""
+
 BASE_PAASBETA_APPLICATION = {
     "apiVersion": "schibsted.io/v1beta",
     "kind": "PaasbetaApplication",
@@ -425,6 +447,28 @@ class TestConfigMapGenerator(object):
             )
         )
         expected_configmap = BASE_CONFIGMAP
+        expected_configmap["metadata"]["namespace"] = ANY_NAMESPACE
+        assert returned_configmap == expected_configmap
+
+    def test_empty_configmap_generator(self):
+        spinnaker_tags = {}
+        raw_tags = {}
+        metadata_annotations = {'strategy.spinnaker.io/versioned': 'false'}
+
+        http_client = _given_config_url_response_content_is(EMPTY_APPLICATION_DATA)
+        generator = ConfigMapGenerator(http_client, create_deployment_id=lambda: DEPLOYMENT_ID)
+        deployment_id, returned_configmap = generator.generate_configmap(
+            target_namespace=ANY_NAMESPACE,
+            configmap_request=ApplicationConfiguration(
+                EMPTY_APPLICATION_DATA,
+                make_safe_name(APPLICATION_NAME),
+                APPLICATION_NAME,
+                spinnaker_tags,
+                raw_tags,
+                metadata_annotations
+            )
+        )
+        expected_configmap = EMPTY_BASE_CONFIGMAP
         expected_configmap["metadata"]["namespace"] = ANY_NAMESPACE
         assert returned_configmap == expected_configmap
 
