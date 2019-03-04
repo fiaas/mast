@@ -52,7 +52,10 @@ healthchecks:
 
 BASE_CONFIGMAP = {
     "data": {
-        "rules.yml": "# put your recording rules here"
+        "rules.yml": "# put your recording rules here",
+        "int_variable": "42",
+        "float_variable": "3.14",
+        "boolean_variable": "True"
     },
     "kind": "ConfigMap",
     "apiVersion": "v1",
@@ -72,6 +75,9 @@ BASE_CONFIGMAP = {
 
 APPLICATION_DATA = """
 rules.yml: '# put your recording rules here'
+int_variable: 42
+float_variable: 3.14
+boolean_variable: True
 """
 
 BASE_PAASBETA_APPLICATION = {
