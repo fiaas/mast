@@ -64,3 +64,7 @@ export APISERVER_CA_CERT="bar"
 * Target: The specific test-file you wish to run
 * Python Interpreter: Make sure to add the virtualenv as an SDK, and use that interpreter
 
+## Release Process
+
+When changes are merged to master the master branch is built using (travis)[https://travis-ci.org/fiaas/mast]. The build generates a docker image that is published to the (fiaas/mast)[https://cloud.docker.com/u/fiaas/repository/docker/fiaas/mast] respository on docker hub and is publicly available.
+Additionally a helm chart is created and published to the (fiaas helm repository)[https://github.com/fiaas/helm].
