@@ -60,6 +60,7 @@ BASE_CONFIGMAP = {
     "kind": "ConfigMap",
     "apiVersion": "v1",
     "metadata": {
+        "finalizers": [],
         "annotations": {
             "strategy.spinnaker.io/versioned": "false"
         },
@@ -86,6 +87,7 @@ EMPTY_BASE_CONFIGMAP = {
     "kind": "ConfigMap",
     "apiVersion": "v1",
     "metadata": {
+        "finalizers": [],
         "annotations": {
             "strategy.spinnaker.io/versioned": "false"
         },
@@ -106,6 +108,7 @@ BASE_PAASBETA_APPLICATION = {
     "apiVersion": "schibsted.io/v1beta",
     "kind": "PaasbetaApplication",
     "metadata": {
+        "finalizers": [],
         "labels": {
             "app": "test-image",
             "fiaas/deployment_id": "deadbeef-abba-cafe-1337-baaaaaaaaaad"
