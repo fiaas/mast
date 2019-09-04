@@ -10,6 +10,6 @@ chmod +x "${gitversion}"
 echo "gitversion ready at ${gitversion}"
 "${gitversion}" --version
 GIT_TAG=$("${gitversion}" --prefix=v bump auto 2>&1|tail -1)
-git push "https://${GITHUBKEY}@github.com/fiaas/skipper" "${GIT_TAG}"
+git push "https://${GITHUBKEY}@github.com/fiaas/mast" "${GIT_TAG}"
 echo "successfully tagged release"
 echo "${GIT_TAG}"
