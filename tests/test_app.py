@@ -27,6 +27,7 @@ DEFAULT_CONFIG = {
     'APISERVER_CA_CERT': "/path/to/default.crt",
     'ARTIFACTORY_USER': "default_username",
     'ARTIFACTORY_PWD': "default_password",
+    'ARTIFACTORY_ORIGIN': "https://artifactory.example.com",
 }
 
 
@@ -63,5 +64,6 @@ class TestApp(object):
         monkeypatch.setenv('APISERVER_CA_CERT', "/path/to/cert.crt")
         monkeypatch.setenv('ARTIFACTORY_USER', "default_username")
         monkeypatch.setenv('ARTIFACTORY_PWD', "default_password")
+        monkeypatch.setenv('ARTIFACTORY_ORIGIN', "https://artifactory.example.com")
         app = create_app()
         assert app.config['APISERVER_TOKEN'] == token

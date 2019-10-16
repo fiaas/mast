@@ -79,6 +79,11 @@ spec:
             secretKeyRef:
               name: {{.Release.Name}}-secret
               key: artifactory_password
+        - name: ARTIFACTORY_ORIGIN
+          valueFrom:
+            secretKeyRef:
+              name: {{.Release.Name}}-secret
+              key: artifactory_origin
         - name: NAMESPACE
           valueFrom:
             fieldRef:

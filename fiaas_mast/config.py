@@ -25,9 +25,12 @@ class Config(object):
 
         self.ARTIFACTORY_USER = os.environ.get('ARTIFACTORY_USER')
         self.ARTIFACTORY_PWD = os.environ.get('ARTIFACTORY_PWD')
-        if self.ARTIFACTORY_USER is None or self.ARTIFACTORY_PWD is None:
+        self.ARTIFACTORY_ORIGIN = os.environ.get('ARTIFACTORY_ORIGIN')
+        if self.ARTIFACTORY_USER is None or self.ARTIFACTORY_PWD is None or self.ARTIFACTORY_ORIGIN is None:
             raise RuntimeError(
-                'You need to pass the \'ARTIFACTORY_USER\' and \'ARTIFACTORY_PWD\' environment variables')
+                'You need to pass the \'ARTIFACTORY_USER\', \'ARTIFACTORY_PWD\' and \'ARTIFACTORY_ORIGIN\' '
+                'environment variables'
+            )
         self.scheme = os.environ.get('URL_SCHEME', 'https')
 
     def get_apiserver_token(self):

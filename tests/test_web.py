@@ -25,6 +25,8 @@ from fiaas_mast.configmap_generator import ConfigMapGenerator
 from fiaas_mast.deployer import Deployer
 from fiaas_mast.fiaas import FiaasApplication
 from fiaas_mast.models import Release, Status, ApplicationConfiguration
+from fiaas_mast.web import ArtifactoryAuth
+from requests.models import Request
 
 DEFAULT_NAMESPACE = "default-namespace"
 
@@ -57,6 +59,7 @@ DEFAULT_CONFIG = {
     'APISERVER_CA_CERT': "/path/to/default.crt",
     'ARTIFACTORY_USER': "default_username",
     'ARTIFACTORY_PWD': "default_password",
+    'ARTIFACTORY_ORIGIN': "https://www.example.com",
 }
 
 SPINNAKER_TAGS = {}
@@ -219,3 +222,25 @@ def test_status_bootstrap_filter():
     assert app.jinja_env.filters['status_bootstrap']('SUCCESS') == 'success'
     assert app.jinja_env.filters['status_bootstrap']('RUNNING') == 'info'
     assert app.jinja_env.filters['status_bootstrap']('FAILED') == 'danger'
+
+
+def test_artifactory_auth_for_allowed_origin():
+    auth = ArtifactoryAuth("username", "password", "https://artifactory.example.com")
+    input_request = Request(url="https://artifactory.example.com/some/path")
+    result = auth(input_request)
+    assert 'Authorization' in result.headers
+
+
+@pytest.mark.parametrize(
+    "url",
+    (
+        "http://artifactory.example.com/some/path",
+        "https://foo.example.com/some/path",
+        "https://artifactory.example.com.other.com",
+    )
+)
+def test_artifactory_auth_for_disallowed_origin(url):
+    auth = ArtifactoryAuth("username", "password", "https://artifactory.example.com")
+    input_request = Request(url=url)
+    result = auth(input_request)
+    assert 'Authorization' not in result.headers
