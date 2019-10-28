@@ -13,7 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from .common import select_models, generate_random_uuid_string
+from .common import select_models, generate_random_uuid_string, ClientError
 from .metadata_generator import MetadataGenerator
 
 
@@ -34,6 +34,8 @@ class ApplicationGenerator(MetadataGenerator):
 
     def spec(self, release):
         config = self.download_config(release.config_url)
+        if not config:
+            raise ClientError("Invalid config: {}".format(release.config_url))
 
         super().merge_tags(release, config)
 
