@@ -67,6 +67,7 @@ complain if an interpreter is not available.
 
 Set the following env variables to run locally:
 ```
+export ARTIFACTORY_ORIGIN="https://artifactory.yourdomain.com"
 export ARTIFACTORY_USER="user.name@schibsted.com"
 export ARTIFACTORY_PWD="artifactory-api-key"
 export APISERVER_TOKEN="foo"

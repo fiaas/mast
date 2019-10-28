@@ -18,6 +18,8 @@ from flask import current_app as app
 from flask import url_for, jsonify, request, abort, Blueprint, make_response, render_template
 from prometheus_client import generate_latest, CONTENT_TYPE_LATEST, Histogram
 from werkzeug.exceptions import UnprocessableEntity
+from requests.auth import HTTPBasicAuth
+from urllib.parse import urlparse
 
 from .application_generator import ApplicationGenerator
 from .common import make_safe_name
@@ -179,10 +181,26 @@ def status_bootstrap_filter(statuz):
 
 def get_http_client():
     http_client = requests.Session()
-    http_client.auth = (app.config['ARTIFACTORY_USER'], app.config['ARTIFACTORY_PWD'])
+    http_client.auth = ArtifactoryAuth(
+        app.config['ARTIFACTORY_USER'], app.config['ARTIFACTORY_PWD'], app.config['ARTIFACTORY_ORIGIN']
+    )
 
     return http_client
 
 
 def _get_scheme():
     return app.config.get('scheme', 'https')
+
+
+class ArtifactoryAuth(HTTPBasicAuth):
+    def __init__(self, username, password, origin):
+        super(ArtifactoryAuth, self).__init__(username, password)
+        self.origin = origin
+
+    def __call__(self, r):
+        parsed_url = urlparse(r.url)
+        request_origin = "{}://{}".format(parsed_url.scheme, parsed_url.netloc)
+        if request_origin != self.origin:
+            return r
+
+        return super(ArtifactoryAuth, self).__call__(r)

@@ -25,22 +25,26 @@ class TestConfig(object):
         certificate = "/path/to/the/ca.crt"
         username = "artifactory_username"
         password = "artifactory_password"
+        origin = "https://artifactory.example.com"
         monkeypatch.setenv("APISERVER_TOKEN", token)
         monkeypatch.setenv("APISERVER_CA_CERT", certificate)
         monkeypatch.setenv("ARTIFACTORY_USER", username)
         monkeypatch.setenv("ARTIFACTORY_PWD", password)
+        monkeypatch.setenv("ARTIFACTORY_ORIGIN", origin)
 
         config = Config()
         assert config.APISERVER_TOKEN == token
         assert config.APISERVER_CA_CERT == certificate
         assert config.ARTIFACTORY_USER == username
         assert config.ARTIFACTORY_PWD == password
+        assert config.ARTIFACTORY_ORIGIN == origin
 
     def test_k8s_token_is_read_from_file_when_env_is_not_defined(self, monkeypatch):
         token = "token"
         monkeypatch.setenv("APISERVER_CA_CERT", "/path/to/the/ca.crt")
         monkeypatch.setenv("ARTIFACTORY_USER", "username")
         monkeypatch.setenv("ARTIFACTORY_PWD", "password")
+        monkeypatch.setenv("ARTIFACTORY_ORIGIN", "origin")
 
         with mock.patch("builtins.open", mock.mock_open(read_data=token)), mock.patch("os.path.exists") as exists:
             exists.return_value = True
@@ -52,6 +56,7 @@ class TestConfig(object):
         monkeypatch.setenv("APISERVER_TOKEN", "token")
         monkeypatch.setenv("ARTIFACTORY_USER", "username")
         monkeypatch.setenv("ARTIFACTORY_PWD", "password")
+        monkeypatch.setenv("ARTIFACTORY_ORIGIN", "origin")
 
         with mock.patch("os.path.exists") as exists:
             exists.return_value = True
@@ -63,6 +68,7 @@ class TestConfig(object):
         monkeypatch.setenv("APISERVER_CA_CERT", certificate)
         monkeypatch.setenv("ARTIFACTORY_USER", "username")
         monkeypatch.setenv("ARTIFACTORY_PWD", "password")
+        monkeypatch.setenv("ARTIFACTORY_ORIGIN", "origin")
 
         with pytest.raises(RuntimeError):
             config = Config()
@@ -72,6 +78,7 @@ class TestConfig(object):
         monkeypatch.setenv("APISERVER_TOKEN", "thetoken")
         monkeypatch.setenv("ARTIFACTORY_USER", "username")
         monkeypatch.setenv("ARTIFACTORY_PWD", "password")
+        monkeypatch.setenv("ARTIFACTORY_ORIGIN", "origin")
 
         with pytest.raises(RuntimeError):
             config = Config()
