@@ -25,7 +25,8 @@ from fiaas_mast.configmap_generator import ConfigMapGenerator
 from fiaas_mast.deployer import Deployer
 from fiaas_mast.fiaas import FiaasApplication
 from fiaas_mast.models import Release, Status, ApplicationConfiguration
-from fiaas_mast.web import ArtifactoryAuth
+from fiaas_mast.web import ArtifactoryAuth, get_http_client
+import requests
 from requests.models import Request
 
 DEFAULT_NAMESPACE = "default-namespace"
@@ -229,6 +230,17 @@ def test_artifactory_auth_for_allowed_origin():
     input_request = Request(url="https://artifactory.example.com/some/path")
     result = auth(input_request)
     assert 'Authorization' in result.headers
+
+
+@pytest.mark.parametrize("url", ["http://artifactory.example.com", "https://artifactory.example.com"])
+def test_http_client_configured_for_retry(url):
+    app = create_app(DEFAULT_CONFIG)
+    with app.app_context():
+        session = get_http_client()
+        adapter = session.get_adapter(url)
+        assert adapter.max_retries.total > 0
+        assert requests.codes.too_many_requests in adapter.max_retries.status_forcelist
+        assert requests.codes.ok not in adapter.max_retries.status_forcelist
 
 
 @pytest.mark.parametrize(

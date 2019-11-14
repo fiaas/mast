@@ -19,6 +19,8 @@ from flask import url_for, jsonify, request, abort, Blueprint, make_response, re
 from prometheus_client import generate_latest, CONTENT_TYPE_LATEST, Histogram
 from werkzeug.exceptions import UnprocessableEntity
 from requests.auth import HTTPBasicAuth
+from requests.adapters import HTTPAdapter
+from requests.packages.urllib3.util.retry import Retry
 from urllib.parse import urlparse
 
 from .application_generator import ApplicationGenerator
@@ -184,6 +186,15 @@ def get_http_client():
     http_client.auth = ArtifactoryAuth(
         app.config['ARTIFACTORY_USER'], app.config['ARTIFACTORY_PWD'], app.config['ARTIFACTORY_ORIGIN']
     )
+
+    retry_statuses = [requests.codes.too_many_requests,
+                      requests.codes.internal_server_error,
+                      requests.codes.bad_gateway,
+                      requests.codes.service_unavailable,
+                      requests.codes.gateway_timeout]
+    retries = Retry(total=10, backoff_factor=1, status_forcelist=retry_statuses, method_whitelist=False)
+    http_client.mount('http://', HTTPAdapter(max_retries=retries))
+    http_client.mount('https://', HTTPAdapter(max_retries=retries))
 
     return http_client
 
