@@ -15,7 +15,7 @@
 
 import yaml
 from k8s.models.common import ObjectMeta
-from requests.exceptions import MissingSchema, InvalidURL
+from requests.exceptions import MissingSchema, InvalidURL, InvalidSchema
 
 from .common import dict_merge, generate_random_uuid_string, ClientError
 
@@ -71,8 +71,8 @@ class MetadataGenerator:
     def download_config(self, config_url):
         try:
             resp = self.http_client.get(config_url)
-        except (InvalidURL, MissingSchema) as e:
-            raise ClientError("Invalid config_url") from e
+        except (InvalidURL, MissingSchema, InvalidSchema) as e:
+            raise ClientError("Invalid config_url: {}".format(config_url)) from e
         resp.raise_for_status()
         app_config = yaml.safe_load(resp.text)
         return app_config

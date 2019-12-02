@@ -174,7 +174,9 @@ def test_generate_paasbeta_application_invalid_config_url(client, config_url, ap
     resp = client.post(application_endpoint, data=dumps(deploy_data), content_type="application/json")
     assert resp.status_code == 422
     response_json = loads(resp.get_data())
-    assert response_json == {"code": 422, "name": "Unprocessable Entity", "description": "Invalid config_url"}
+    assert response_json == {"code": 422,
+                             "name": "Unprocessable Entity",
+                             "description": "Invalid config_url: {}".format(config_url)}
 
 
 def test_generate_configmap(client):
