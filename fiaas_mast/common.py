@@ -20,7 +20,6 @@ import uuid
 from k8s.client import NotFound
 
 from fiaas_mast.fiaas import FiaasApplication, FiaasApplicationSpec
-from fiaas_mast.paasbeta import PaasbetaApplication, PaasbetaApplicationSpec
 
 LOG = logging.getLogger(__name__)
 
@@ -53,10 +52,9 @@ def make_safe_name(name):
 
 
 def select_models():
-    for app_model, spec_model in (
-            (FiaasApplication, FiaasApplicationSpec),
-            (PaasbetaApplication, PaasbetaApplicationSpec),
-    ):
+    for app_model, spec_model in [
+            (FiaasApplication, FiaasApplicationSpec)
+    ]:
         try:
             app_model.list()
             return app_model, spec_model

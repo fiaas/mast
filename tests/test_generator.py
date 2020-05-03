@@ -23,7 +23,7 @@ from fiaas_mast.common import make_safe_name
 from fiaas_mast.common import ClientError
 from fiaas_mast.configmap_generator import ConfigMapGenerator
 from fiaas_mast.models import Release, ApplicationConfiguration
-from fiaas_mast.paasbeta import PaasbetaApplication, PaasbetaApplicationSpec
+from fiaas_mast.fiaas import FiaasApplication, FiaasApplicationSpec
 
 APPLICATION_NAME = "test-image"
 SPINNAKER_TAGS = {}
@@ -120,9 +120,9 @@ EMPTY_BASE_CONFIGMAP = {
 EMPTY_APPLICATION_DATA = """
 """
 
-BASE_PAASBETA_APPLICATION = {
-    "apiVersion": "schibsted.io/v1beta",
-    "kind": "PaasbetaApplication",
+FIAAS_APPLICATION = {
+    "apiVersion": "fiaas.schibsted.io/v1",
+    "kind": "Application",
     "metadata": {
         "finalizers": [],
         "labels": {
@@ -272,7 +272,7 @@ class TestApplicationGenerator(object):
     @pytest.fixture(autouse=True)
     def select_models(self):
         with mock.patch('fiaas_mast.application_generator.select_models') as m:
-            m.return_value = (PaasbetaApplication, PaasbetaApplicationSpec)
+            m.return_value = (FiaasApplication, FiaasApplicationSpec)
             yield m
 
     @pytest.mark.parametrize(
@@ -298,7 +298,7 @@ class TestApplicationGenerator(object):
                 {}
             )
         )
-        expected_paasbeta_application = BASE_PAASBETA_APPLICATION
+        expected_paasbeta_application = FIAAS_APPLICATION
         expected_paasbeta_application["metadata"]["namespace"] = expected_namespace
 
         assert returned_paasbeta_application.as_dict() == expected_paasbeta_application
@@ -339,7 +339,7 @@ class TestApplicationGenerator(object):
                 metadata_annotation
             )
         )
-        expected_application = BASE_PAASBETA_APPLICATION
+        expected_application = FIAAS_APPLICATION
         expected_application["metadata"]["namespace"] = expected_namespace
         expected_application["metadata"]["annotations"] = expected_metadata_annotations
 
