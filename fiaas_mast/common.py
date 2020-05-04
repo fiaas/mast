@@ -60,7 +60,7 @@ def select_models():
             return app_model, spec_model
         except NotFound:
             LOG.debug("{} was not found".format(app_model))
-    raise PlatformError("Unable to find support for either PaasbetaApplication or FiaasApplication in the cluster")
+    raise PlatformError("Unable to find support for FiaasApplication in the cluster")
 
 
 class ClientError(Exception):

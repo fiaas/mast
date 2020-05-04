@@ -95,10 +95,9 @@ version: 3
 
 
 class TestCreateDeploymentInK8s(object):
-    @pytest.fixture(params=["fiaas"])
-    def object_types(self, request):
-        if request.param == "fiaas":
-            return FiaasApplication, FiaasApplicationSpec
+    @pytest.fixture
+    def object_types(self):
+        return FiaasApplication, FiaasApplicationSpec
 
     @pytest.fixture
     def k8s_model(self, object_types):
