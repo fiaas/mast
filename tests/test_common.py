@@ -30,6 +30,7 @@ class TestSelectModel:
             fm.side_effect = None if request.param else NotFound()
             yield request.param
 
+    @staticmethod
     def test_select_models(crd):
         if not crd:
             with pytest.raises(PlatformError):
