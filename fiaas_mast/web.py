@@ -96,7 +96,6 @@ def status_handler(namespace, application, deployment_id):
     return jsonify(response)
 
 
-@web.route("/generate/paasbeta_application", methods=["POST"])
 @web.route("/generate/application", methods=["POST"])
 @generate_application_histogram.time()
 def generate_application():

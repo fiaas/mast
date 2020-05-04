@@ -96,11 +96,6 @@ def client():
             yield client
 
 
-@pytest.fixture(params=("/generate/application", "/generate/paasbeta_application"))
-def application_endpoint(request):
-    yield request.param
-
-
 def test_deploy_500_error_on_unhandled_exception(client):
     with mock.patch.object(Deployer, 'deploy', side_effect=Exception):
         resp = client.post("/deploy/", data=dumps(VALID_DEPLOY_DATA), content_type="application/json")
@@ -144,10 +139,10 @@ def test_deploy(client, status):
         status.assert_called_with("some-namespace", "app-name", "deploy_id")
 
 
-def test_generate_application(client, application_endpoint):
+def test_generate_application(client):
     with mock.patch.object(ApplicationGenerator, 'generate_application',
                            return_value=("deployment_id", FiaasApplication())) as generate_application:
-        resp = client.post(application_endpoint, data=dumps(VALID_DEPLOY_DATA),
+        resp = client.post("/generate/application", data=dumps(VALID_DEPLOY_DATA),
                            content_type="application/json")
         assert resp.status_code == 200
         body = loads(resp.data.decode(resp.charset))
@@ -158,8 +153,8 @@ def test_generate_application(client, application_endpoint):
         )
 
 
-def test_generate_paasbeta_application_invalid_data(client, application_endpoint):
-    resp = client.post(application_endpoint, data=dumps(INVALID_DEPLOY_DATA),
+def test_generate_paasbeta_application_invalid_data(client):
+    resp = client.post("/generate/application", data=dumps(INVALID_DEPLOY_DATA),
                        content_type="application/json")
     assert resp.status_code == 422
 
@@ -168,10 +163,10 @@ def test_generate_paasbeta_application_invalid_data(client, application_endpoint
     "missing_schema",  # should cause MissingSchema
     "http://",  # should cause InvalidURL
 ))
-def test_generate_paasbeta_application_invalid_config_url(client, config_url, application_endpoint):
+def test_generate_paasbeta_application_invalid_config_url(client, config_url):
     deploy_data = VALID_DEPLOY_DATA.copy()
     deploy_data.update({"config_url": config_url})
-    resp = client.post(application_endpoint, data=dumps(deploy_data), content_type="application/json")
+    resp = client.post("/generate/application", data=dumps(deploy_data), content_type="application/json")
     assert resp.status_code == 422
     response_json = loads(resp.get_data())
     assert response_json == {"code": 422,
