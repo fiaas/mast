@@ -29,8 +29,7 @@ class MetadataGenerator:
         annotations = {}
         for k, v, in items:
             annotations["{}{}".format(prefix, k)] = str(v)
-        annotation_objects = self.get_annotation_objects()
-        return {k: annotations for k in annotation_objects} if annotation_objects else annotations
+        return annotations
 
     def spinnaker_annotations(self, release):
         return self.build_annotations(release.spinnaker_tags.items(), "pipeline.schibsted.io/")
@@ -38,24 +37,29 @@ class MetadataGenerator:
     def raw_annotations(self, release):
         return self.build_annotations(release.raw_tags.items())
 
-    def merge_tags(self, generator_object, config):
+    def raw_labels(self, release):
+        return self.build_annotations(release.raw_labels.items())
+
+    def merge_tags(self, generator_object):
+        tags = {}
         if generator_object.spinnaker_tags:
-            if "annotations" not in config:
-                config["annotations"] = {}
-            dict_merge(config["annotations"], self.spinnaker_annotations(generator_object))
+            dict_merge(tags, self.spinnaker_annotations(generator_object))
 
         if generator_object.raw_tags:
-            if "annotations" not in config:
-                config["annotations"] = {}
-            dict_merge(config["annotations"], self.raw_annotations(generator_object))
+            dict_merge(tags, self.raw_annotations(generator_object))
 
         if generator_object.application_name != generator_object.original_application_name:
-            if "annotations" not in config:
-                config["annotations"] = {}
-
-            config['annotations']['mast'] = {
+            tags['mast'] = {
                 'originalApplicationName': generator_object.original_application_name
             }
+
+        return tags
+
+    def merge_labels(self, generator_object):
+        labels = {}
+        if generator_object.raw_labels:
+            dict_merge(labels, self.raw_labels(generator_object))
+        return labels
 
     def metadata(self, generator_object, namespace, deployment_id):
         application_name = generator_object.application_name
@@ -64,9 +68,6 @@ class MetadataGenerator:
         # TODO: Why doesn't annotations default to a dict?
         metadata = ObjectMeta(name=application_name, namespace=namespace, labels=labels, annotations=annotations)
         return metadata
-
-    def get_annotation_objects(self):
-        return []
 
     def download_config(self, config_url):
         try:

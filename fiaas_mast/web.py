@@ -71,6 +71,7 @@ def deploy_handler():
             data["application_name"],
             data.get("spinnaker_tags", {}),
             data.get("raw_tags", {}),
+            data.get("raw_labels", {}),
             data.get("metadata_annotations", {}))
     )
     response = status(namespace, application_name, deployment_id)
@@ -114,6 +115,7 @@ def generate_application():
             data["application_name"],
             data.get("spinnaker_tags", {}),
             data.get("raw_tags", {}),
+            data.get("raw_labels", {}),
             data.get("metadata_annotations", {}))
     )
     return_body = {

@@ -136,6 +136,12 @@ FIAAS_APPLICATION = {
     "spec": {
         "application": "test-image",
         "image": "test_image:a1b2c3d",
+        "additional_labels": {
+            "global": {}
+        },
+        "additional_annotations": {
+            "global": {}
+        },
         "config": {
             "admin_access": True,
             "healthchecks": {
@@ -160,111 +166,61 @@ FIAAS_APPLICATION = {
 }
 
 ANNOTATIONS_WITH_SPINNAKER_TAGS = {
-    "deployment": {
-        "pipeline.schibsted.io/foo": "bar",
-        "pipeline.schibsted.io/numeric": "1337",
+    "additional_annotations": {
+        "global": {
+            "pipeline.schibsted.io/foo": "bar",
+            "pipeline.schibsted.io/numeric": "1337",
+        }
     },
-    "pod": {
-        "pipeline.schibsted.io/foo": "bar",
-        "pipeline.schibsted.io/numeric": "1337",
-    },
-    "service": {
-        "pipeline.schibsted.io/foo": "bar",
-        "pipeline.schibsted.io/numeric": "1337",
-    },
-    "ingress": {
-        "pipeline.schibsted.io/foo": "bar",
-        "pipeline.schibsted.io/numeric": "1337",
-    },
-    "horizontal_pod_autoscaler": {
-        "pipeline.schibsted.io/foo": "bar",
-        "pipeline.schibsted.io/numeric": "1337",
-    },
+    "additional_labels": {"global": {}}
 }
 
 ANNOTATIONS_WITH_RAW_TAGS = {
-    "deployment": {
-        "my_domain.io/some_annotation": "and_some_value",
-        "my_domain_aux.io/some_annotation": "and_some_value"
+    "additional_annotations": {
+        "global": {
+            "my_domain.io/some_annotation": "and_some_value",
+            "my_domain_aux.io/some_annotation": "and_some_value"
+        }
     },
-    "pod": {
-        "my_domain.io/some_annotation": "and_some_value",
-        "my_domain_aux.io/some_annotation": "and_some_value"
-    },
-    "service": {
-        "my_domain.io/some_annotation": "and_some_value",
-        "my_domain_aux.io/some_annotation": "and_some_value"
-    },
-    "ingress": {
-        "my_domain.io/some_annotation": "and_some_value",
-        "my_domain_aux.io/some_annotation": "and_some_value"
-    },
-    "horizontal_pod_autoscaler": {
-        "my_domain.io/some_annotation": "and_some_value",
-        "my_domain_aux.io/some_annotation": "and_some_value"
-    },
+    "additional_labels": {"global": {}}
+}
+
+ANNOTATIONS_WITH_RAW_LABELS = {
+    "additional_annotations": {"global": {}},
+    "additional_labels": {
+        "global": {
+            "my_domain.io/some_label": "and_some_value",
+            "my_domain.io/some_other_label": "and_some_other_value"
+        }
+    }
 }
 
 ANNOTATIONS_WITH_MERGED_SPINNAKER_TAGS = {
-    "deployment": {
-        "i_was_here": "first",
-        "pipeline.schibsted.io/foo": "bar",
+    "additional_annotations": {
+        "global": {
+            "pipeline.schibsted.io/foo": "bar",
+        }
     },
-    "pod": {
-        "pipeline.schibsted.io/foo": "bar",
-    },
-    "service": {
-        "pipeline.schibsted.io/foo": "bar",
-    },
-    "ingress": {
-        "pipeline.schibsted.io/foo": "bar",
-    },
-    "horizontal_pod_autoscaler": {
-        "pipeline.schibsted.io/foo": "bar",
-    },
+    "additional_labels": {"global": {}}
 }
 
 ANNOTATIONS_WITH_MERGED_SPINNAKER_TAGS_AND_RAW_TAGS = {
-    "deployment": {
-        "i_was_here": "first",
-        "pipeline.schibsted.io/foo": "bar",
-        'my_domain.io/some_annotation': 'and_some_value'
+    "additional_annotations": {
+        "global": {
+            "pipeline.schibsted.io/foo": "bar",
+            'my_domain.io/some_annotation': 'and_some_value'
+        }
     },
-    "pod": {
-        "pipeline.schibsted.io/foo": "bar",
-        'my_domain.io/some_annotation': 'and_some_value'
-    },
-    "service": {
-        "pipeline.schibsted.io/foo": "bar",
-        'my_domain.io/some_annotation': 'and_some_value'
-    },
-    "ingress": {
-        "pipeline.schibsted.io/foo": "bar",
-        'my_domain.io/some_annotation': 'and_some_value'
-    },
-    "horizontal_pod_autoscaler": {
-        "pipeline.schibsted.io/foo": "bar",
-        'my_domain.io/some_annotation': 'and_some_value'
-    },
+    "additional_labels": {"global": {}}
 }
 
 ANNOTATIONS_WITH_MERGED_RAW_TAGS = {
-    "deployment": {
-        "i_was_here": "first",
-        'my_domain.io/some_annotation': 'and_some_value'
+    "additional_annotations": {
+        "global": {
+            'my_domain.io/some_annotation': 'and_some_value'
+        }
     },
-    "pod": {
-        'my_domain.io/some_annotation': 'and_some_value'
-    },
-    "service": {
-        'my_domain.io/some_annotation': 'and_some_value'
-    },
-    "ingress": {
-        'my_domain.io/some_annotation': 'and_some_value'
-    },
-    "horizontal_pod_autoscaler": {
-        'my_domain.io/some_annotation': 'and_some_value'
-    },
+    "additional_labels": {"global": {}}
 }
 
 
@@ -283,6 +239,7 @@ class TestApplicationGenerator(object):
     def test_generator_creates_object_of_given_type(self, config, target_namespace, expected_namespace):
         spinnaker_tags = {}
         raw_tags = {}
+        raw_labels = {}
 
         http_client = _given_config_url_response_content_is(config)
         generator = ApplicationGenerator(http_client, create_deployment_id=lambda: DEPLOYMENT_ID)
@@ -295,6 +252,7 @@ class TestApplicationGenerator(object):
                 APPLICATION_NAME,
                 spinnaker_tags,
                 raw_tags,
+                raw_labels,
                 {}
             )
         )
@@ -311,6 +269,7 @@ class TestApplicationGenerator(object):
     def test_generator_annotates_moniker_application(self, config, target_namespace, expected_namespace):
         spinnaker_tags = {}
         raw_tags = {}
+        raw_labels = {}
         metadata_annotation = {
             "moniker.spinnaker.io/application": "unicorn",
             "this_is_a_number": 3,
@@ -336,6 +295,7 @@ class TestApplicationGenerator(object):
                 APPLICATION_NAME,
                 spinnaker_tags,
                 raw_tags,
+                raw_labels,
                 metadata_annotation
             )
         )
@@ -348,39 +308,57 @@ class TestApplicationGenerator(object):
     def test_generator_adds_spinnaker_annotations(self):
         spinnaker_tags = {'foo': 'bar', 'numeric': 1337}
         raw_tags = {}
+        raw_labels = {}
 
-        self._annotations_verification(spinnaker_tags, raw_tags, ANNOTATIONS_WITH_SPINNAKER_TAGS,
+        self._annotations_verification(spinnaker_tags, raw_tags, raw_labels, ANNOTATIONS_WITH_SPINNAKER_TAGS,
                                        VALID_DEPLOY_CONFIG_V3)
 
     def test_generator_adds_raw_annotations(self):
         spinnaker_tags = {}
         raw_tags = {'my_domain.io/some_annotation': 'and_some_value',
                     'my_domain_aux.io/some_annotation': 'and_some_value'}
+        raw_labels = {}
 
-        self._annotations_verification(spinnaker_tags, raw_tags, ANNOTATIONS_WITH_RAW_TAGS, VALID_DEPLOY_CONFIG_V3)
+        self._annotations_verification(spinnaker_tags, raw_tags, raw_labels, ANNOTATIONS_WITH_RAW_TAGS,
+                                       VALID_DEPLOY_CONFIG_V3)
+
+    def test_generator_adds_raw_labels(self):
+        spinnaker_tags = {}
+        raw_tags = {}
+        raw_labels = {
+            'my_domain.io/some_label': 'and_some_value',
+            'my_domain.io/some_other_label': 'and_some_other_value'
+        }
+
+        self._annotations_verification(spinnaker_tags, raw_tags, raw_labels, ANNOTATIONS_WITH_RAW_LABELS,
+                                       VALID_DEPLOY_CONFIG_V3)
 
     def test_generator_merges_spinnaker_annotations(self):
         spinnaker_tags = {'foo': 'bar'}
         raw_tags = {}
+        raw_labels = {}
 
-        self._annotations_verification(spinnaker_tags, raw_tags, ANNOTATIONS_WITH_MERGED_SPINNAKER_TAGS,
+        self._annotations_verification(spinnaker_tags, raw_tags, raw_labels, ANNOTATIONS_WITH_MERGED_SPINNAKER_TAGS,
                                        VALID_DEPLOY_CONFIG_V3_WITH_ANNOTATIONS)
 
     def test_generator_merges_raw_annotations(self):
         spinnaker_tags = {}
         raw_tags = {'my_domain.io/some_annotation': 'and_some_value'}
+        raw_labels = {}
 
-        self._annotations_verification(spinnaker_tags, raw_tags, ANNOTATIONS_WITH_MERGED_RAW_TAGS,
+        self._annotations_verification(spinnaker_tags, raw_tags, raw_labels, ANNOTATIONS_WITH_MERGED_RAW_TAGS,
                                        VALID_DEPLOY_CONFIG_V3_WITH_ANNOTATIONS)
 
     def test_generator_merges_spinnaker_and_raw_annotations(self):
         spinnaker_tags = {'foo': 'bar'}
         raw_tags = {'my_domain.io/some_annotation': 'and_some_value'}
+        raw_labels = {}
 
-        self._annotations_verification(spinnaker_tags, raw_tags, ANNOTATIONS_WITH_MERGED_SPINNAKER_TAGS_AND_RAW_TAGS,
+        self._annotations_verification(spinnaker_tags, raw_tags, raw_labels,
+                                       ANNOTATIONS_WITH_MERGED_SPINNAKER_TAGS_AND_RAW_TAGS,
                                        VALID_DEPLOY_CONFIG_V3_WITH_ANNOTATIONS)
 
-    def _annotations_verification(self, spinnaker_tags, raw_tags, exptected_paasbeta_result, deploy_config):
+    def _annotations_verification(self, spinnaker_tags, raw_tags, raw_labels, exptected_paasbeta_result, deploy_config):
         http_client = _given_config_url_response_content_is(deploy_config)
         generator = ApplicationGenerator(http_client, create_deployment_id=lambda: DEPLOYMENT_ID)
         deployment_id, returned_paasbeta_application = generator.generate_application(
@@ -392,15 +370,20 @@ class TestApplicationGenerator(object):
                 APPLICATION_NAME,
                 spinnaker_tags,
                 raw_tags,
+                raw_labels,
                 {}
             )
         )
-        returned_annotations = returned_paasbeta_application.spec.config["annotations"]
+        returned_annotations = {
+            'additional_annotations': returned_paasbeta_application.spec.additional_annotations,
+            'additional_labels': returned_paasbeta_application.spec.additional_labels,
+        }
         assert returned_annotations == exptected_paasbeta_result
 
     def test_generator_without_annotations(self):
         spinnaker_tags = {}
         raw_tags = {}
+        raw_labels = {}
 
         http_client = _given_config_url_response_content_is(VALID_DEPLOY_CONFIG_V3)
         generator = ApplicationGenerator(http_client, create_deployment_id=lambda: DEPLOYMENT_ID)
@@ -413,6 +396,7 @@ class TestApplicationGenerator(object):
                 APPLICATION_NAME,
                 spinnaker_tags,
                 raw_tags,
+                raw_labels,
                 {}
             )
         )
@@ -422,6 +406,7 @@ class TestApplicationGenerator(object):
         app_name_with_underscores = "test_app"
         spinnaker_tags = {}
         raw_tags = {}
+        raw_labels = {}
 
         http_client = _given_config_url_response_content_is(VALID_DEPLOY_CONFIG_V3)
         generator = ApplicationGenerator(http_client, create_deployment_id=lambda: DEPLOYMENT_ID)
@@ -434,6 +419,7 @@ class TestApplicationGenerator(object):
                 app_name_with_underscores,
                 spinnaker_tags,
                 raw_tags,
+                raw_labels,
                 {}
             )
         )
@@ -443,11 +429,13 @@ class TestApplicationGenerator(object):
         assert returned_metadata.labels["app"] == make_safe_name(app_name_with_underscores)
         returned_spec = returned_application.spec
         assert returned_spec.application == make_safe_name(app_name_with_underscores)
-        assert returned_spec.config["annotations"]["mast"]["originalApplicationName"] == app_name_with_underscores
+        assert returned_spec.additional_annotations[
+            "global"]["mast"]["originalApplicationName"] == app_name_with_underscores
 
     def test_generator_with_empty_config(self):
         spinnaker_tags = {}
         raw_tags = {}
+        raw_labels = {}
 
         http_client = _given_config_url_response_content_is("")
         generator = ApplicationGenerator(http_client, create_deployment_id=lambda: DEPLOYMENT_ID)
@@ -462,6 +450,7 @@ class TestApplicationGenerator(object):
                     APPLICATION_NAME,
                     spinnaker_tags,
                     raw_tags,
+                    raw_labels,
                     {}
                 )
             )

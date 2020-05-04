@@ -25,6 +25,7 @@ from fiaas_mast.models import Release
 APPLICATION_NAME = "test_image"
 SPINNAKER_TAGS = {}
 RAW_TAGS = {}
+RAW_LABELS = {}
 DEPLOYMENT_ID = "deadbeef-abba-cafe-1337-baaaaaaaaaad"
 VALID_IMAGE_NAME = "test_image:a1b2c3d"
 VALID_DEPLOY_CONFIG_URL = "http://url_to_config.file"
@@ -148,6 +149,7 @@ class TestCreateDeploymentInK8s(object):
                 APPLICATION_NAME,
                 SPINNAKER_TAGS,
                 RAW_TAGS,
+                RAW_LABELS,
                 ""
             )
         )
@@ -192,6 +194,7 @@ class TestCreateDeploymentInK8s(object):
                 APPLICATION_NAME,
                 SPINNAKER_TAGS,
                 RAW_TAGS,
+                RAW_LABELS,
                 ""
             )
         )

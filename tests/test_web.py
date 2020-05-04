@@ -65,6 +65,7 @@ DEFAULT_CONFIG = {
 
 SPINNAKER_TAGS = {}
 RAW_TAGS = {}
+RAW_LABELS = {}
 
 
 @pytest.fixture(autouse=True)
@@ -135,7 +136,7 @@ def test_deploy(client, status):
 
         deploy.assert_called_with(DEFAULT_NAMESPACE,
                                   Release("test_image", "http://example.com", "example", "example", SPINNAKER_TAGS,
-                                          RAW_TAGS, {}))
+                                          RAW_TAGS, RAW_LABELS, {}))
         status.assert_called_with("some-namespace", "app-name", "deploy_id")
 
 
@@ -149,7 +150,7 @@ def test_generate_application(client):
         assert urlparse(body["status_url"]).path == "/status/default-namespace/example/deployment_id/"
         generate_application.assert_called_with(
             DEFAULT_NAMESPACE, Release("test_image", "http://example.com", "example", "example", SPINNAKER_TAGS,
-                                       RAW_TAGS, {})
+                                       RAW_TAGS, RAW_LABELS, {})
         )
 
 
