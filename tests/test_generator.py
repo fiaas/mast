@@ -270,8 +270,8 @@ ANNOTATIONS_WITH_MERGED_RAW_TAGS = {
 
 class TestApplicationGenerator(object):
     @pytest.fixture(autouse=True)
-    def select_models(self):
-        with mock.patch('fiaas_mast.application_generator.select_models') as m:
+    def check_models(self):
+        with mock.patch('fiaas_mast.application_generator.check_models') as m:
             m.return_value = (FiaasApplication, FiaasApplicationSpec)
             yield m
 

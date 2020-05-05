@@ -31,7 +31,7 @@ class TestSelectModel:
             yield request.param
 
     @staticmethod
-    def test_select_models(crd):
+    def test_check_models(crd):
         if not crd:
             with pytest.raises(PlatformError):
                 check_models()

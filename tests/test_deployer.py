@@ -119,8 +119,8 @@ class TestCreateDeploymentInK8s(object):
             yield m
 
     @pytest.fixture(autouse=True)
-    def select_models(self, object_types):
-        with patch('fiaas_mast.deployer.select_models') as m:
+    def check_models(self, object_types):
+        with patch('fiaas_mast.deployer.check_models') as m:
             m.return_value = object_types
             yield m
 

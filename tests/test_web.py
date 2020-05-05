@@ -75,15 +75,15 @@ def status():
 
 
 @pytest.fixture(autouse=True)
-def select_models_deployer():
-    with mock.patch('fiaas_mast.deployer.select_models') as m:
+def check_models_deployer():
+    with mock.patch('fiaas_mast.deployer.check_models') as m:
         m.return_value = (None, None)
         yield m
 
 
 @pytest.fixture(autouse=True)
-def select_models_generator():
-    with mock.patch('fiaas_mast.application_generator.select_models') as m:
+def check_models_generator():
+    with mock.patch('fiaas_mast.application_generator.check_models') as m:
         m.return_value = (None, None)
         yield m
 
