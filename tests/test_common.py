@@ -19,7 +19,7 @@ import pytest
 from k8s.client import NotFound
 from mock import patch
 
-from fiaas_mast.common import select_models, PlatformError
+from fiaas_mast.common import check_models, PlatformError
 from fiaas_mast.fiaas import FiaasApplication, FiaasApplicationSpec
 
 
@@ -34,10 +34,10 @@ class TestSelectModel:
     def test_select_models(crd):
         if not crd:
             with pytest.raises(PlatformError):
-                select_models()
+                check_models()
             return
 
         wanted_app, wanted_spec = FiaasApplication, FiaasApplicationSpec
-        actual_app, actual_spec = select_models()
+        actual_app, actual_spec = check_models()
         assert wanted_app == actual_app
         assert wanted_spec == actual_spec
