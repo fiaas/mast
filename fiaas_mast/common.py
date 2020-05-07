@@ -20,7 +20,6 @@ import uuid
 from k8s.client import NotFound
 
 from fiaas_mast.fiaas import FiaasApplication, FiaasApplicationSpec
-from fiaas_mast.paasbeta import PaasbetaApplication, PaasbetaApplicationSpec
 
 LOG = logging.getLogger(__name__)
 
@@ -52,17 +51,16 @@ def make_safe_name(name):
     return safe_name
 
 
-def select_models():
-    for app_model, spec_model in (
-            (FiaasApplication, FiaasApplicationSpec),
-            (PaasbetaApplication, PaasbetaApplicationSpec),
-    ):
+def check_models():
+    for app_model, spec_model in [
+            (FiaasApplication, FiaasApplicationSpec)
+    ]:
         try:
             app_model.list()
             return app_model, spec_model
         except NotFound:
             LOG.debug("{} was not found".format(app_model))
-    raise PlatformError("Unable to find support for either PaasbetaApplication or FiaasApplication in the cluster")
+    raise PlatformError("Unable to find support for FiaasApplication in the cluster")
 
 
 class ClientError(Exception):

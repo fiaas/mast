@@ -21,7 +21,6 @@ from mock import MagicMock, patch
 from fiaas_mast.deployer import generate_random_uuid_string, Deployer
 from fiaas_mast.fiaas import FiaasApplicationSpec, FiaasApplication
 from fiaas_mast.models import Release
-from fiaas_mast.paasbeta import PaasbetaApplicationSpec, PaasbetaApplication
 
 APPLICATION_NAME = "test_image"
 SPINNAKER_TAGS = {}
@@ -96,12 +95,9 @@ version: 3
 
 
 class TestCreateDeploymentInK8s(object):
-    @pytest.fixture(params=["fiaas", "paasbeta"])
-    def object_types(self, request):
-        if request.param == "fiaas":
-            return FiaasApplication, FiaasApplicationSpec
-        if request.param == "paasbeta":
-            return PaasbetaApplication, PaasbetaApplicationSpec
+    @pytest.fixture
+    def object_types(self):
+        return FiaasApplication, FiaasApplicationSpec
 
     @pytest.fixture
     def k8s_model(self, object_types):
@@ -123,8 +119,8 @@ class TestCreateDeploymentInK8s(object):
             yield m
 
     @pytest.fixture(autouse=True)
-    def select_models(self, object_types):
-        with patch('fiaas_mast.deployer.select_models') as m:
+    def check_models(self, object_types):
+        with patch('fiaas_mast.deployer.check_models') as m:
             m.return_value = object_types
             yield m
 

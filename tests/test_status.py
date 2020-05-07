@@ -35,7 +35,7 @@ def get():
         yield m
 
 
-@pytest.fixture(params=("paasbetastatuses", "statuses", "application-statuses"))
+@pytest.fixture(params=("statuses", "application-statuses"))
 def status_type(request):
     return request.param
 

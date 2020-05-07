@@ -18,14 +18,14 @@ from k8s.client import NotFound
 from k8s.models.common import ObjectMeta
 from requests.exceptions import MissingSchema, InvalidURL
 
-from .common import generate_random_uuid_string, ClientError, select_models
+from .common import generate_random_uuid_string, ClientError, check_models
 
 
 class Deployer:
     def __init__(self, http_client, create_deployment_id=generate_random_uuid_string):
         self.http_client = http_client
         self.create_deployment_id = create_deployment_id
-        self.application_model, self.spec_model = select_models()
+        self.application_model, self.spec_model = check_models()
 
     def deploy(self, target_namespace, release):
         """Create or update TPR for application"""

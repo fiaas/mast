@@ -13,14 +13,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from .common import select_models, generate_random_uuid_string, ClientError
+from .common import check_models, generate_random_uuid_string, ClientError
 from .metadata_generator import MetadataGenerator
 
 
 class ApplicationGenerator(MetadataGenerator):
     def __init__(self, http_client, create_deployment_id=generate_random_uuid_string):
         super().__init__(http_client, create_deployment_id)
-        self.application_model, self.spec_model = select_models()
+        self.application_model, self.spec_model = check_models()
 
     def generate_application(self, target_namespace, release):
         """Generate Application manifest for application"""
