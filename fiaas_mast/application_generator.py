@@ -37,10 +37,10 @@ class ApplicationGenerator(MetadataGenerator):
         if not config:
             raise ClientError("Invalid config: {}".format(release.config_url))
 
-        super().merge_tags(release, config)
+        global_tags = {"global": super().merge_tags(release)}
 
-        spec = self.spec_model(image=release.image, application=release.application_name, config=config)
+        global_labels = {"global": super().merge_labels(release)}
+
+        spec = self.spec_model(image=release.image, application=release.application_name, config=config,
+                               additional_annotations=global_tags, additional_labels=global_labels)
         return spec
-
-    def get_annotation_objects(self):
-        return ["deployment", "pod", "service", "ingress", "horizontal_pod_autoscaler"]
