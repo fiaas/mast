@@ -2,13 +2,15 @@
 
 set -evuo pipefail
 
-DOCKER_IMAGE="${TRAVIS_REPO_SLUG}:${VERSION/+/-}"
+IMAGE_NAME=${TRAVIS_REPO_SLUG:-${USER}/mast}
+DOCKER_IMAGE="${IMAGE_NAME}:${VERSION/+/-}"
 
-echo "${DOCKER_PASSWORD}" | docker login -u "${DOCKER_USERNAME}" --password-stdin
-
-docker tag "${TRAVIS_REPO_SLUG}:latest" "${DOCKER_IMAGE}"
-
-if [[ "${CI}" == "true" ]]; then
-    docker push "${TRAVIS_REPO_SLUG}"
+if [[ "${CI:-}" == "true" ]]; then
+  # Run multi-arch build and push it
+  docker buildx build --pull \
+    --tag "${IMAGE_NAME}:latest" \
+    --tag "${DOCKER_IMAGE}" \
+    --platform=linux/arm,linux/arm64,linux/amd64 \
+    --push .
     echo "Pushed image ${DOCKER_IMAGE}"
 fi

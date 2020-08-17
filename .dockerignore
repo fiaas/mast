@@ -98,4 +98,5 @@ Temporary Items
 .apdisk
 .dir-locals.el
 mast.tar
-.wheel_cache
+helm
+tests
