@@ -16,19 +16,26 @@
 FROM python:3.6-alpine3.7 as common
 LABEL maintainer="fiaas <fiaas@googlegroups.com>"
 
-RUN apk add --update ca-certificates git curl tini=0.16.1-r0 && \
+RUN apk --no-cache add --update ca-certificates tini=0.16.1-r0 yaml && \
     mkdir -p /opt/fiaas-mast && \
-    adduser -u 10001 -D -h /opt/fiaas-mast fiaas-mast && \
-    rm -rf /var/cache/apk/*
+    adduser -u 10001 -D -h /opt/fiaas-mast fiaas-mast
 
 FROM common as build
+# Install build tools, and build wheels of all dependencies
+RUN apk --no-cache add \
+    build-base \
+    git \
+    curl \
+    yaml-dev
 COPY . /opt/fiaas-mast
+COPY .wheel_cache/*.whl /links/
 WORKDIR /opt/fiaas-mast
-RUN pip wheel . --wheel-dir=/wheels/
+RUN pip wheel . --no-cache-dir --wheel-dir=/wheels/ --find-links=/links/
 
 FROM common as production
+# Get rid of all build dependencies, install application using only pre-built binary wheels
 COPY --from=build /wheels/ /wheels/
-RUN pip install --no-index --find-links=/wheels/ --only-binary all /wheels/fiaas_mast*.whl
+RUN pip install --no-index --no-cache-dir --find-links=/wheels/ --only-binary all /wheels/fiaas_mast*.whl
 USER fiaas-mast
 EXPOSE 5000
 ENTRYPOINT ["/sbin/tini", "--"]
