@@ -30,7 +30,7 @@ ingress:
   whitelistSourceRange: ""
   enableTLS: false
   certIssuer: ""
-  IngressClass: nginx
+  ingressClass: nginx
 besteffortQoS: false # if set to true, will force BestEffort QoS by not setting any resource limits or requests, even if these values are  specified
 
 annotations: {} # can be used to set custom annotations on every resource
