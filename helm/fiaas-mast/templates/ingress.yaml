@@ -29,7 +29,7 @@ metadata:
 {{- if .Values.ingress.certIssuer }}
     certmanager.k8s.io/cluster-issuer: "{{ .Values.ingress.certIssuer }}"
 {{- end}}
-    kubernetes.io/ingress.class: nginx
+    kubernetes.io/ingress.class: "{{ .Values.ingress.ingressClass }}"
 {{- if .Values.ingress.whitelistSourceRange }}
     ingress.kubernetes.io/whitelist-source-range: {{ .Values.ingress.whitelistSourceRange }}
     nginx.ingress.kubernetes.io/whitelist-source-range: {{ .Values.ingress.whitelistSourceRange }}
