@@ -27,7 +27,7 @@ metadata:
     kubernetes.io/tls-acme: "true"
 {{- end}}
 {{- if .Values.ingress.certIssuer }}
-    certmanager.k8s.io/cluster-issuer: "{{ .Values.ingress.certIssuer }}"
+    {{ .Values.certManager.keyAnnotationPrefix }}/cluster-issuer: "{{ .Values.ingress.certIssuer }}"
 {{- end}}
     kubernetes.io/ingress.class: "{{ .Values.ingress.ingressClass }}"
 {{- if .Values.ingress.whitelistSourceRange }}
