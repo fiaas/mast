@@ -1,0 +1,51 @@
+version: v1.0
+name: Mast docker build
+agent:
+  machine:
+    type: e1-standard-4
+    os_image: ubuntu1804
+blocks:
+  - name: build
+    task:
+      secrets:
+        - name: codacy_api_token
+        - name: docker
+      env_vars:
+        - name: DOCKER_REPO
+          value: fiaas/mast
+      jobs:
+        - name: build
+          commands:
+            - checkout
+            - sem-version python 3.6
+            - cache restore ${SEMAPHORE_GIT_BRANCH}-pip
+            - pip install --quiet --no-color .[ci]
+            - cache delete ${SEMAPHORE_GIT_BRANCH}-pip
+            - cache store ${SEMAPHORE_GIT_BRANCH}-pip $(pip cache dir)
+            - export PATH="$PATH:$HOME/.local/bin"
+            - tox
+            - ./bin/docker_build
+            - cache store ${SEMAPHORE_GIT_BRANCH}-${SEMAPHORE_WORKFLOW_ID}-build build
+            - CODACY_PROJECT_TOKEN=$CODACY_MAST_API_TOKEN tox -e coverage
+  - name: deploy
+    skip:
+      when: branch != 'master'
+    task:
+      secrets:
+        - name: docker
+        - name: fdd-github
+      env_vars:
+        - name: DOCKER_REPO
+          value: fiaas/mast
+        - name: HELM_VERSION
+          value: v3.6.0
+      jobs:
+        - name: deploy
+          commands:
+            - checkout
+            - sem-version python 3.6
+            - git config --global user.email "semaphore@example.org"
+            - git config --global user.name "Semaphore CI"
+            - cache restore ${SEMAPHORE_GIT_BRANCH}-${SEMAPHORE_WORKFLOW_ID}-build
+            - docker tag $(docker import build/mast.tar) $DOCKER_REPO:latest
+            - ./bin/deploy
