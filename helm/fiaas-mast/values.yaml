@@ -39,3 +39,10 @@ secrets: # Must be set by user
   artifactoryUser: replace_me
   artifactoryPassword: replace_me
   artifactoryOrigin: replace_me
+
+certManager:
+  # In cert-manager version v0.11.0 (https://github.com/jetstack/cert-manager/releases/tag/v0.11.0) the prefix that cert-manager uses for
+  # annotations was changed. From certmanager.k8s.io to cert-manager.io - see link for more details. In order to allow new behavior this
+  # parameter was added. Keeps previous behaviour but lets overwride for compatibility of newer versions
+  keyAnnotationPrefix: "certmanager.k8s.io"
+

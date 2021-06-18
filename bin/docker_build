@@ -9,7 +9,8 @@ CACHE_DIR=${PIP_CACHE_DIR:-~/.cache/pip}
 mkdir -p build
 
 if [[ "${CI:-}" == "true" ]]; then
-  PLATFORMS=linux/arm,linux/arm64,linux/amd64
+  #PLATFORMS=linux/arm,linux/arm64,linux/amd64
+  PLATFORMS=linux/amd64
 else
   PLATFORMS=linux/amd64
 fi
