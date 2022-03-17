@@ -52,7 +52,7 @@ class Deployer:
         except (InvalidURL, MissingSchema) as e:
             raise ClientError("Invalid config_url") from e
         resp.raise_for_status()
-        app_config = yaml.safe_load(resp.text)
+        app_config = yaml.safe_load(resp.content)
         return app_config
 
 

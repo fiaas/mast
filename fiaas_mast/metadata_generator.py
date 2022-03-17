@@ -76,7 +76,7 @@ class MetadataGenerator:
             raise ClientError("Invalid config_url: {}".format(config_url)) from e
         resp.raise_for_status()
         try:
-            app_config = yaml.safe_load(resp.text)
+            app_config = yaml.safe_load(resp.content)
         except yaml.YAMLError as e:
             raise ClientError("Invalid config YAML: {}".format(e))
         return app_config

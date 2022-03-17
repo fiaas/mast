@@ -71,7 +71,8 @@ BASE_CONFIGMAP = {
         "rules.yml": "# put your recording rules here",
         "int_variable": "42",
         "float_variable": "3.14",
-        "boolean_variable": "True"
+        "boolean_variable": "True",
+        "non_ISO8859-1_data": "Új találatok!"
     },
     "kind": "ConfigMap",
     "apiVersion": "v1",
@@ -90,11 +91,12 @@ BASE_CONFIGMAP = {
     }
 }
 
-APPLICATION_DATA = """
+APPLICATION_DATA = b"""
 rules.yml: '# put your recording rules here'
 int_variable: 42
 float_variable: 3.14
 boolean_variable: True
+non_ISO8859-1_data: "\xc3\x9aj tal\xc3\xa1latok!"
 """
 
 EMPTY_BASE_CONFIGMAP = {
@@ -512,7 +514,7 @@ class TestUUID:
 def _given_config_url_response_content_is(config):
     http_client = MagicMock(spec="requests.Session")
     config_response = MagicMock()
-    config_response.text = config
+    config_response.content = config
 
     http_client_get = MagicMock()
     http_client_get.return_value = config_response

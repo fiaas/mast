@@ -31,7 +31,7 @@ VALID_IMAGE_NAME = "test_image:a1b2c3d"
 VALID_DEPLOY_CONFIG_URL = "http://url_to_config.file"
 ANY_NAMESPACE = "any-namespace"
 
-VALID_DEPLOY_CONFIG = """
+VALID_DEPLOY_CONFIG = b"""
 version: 2
 admin_access: true
 replicas: 1
@@ -48,7 +48,7 @@ config:
   volume: true
 """
 
-VALID_DEPLOY_CONFIG_WITH_NAMESPACE = """
+VALID_DEPLOY_CONFIG_WITH_NAMESPACE = b"""
 version: 2
 namespace: custom-namespace
 admin_access: true
@@ -66,7 +66,25 @@ config:
   volume: true
 """
 
-VALID_DEPLOY_CONFIG_WITH_NAMESPACE_V3 = """
+VALID_DEPLOY_CONFIG_WITH_NON_ISO_8859_1_CHARS = b"""
+version: 2
+namespace: \xc3\x9aj-tal\xc3\xa1latok
+admin_access: true
+replicas: 1
+resources:
+  requests:
+    memory: 128m
+ports:
+  - target_port: 5000
+healthchecks:
+  liveness:
+    http:
+      path: /healthz
+config:
+  volume: true
+"""
+
+VALID_DEPLOY_CONFIG_WITH_NAMESPACE_V3 = b"""
 version: 3
 namespace: custom-namespace
 admin_access: true
@@ -84,13 +102,13 @@ config:
   volume: true
 """
 
-VALID_DEPLOY_CONFIG_WITH_INGRESS_1 = """
+VALID_DEPLOY_CONFIG_WITH_INGRESS_1 = b"""
 version: 3
 ingress:
   - host: foo.example.com
 """
 
-VALID_DEPLOY_CONFIG_WITH_INGRESS_2 = """
+VALID_DEPLOY_CONFIG_WITH_INGRESS_2 = b"""
 version: 3
 """
 
@@ -127,6 +145,7 @@ class TestCreateDeploymentInK8s(object):
 
     @pytest.mark.parametrize("config,target_namespace,expected_namespace", (
         (VALID_DEPLOY_CONFIG, ANY_NAMESPACE, ANY_NAMESPACE),
+        (VALID_DEPLOY_CONFIG_WITH_NON_ISO_8859_1_CHARS, "Új-találatok", "Új-találatok"),
         (VALID_DEPLOY_CONFIG_WITH_NAMESPACE, ANY_NAMESPACE, "custom-namespace"),
         (VALID_DEPLOY_CONFIG_WITH_NAMESPACE_V3, "target-namespace", "target-namespace"),
     ))
@@ -217,7 +236,7 @@ class TestUUID:
 def _given_config_url_response_content_is(config):
     http_client = MagicMock(spec="requests.Session")
     config_response = MagicMock()
-    config_response.text = config
+    config_response.content = config
 
     http_client_get = MagicMock()
     http_client_get.return_value = config_response
