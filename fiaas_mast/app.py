@@ -55,6 +55,7 @@ def configure_bootstrap(app):
 def configure_app(app, config):
     if config is None:
         config = vars(Config())
+    app.config['JSON_AS_ASCII'] = False
 
     app.config.update(config)
 
