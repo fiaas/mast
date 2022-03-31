@@ -177,10 +177,11 @@ def test_generate_paasbeta_application_invalid_config_url(client, config_url):
 
 def test_generate_configmap(client):
     with mock.patch.object(ConfigMapGenerator, 'generate_configmap',
-                           return_value=("deployment_id", {"foo": "bar"})) as generate_configmap:
+                           return_value=("deployment_id", {"foo": "bar", "utf8": "ú"})) as generate_configmap:
         resp = client.post("/generate/configmap", data=dumps(VALID_APPLICATIONDATA_REQUEST),
                            content_type="application/json")
         assert resp.status_code == 200
+        assert "ú" in resp.data.decode(resp.charset)
 
         generate_configmap.assert_called_with(
             DEFAULT_NAMESPACE, ApplicationConfiguration("http://example.com", "example", "example", SPINNAKER_TAGS,
