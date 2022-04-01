@@ -48,7 +48,7 @@ GEN_REQ = [
 ]
 
 CODE_QUALITY_REQ = [
-    "prospector",
+    "prospector==1.7.7",
 ]
 
 CI_REQ = [
