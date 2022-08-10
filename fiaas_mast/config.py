@@ -34,30 +34,7 @@ class Config(object):
         self.scheme = os.environ.get('URL_SCHEME', 'https')
 
     def get_apiserver_token(self):
-        token = os.environ.get('APISERVER_TOKEN')
-        if token is None:
-            token_path = "/var/run/secrets/kubernetes.io/serviceaccount/token"
-            if os.path.exists(token_path):
-                with open(token_path) as fobj:
-                    return fobj.read().strip()
-            else:
-                raise RuntimeError(
-                    "Could not resolve apiserver token. No $APISERVER_TOKEN set in the environment and "
-                    "{} did not exist.".format(token_path)
-                )
-
-        return token
+        return os.environ.get('APISERVER_TOKEN')
 
     def get_apiserver_cert(self):
-        cert = os.environ.get('APISERVER_CA_CERT')
-        if cert is None:
-            ca_cert_path = "/var/run/secrets/kubernetes.io/serviceaccount/ca.crt"
-            if os.path.exists(ca_cert_path):
-                return ca_cert_path
-            else:
-                raise RuntimeError(
-                    "Could not resolve apiserver CA certificate. No $APISERVER_CA_CERT set in the "
-                    "environment and {} did not exist.".format(ca_cert_path)
-                )
-
-        return cert
+        return os.environ.get('APISERVER_CA_CERT')
