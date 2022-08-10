@@ -43,7 +43,7 @@ GEN_REQ = [
     "requests==2.22.0",
     "six==1.12.0",
     "ipaddress==1.0.22",
-    "k8s==0.13.0",
+    "k8s==0.21.0",
     "prometheus_client == 0.7.1",
 ]
 
