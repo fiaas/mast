@@ -45,9 +45,6 @@ GEN_REQ = [
     "ipaddress==1.0.22",
     "k8s==0.21.0",
     "prometheus_client == 0.7.1",
-    "jinja2<3.1.0",
-    "itsdangerous==2.0.1",
-    "werkzeug==2.0.3",
 ]
 
 CODE_QUALITY_REQ = [
