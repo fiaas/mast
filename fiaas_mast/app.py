@@ -80,8 +80,17 @@ def configure_logging():
 
 def configure_k8s_client(app):
     k8s_config.debug = True
-    k8s_config.api_token = app.config.get('APISERVER_TOKEN')
-    k8s_config.verify_ssl = app.config.get('APISERVER_CA_CERT')
+
+    if app.config.get('APISERVER_TOKEN'):
+        k8s_config.api_token = app.config.get('APISERVER_TOKEN')
+    else:
+        # use default in-cluster config if api_token is not explicitly set
+        # sets api_token_source and verify_ssl
+        k8s_config.use_in_cluster_config()
+
+    # if api_cert is explicitly set, override in-cluster config setting (if used)
+    if app.config.get('APISERVER_CA_CERT'):
+        k8s_config.verify_ssl = app.config.get('APISERVER_CA_CERT')
 
 
 def error_handler(error):
