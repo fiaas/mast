@@ -45,8 +45,9 @@ spec:
         paths:
           - path: /
             backend:
-              serviceName: {{ template "fullname" . }}
-              servicePort: http
+              service:
+                name: {{ template "fullname" . }}
+                port: http
 {{- if .Values.ingress.enableTLS }}
   tls:
   - hosts:
