@@ -47,7 +47,8 @@ spec:
             backend:
               service:
                 name: {{ template "fullname" . }}
-                port: http
+                port: 
+                  number: 80
 {{- if .Values.ingress.enableTLS }}
   tls:
   - hosts:
