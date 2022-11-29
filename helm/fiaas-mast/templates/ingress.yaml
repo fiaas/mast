@@ -48,7 +48,7 @@ spec:
               service:
                 name: {{ template "fullname" . }}
                 port: 
-                  number: 5000
+                  number: 80
             pathType: ImplementationSpecific
 {{- if .Values.ingress.enableTLS }}
   tls:
