@@ -39,7 +39,7 @@ GEN_REQ = [
     "Flask==1.1.1",
     "flask-talisman==0.7.0",
     "flask-bootstrap==3.3.7.1",
-    "PyYAML==5.1.2",
+    "pyyaml>=5.4",
     "requests==2.22.0",
     "six==1.12.0",
     "ipaddress==1.0.22",
