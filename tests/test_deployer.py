@@ -16,7 +16,7 @@
 import pytest
 import yaml
 from k8s.models.common import ObjectMeta
-from mock import MagicMock, patch
+from unittest.mock import MagicMock, patch
 
 from fiaas_mast.deployer import generate_random_uuid_string, Deployer
 from fiaas_mast.fiaas import FiaasApplicationSpec, FiaasApplication

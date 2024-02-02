@@ -13,9 +13,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import mock
+from unittest import mock
 import pytest
-from mock import MagicMock
+from unittest.mock import MagicMock
 
 from fiaas_mast.application_generator import ApplicationGenerator
 from fiaas_mast.common import generate_random_uuid_string

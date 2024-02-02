@@ -57,7 +57,6 @@ CI_REQ = [
 ]
 
 TEST_REQ = [
-    'mock==3.0.5',
     'pytest-sugar==0.9.2',
     'pytest==3.10.1',
     "pytest-cov==2.7.1",
