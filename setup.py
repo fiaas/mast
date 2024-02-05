@@ -39,10 +39,15 @@ GEN_REQ = [
     "Flask==1.1.1",
     "flask-talisman==0.7.0",
     "flask-bootstrap==3.3.7.1",
+    "itsdangerous==2.0.1", # pinned for Flask 1.x
+    "jinja2==3.0.3", # pinned for flask 1.x
+    "markupsafe==2.0.1", # pinned for flask 1.x
+    "werkzeug==2.0.3", # pinned for flask 1.x
     "pyyaml>=5.4",
-    "requests==2.22.0",
+    "requests==2.31.0",
+    "urllib3==1.26.17",
     "ipaddress==1.0.22",
-    "k8s==0.21.0",
+    "k8s==0.24.2",
     "prometheus_client == 0.7.1",
 ]
 
@@ -51,8 +56,7 @@ CODE_QUALITY_REQ = [
 ]
 
 CI_REQ = [
-    "tox==3.13.2",
-    "tox-travis==0.12",
+    "tox==3.28.0",
 ]
 
 TEST_REQ = [
