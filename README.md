@@ -24,7 +24,7 @@ Kubernetes cluster.
 Development
 -----------
 
-The Development target is Python 3.6.
+The Development target is Python 3.9.
 
 Install dependencies using `pip`:
 

@@ -16,7 +16,7 @@
 from json import loads, dumps
 from urllib.parse import urlparse
 
-import mock
+from unittest import mock
 import pytest
 
 from fiaas_mast.app import create_app

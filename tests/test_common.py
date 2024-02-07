@@ -17,7 +17,7 @@
 
 import pytest
 from k8s.client import NotFound
-from mock import patch
+from unittest.mock import patch
 
 from fiaas_mast.common import check_models, PlatformError
 from fiaas_mast.fiaas import FiaasApplication, FiaasApplicationSpec

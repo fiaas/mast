@@ -16,7 +16,7 @@
 # limitations under the License.
 
 
-import mock
+from unittest import mock
 import os.path
 import pytest
 import yaml

@@ -17,7 +17,6 @@
 
 from __future__ import absolute_import
 
-import six
 from k8s.base import Model
 from k8s.fields import Field, RequiredField, ListField
 from k8s.models.common import ObjectMeta
@@ -34,8 +33,8 @@ class AdditionalLabelsOrAnnotations(Model):
 
 
 class FiaasApplicationSpec(Model):
-    application = RequiredField(six.text_type)
-    image = RequiredField(six.text_type)
+    application = RequiredField(str)
+    image = RequiredField(str)
     config = RequiredField(dict)
     additional_labels = Field(AdditionalLabelsOrAnnotations)
     additional_annotations = Field(AdditionalLabelsOrAnnotations)
@@ -47,8 +46,8 @@ class FiaasApplication(Model):
         watch_list_url = "/apis/fiaas.schibsted.io/v1/watch/applications"
 
     # Workaround for https://github.com/kubernetes/kubernetes/issues/44182
-    apiVersion = Field(six.text_type, "fiaas.schibsted.io/v1")
-    kind = Field(six.text_type, "Application")
+    apiVersion = Field(str, "fiaas.schibsted.io/v1")
+    kind = Field(str, "Application")
 
     metadata = Field(ObjectMeta)
     spec = Field(FiaasApplicationSpec)
@@ -60,12 +59,12 @@ class FiaasStatus(Model):
         url_template = "/apis/fiaas.schibsted.io/v1/namespaces/{namespace}/statuses/{name}"
 
     # Workaround for https://github.com/kubernetes/kubernetes/issues/44182
-    apiVersion = Field(six.text_type, "fiaas.schibsted.io/v1")
-    kind = Field(six.text_type, "Status")
+    apiVersion = Field(str, "fiaas.schibsted.io/v1")
+    kind = Field(str, "Status")
 
     metadata = Field(ObjectMeta)
-    result = Field(six.text_type)
-    logs = ListField(six.text_type)
+    result = Field(str)
+    logs = ListField(str)
 
 
 class FiaasApplicationStatus(Model):
@@ -73,9 +72,9 @@ class FiaasApplicationStatus(Model):
         url_template = "/apis/fiaas.schibsted.io/v1/namespaces/{namespace}/application-statuses/{name}"
 
     # Workaround for https://github.com/kubernetes/kubernetes/issues/44182
-    apiVersion = Field(six.text_type, "fiaas.schibsted.io/v1")
-    kind = Field(six.text_type, "ApplicationStatus")
+    apiVersion = Field(str, "fiaas.schibsted.io/v1")
+    kind = Field(str, "ApplicationStatus")
 
     metadata = Field(ObjectMeta)
-    result = Field(six.text_type)
-    logs = ListField(six.text_type)
+    result = Field(str)
+    logs = ListField(str)

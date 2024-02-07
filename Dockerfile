@@ -13,10 +13,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-FROM python:3.6-alpine3.7 as common
+FROM python:3.9-alpine3.19 as common
 LABEL maintainer="fiaas <fiaas@googlegroups.com>"
 
-RUN apk --no-cache add --update ca-certificates tini=0.16.1-r0 yaml && \
+RUN apk --no-cache add --update ca-certificates tini=0.19.0-r2 yaml && \
     mkdir -p /opt/fiaas-mast && \
     adduser -u 10001 -D -h /opt/fiaas-mast fiaas-mast
 
